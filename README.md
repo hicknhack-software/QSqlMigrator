@@ -1,7 +1,7 @@
 HicknHack QSqlMigrator Library
 ==============================
 
-https://www.github.com/hicknhack/qsqlmigrator
+https://github.com/hicknhack-software/QSqlMigrator
 
 
 Overview
