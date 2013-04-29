@@ -21,7 +21,10 @@ Makefile
 *.exp
 
 *.ilk
-
 *.lib
 *.pdb
 *.exe
+
+/tests/auto/mysql/MysqlConfig.h
+/tests/auto/sqlite/SqliteConfig.h
+/tests/auto/api/ApiConfig.h
