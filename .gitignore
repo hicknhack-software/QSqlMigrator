@@ -18,3 +18,10 @@ moc_*.cpp
 qrc_*.cpp
 Makefile
 *-build-*
+*.exp
+
+*.ilk
+
+*.lib
+*.pdb
+*.exe
