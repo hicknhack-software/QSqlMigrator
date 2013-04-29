@@ -3,7 +3,6 @@ HicknHack QSqlMigrator Library
 
 https://github.com/hicknhack-software/QSqlMigrator
 
-
 Overview
 --------
 
