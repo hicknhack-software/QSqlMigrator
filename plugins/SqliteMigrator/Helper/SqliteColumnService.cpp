@@ -23,7 +23,7 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "SqliteColumnService.h"
+#include "SqliteMigrator/Helper/SqliteColumnService.h"
 
 #include <QStringList>
 

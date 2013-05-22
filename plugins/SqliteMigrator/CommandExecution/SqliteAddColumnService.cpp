@@ -23,9 +23,10 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "SqliteAddColumnService.h"
-#include "Helper/SqliteColumnService.h"
-#include "SqliteDropColumnService.h"
+#include "SqliteMigrator/CommandExecution/SqliteAddColumnService.h"
+
+#include "SqliteMigrator/CommandExecution/SqliteDropColumnService.h"
+#include "SqliteMigrator/Helper/SqliteColumnService.h"
 
 #include "Commands/AddColumn.h"
 #include "Commands/DropColumn.h"

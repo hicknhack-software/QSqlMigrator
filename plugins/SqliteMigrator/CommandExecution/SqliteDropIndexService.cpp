@@ -23,8 +23,10 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "SqliteDropIndexService.h"
-#include "SqliteCreateIndexService.h"
+#include "SqliteMigrator/CommandExecution/SqliteDropIndexService.h"
+
+#include "SqliteMigrator/CommandExecution/SqliteCreateIndexService.h"
+
 #include "Commands/CreateIndex.h"
 #include "Commands/DropIndex.h"
 

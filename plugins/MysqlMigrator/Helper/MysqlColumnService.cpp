@@ -23,8 +23,8 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "MysqlColumnService.h"
-#include "MysqlQuoteService.h"
+#include "MysqlMigrator/Helper/MysqlColumnService.h"
+#include "MysqlMigrator/Helper/MysqlQuoteService.h"
 
 #include <QStringList>
 

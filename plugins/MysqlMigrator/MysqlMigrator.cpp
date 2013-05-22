@@ -23,17 +23,18 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "MysqlMigrator.h"
+#include "MysqlMigrator/MysqlMigrator.h"
 
-#include "CommandExecution/MysqlAddColumnService.h"
-#include "CommandExecution/MysqlAlterColumnTypeService.h"
-#include "CommandExecution/MysqlCreateIndexService.h"
-#include "CommandExecution/MysqlCreateTableService.h"
-#include "CommandExecution/MysqlDropColumnService.h"
-#include "CommandExecution/MysqlDropIndexService.h"
-#include "CommandExecution/MysqlDropTableService.h"
-#include "CommandExecution/MysqlRenameColumnService.h"
-#include "CommandExecution/MysqlRenameTableService.h"
+#include "MysqlMigrator/CommandExecution/MysqlAddColumnService.h"
+#include "MysqlMigrator/CommandExecution/MysqlAlterColumnTypeService.h"
+#include "MysqlMigrator/CommandExecution/MysqlCreateIndexService.h"
+#include "MysqlMigrator/CommandExecution/MysqlCreateTableService.h"
+#include "MysqlMigrator/CommandExecution/MysqlDropColumnService.h"
+#include "MysqlMigrator/CommandExecution/MysqlDropIndexService.h"
+#include "MysqlMigrator/CommandExecution/MysqlDropTableService.h"
+#include "MysqlMigrator/CommandExecution/MysqlRenameColumnService.h"
+#include "MysqlMigrator/CommandExecution/MysqlRenameTableService.h"
+
 #include "CommandExecution/CustomCommandService.h"
 
 namespace MysqlMigrator {

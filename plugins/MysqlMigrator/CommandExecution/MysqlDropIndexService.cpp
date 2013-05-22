@@ -23,8 +23,10 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "MysqlDropIndexService.h"
-#include "MysqlCreateIndexService.h"
+#include "MysqlMigrator/CommandExecution/MysqlDropIndexService.h"
+
+#include "MysqlMigrator/CommandExecution/MysqlCreateIndexService.h"
+
 #include "Commands/CreateIndex.h"
 #include "Commands/DropIndex.h"
 

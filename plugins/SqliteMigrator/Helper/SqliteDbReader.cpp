@@ -23,7 +23,7 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "SqliteDbReader.h"
+#include "SqliteMigrator/Helper/SqliteDbReader.h"
 
 #include "Structure/Table.h"
 

@@ -23,10 +23,10 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "SqliteAlterColumnTypeService.h"
+#include "SqliteMigrator/CommandExecution/SqliteAlterColumnTypeService.h"
 
-#include "SqliteAlterColumnService.h"
-#include "Helper/SqliteDbReader.h"
+#include "SqliteMigrator/CommandExecution/SqliteAlterColumnService.h"
+#include "SqliteMigrator/Helper/SqliteDbReader.h"
 
 #include "Commands/AlterColumnType.h"
 

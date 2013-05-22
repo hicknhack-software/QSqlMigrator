@@ -23,7 +23,7 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "MysqlDbReader.h"
+#include "MysqlMigrator/Helper/MysqlDbReader.h"
 
 #include "Structure/Table.h"
 

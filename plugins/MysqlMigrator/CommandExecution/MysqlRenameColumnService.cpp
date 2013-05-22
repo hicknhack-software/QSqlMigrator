@@ -23,13 +23,13 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "MysqlRenameColumnService.h"
+#include "MysqlMigrator/CommandExecution/MysqlRenameColumnService.h"
+
+#include "MysqlMigrator/Helper/MysqlColumnService.h"
+#include "MysqlMigrator/Helper/MysqlDbReader.h"
+#include "MysqlMigrator/Helper/MysqlQuoteService.h"
 
 #include "Commands/RenameColumn.h"
-
-#include "Helper/MysqlColumnService.h"
-#include "Helper/MysqlDbReader.h"
-#include "Helper/MysqlQuoteService.h"
 
 #include "Structure/Column.h"
 #include "Structure/Table.h"

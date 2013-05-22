@@ -23,12 +23,13 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "SqliteDropTableService.h"
+#include "SqliteMigrator/CommandExecution/SqliteDropTableService.h"
 
-#include "SqliteCreateTableService.h"
+#include "SqliteMigrator/CommandExecution/SqliteCreateTableService.h"
+#include "SqliteMigrator/Helper/SqliteDbReader.h"
+
 #include "Commands/CreateTable.h"
 #include "Commands/DropTable.h"
-#include "Helper/SqliteDbReader.h"
 
 #include <QDebug>
 #include <QStringList>

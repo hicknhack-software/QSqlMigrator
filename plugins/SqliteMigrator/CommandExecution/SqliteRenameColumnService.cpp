@@ -23,11 +23,12 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "SqliteRenameColumnService.h"
+#include "SqliteMigrator/CommandExecution/SqliteRenameColumnService.h"
 
-#include "SqliteAlterColumnService.h"
+#include "SqliteMigrator/CommandExecution/SqliteAlterColumnService.h"
+#include "SqliteMigrator/Helper/SqliteDbReader.h"
+
 #include "Commands/RenameColumn.h"
-#include "Helper/SqliteDbReader.h"
 
 #include <QDebug>
 #include <QStringList>

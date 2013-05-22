@@ -23,7 +23,7 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "SqliteRenameTableService.h"
+#include "SqliteMigrator/CommandExecution/SqliteRenameTableService.h"
 
 #include "Commands/RenameTable.h"
 

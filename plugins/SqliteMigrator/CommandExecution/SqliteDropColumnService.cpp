@@ -23,12 +23,13 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "SqliteDropColumnService.h"
-#include "SqliteAddColumnService.h"
-#include "SqliteCreateTableService.h"
-#include "Helper/SqliteDbReader.h"
-#include "SqliteDropTableService.h"
-#include "SqliteRenameTableService.h"
+#include "SqliteMigrator/CommandExecution/SqliteDropColumnService.h"
+
+#include "SqliteMigrator/CommandExecution/SqliteAddColumnService.h"
+#include "SqliteMigrator/CommandExecution/SqliteCreateTableService.h"
+#include "SqliteMigrator/CommandExecution/SqliteDropTableService.h"
+#include "SqliteMigrator/CommandExecution/SqliteRenameTableService.h"
+#include "SqliteMigrator/Helper/SqliteDbReader.h"
 
 #include "Commands/AddColumn.h"
 #include "Commands/CreateTable.h"

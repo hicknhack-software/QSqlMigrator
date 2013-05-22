@@ -23,17 +23,18 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "SqliteMigrator.h"
+#include "SqliteMigrator/SqliteMigrator.h"
 
-#include "CommandExecution/SqliteAddColumnService.h"
-#include "CommandExecution/SqliteAlterColumnTypeService.h"
-#include "CommandExecution/SqliteCreateIndexService.h"
-#include "CommandExecution/SqliteCreateTableService.h"
-#include "CommandExecution/SqliteDropColumnService.h"
-#include "CommandExecution/SqliteDropIndexService.h"
-#include "CommandExecution/SqliteDropTableService.h"
-#include "CommandExecution/SqliteRenameColumnService.h"
-#include "CommandExecution/SqliteRenameTableService.h"
+#include "SqliteMigrator/CommandExecution/SqliteAddColumnService.h"
+#include "SqliteMigrator/CommandExecution/SqliteAlterColumnTypeService.h"
+#include "SqliteMigrator/CommandExecution/SqliteCreateIndexService.h"
+#include "SqliteMigrator/CommandExecution/SqliteCreateTableService.h"
+#include "SqliteMigrator/CommandExecution/SqliteDropColumnService.h"
+#include "SqliteMigrator/CommandExecution/SqliteDropIndexService.h"
+#include "SqliteMigrator/CommandExecution/SqliteDropTableService.h"
+#include "SqliteMigrator/CommandExecution/SqliteRenameColumnService.h"
+#include "SqliteMigrator/CommandExecution/SqliteRenameTableService.h"
+
 #include "CommandExecution/CustomCommandService.h"
 
 namespace SqliteMigrator {

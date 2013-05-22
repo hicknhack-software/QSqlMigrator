@@ -23,8 +23,9 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "MysqlMigrationTableService.h"
-#include "Helper/MysqlQuoteService.h"
+#include "MysqlMigrator/MigrationTracker/MysqlMigrationTableService.h"
+
+#include "MysqlMigrator/Helper/MysqlQuoteService.h"
 
 #include <QDebug>
 #include <QSqlError>

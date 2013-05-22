@@ -23,7 +23,7 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "MysqlQuoteService.h"
+#include "MysqlMigrator/Helper/MysqlQuoteService.h"
 
 namespace Helper {
 

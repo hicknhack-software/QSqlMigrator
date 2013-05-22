@@ -23,7 +23,7 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "SqliteMigrationTableService.h"
+#include "SqliteMigrator/MigrationTracker/SqliteMigrationTableService.h"
 
 #include <QDebug>
 #include <QSqlError>

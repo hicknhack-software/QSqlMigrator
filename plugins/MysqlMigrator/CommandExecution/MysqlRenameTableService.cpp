@@ -23,11 +23,11 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "MysqlRenameTableService.h"
+#include "MysqlMigrator/CommandExecution/MysqlRenameTableService.h"
+
+#include "MysqlMigrator/Helper/MysqlQuoteService.h"
 
 #include "Commands/RenameTable.h"
-
-#include "Helper/MysqlQuoteService.h"
 
 #include <QDebug>
 #include <QStringList>

@@ -23,14 +23,15 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "MysqlDropColumnService.h"
-#include "MysqlAddColumnService.h"
+#include "MysqlMigrator/CommandExecution/MysqlDropColumnService.h"
+
+#include "MysqlMigrator/CommandExecution/MysqlAddColumnService.h"
+
+#include "MysqlMigrator/Helper/MysqlDbReader.h"
+#include "MysqlMigrator/Helper/MysqlQuoteService.h"
 
 #include "Commands/AddColumn.h"
 #include "Commands/DropColumn.h"
-
-#include "Helper/MysqlDbReader.h"
-#include "Helper/MysqlQuoteService.h"
 
 #include "Structure/Column.h"
 #include "Structure/Table.h"
