@@ -22,6 +22,7 @@ Prerequisites
 
 QSqlMigrator is meant to be used with the Qt Framework.
 It has been successfully tested with Visual Studio 2010 compiler and Qt 4.8.4 and Qt 5.0.0.
+On Linux with GCC 4.8.1 and Qt 4.8.5.
 
 You will need a working database driver plugin for your database, both for qt and the sql migrator.
 Hint: Our tests include instructions to create the qt sql driver plugin
