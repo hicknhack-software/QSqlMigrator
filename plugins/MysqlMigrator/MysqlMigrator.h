@@ -40,16 +40,6 @@
 #   endif // Q_OS_WIN
 #endif // QX_DLL_EXPORT_HELPER
 
-/*
-#ifndef MYSQLMIGRATOR_DLL_EXPORT
-# ifdef _BUILDING_MYSQLMIGRATOR_DLL
-#  define MYSQLMIGRATOR_DLL_EXPORT __declspec(dllexport)
-# else
-#  define MYSQLMIGRATOR_DLL_EXPORT __declspec(dllimport)
-# endif
-#endif
-*/
-
 namespace MysqlMigrator {
 
 QSharedPointer<CommandExecution::CommandExecutionServiceRepository> MYSQLMIGRATOR_DLL_EXPORT commandServiceRepository();
