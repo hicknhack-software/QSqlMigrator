@@ -28,6 +28,22 @@
 
 #define QSQLMIGRATOR_VERSION "1.0.0"
 
+
+#ifndef QSQLMIGRATOR_DLL_EXPORT
+#   ifdef Q_OS_WIN
+#       ifdef _BUILDING_QSQLMIGRATOR_DLL
+#           define QSQLMIGRATOR_DLL_EXPORT __declspec(dllexport)
+#       else
+#           define QSQLMIGRATOR_DLL_EXPORT __declspec(dllimport)
+#       endif
+#   else
+#       define QSQLMIGRATOR_DLL_EXPORT __attribute__ ((visibility("default")))
+#   endif // Q_OS_WIN
+#endif // QX_DLL_EXPORT_HELPER
+
+
+
+/*
 #ifndef QSQLMIGRATOR_DLL_EXPORT
 # ifdef _BUILDING_QSQLMIGRATOR_DLL
 #  define QSQLMIGRATOR_DLL_EXPORT __declspec(dllexport)
@@ -35,5 +51,6 @@
 #  define QSQLMIGRATOR_DLL_EXPORT __declspec(dllimport)
 # endif
 #endif
+*/
 
 #endif // QSQLMIGRATOR_CONFIG_H

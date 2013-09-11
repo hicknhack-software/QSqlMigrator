@@ -37,7 +37,7 @@ public:
     explicit DropColumn(const QString &columnName, const QString &tableName);
     explicit DropColumn(const Structure::Column &column, const QString &tableName);
 
-    const bool hasColumn() const;
+    bool hasColumn() const;
     const Structure::Column &column() const;
     const QString &columnName() const;
     const QString &tableName() const;

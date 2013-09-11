@@ -32,8 +32,8 @@ namespace Commands {
 AlterColumnType::AlterColumnType(const QString &columnName, const QString &tableName
                                  , const QString &newType, const QString &oldType)
     : BaseCommand(AlterColumnType::typeName())
-    , m_columnName(columnName)
     , m_tableName(tableName)
+    , m_columnName(columnName)
     , m_newType(newType)
     , m_oldType(oldType)
 {
@@ -66,7 +66,7 @@ const QString &AlterColumnType::columnName() const
     return m_columnName;
 }
 
-const bool AlterColumnType::hasOldType() const
+bool AlterColumnType::hasOldType() const
 {
     return (!m_oldType.isEmpty());
 }

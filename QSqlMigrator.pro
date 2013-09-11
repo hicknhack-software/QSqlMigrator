@@ -2,8 +2,9 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
 	 src \
-         tests \
-	 plugins
+         plugins \
+         tests
+
 
 plugins.depends = src
 tests.depends = src plugins

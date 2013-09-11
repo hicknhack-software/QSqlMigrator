@@ -72,7 +72,7 @@ const QString &QSqlMigratorConfig::temporaryTablePrefix() const
     return m_migrationConfig.temporaryTablePrefix;
 }
 
-const bool QSqlMigratorConfig::migrationCreateTable() const
+bool QSqlMigratorConfig::migrationCreateTable() const
 {
     return m_migrationConfig.createDatabase;
 }

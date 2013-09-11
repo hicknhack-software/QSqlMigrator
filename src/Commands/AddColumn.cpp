@@ -31,8 +31,8 @@ namespace Commands {
 
 AddColumn::AddColumn(const Structure::Column &column, const QString &tableName)
     : BaseCommand(AddColumn::typeName())
-    , m_column(column)
     , m_tableName(tableName)
+    , m_column(column)
 {
     if(tableName.isEmpty()) {
         ::qWarning() << LOG_PREFIX << AddColumn::typeName() << "command" << column.name() << "with empty tableName!";

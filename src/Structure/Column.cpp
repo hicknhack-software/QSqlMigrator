@@ -30,10 +30,10 @@
 namespace Structure {
 
 Column::Column(const QString &name, const QString &sqlType, Attributes attributes)
-    : m_name(name)
+    : m_defaultValue(0)
+    , m_name(name)
     , m_sqlType(sqlType)
     , m_attributes(attributes)
-    , m_defaultValue(0)
 {
     if(name.isEmpty()) {
         ::qWarning() << LOG_PREFIX << "Column with empty name!";

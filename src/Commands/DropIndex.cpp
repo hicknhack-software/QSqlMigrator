@@ -47,7 +47,7 @@ DropIndex::DropIndex(const Structure::Index &index)
 {
 }
 
-const bool DropIndex::hasIndex() const
+bool DropIndex::hasIndex() const
 {
     return m_hasIndex;
 }

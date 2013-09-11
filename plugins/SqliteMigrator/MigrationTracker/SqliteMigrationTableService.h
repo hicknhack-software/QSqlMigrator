@@ -36,10 +36,10 @@ class SQLITEMIGRATOR_DLL_EXPORT SqliteMigrationTableService : public MigrationTr
 public:
     SqliteMigrationTableService();
 
-    const bool canRevertStrucuturalChangesUsingTransactions() const;
+    bool canRevertStrucuturalChangesUsingTransactions() const;
     bool wasMigrationExecuted(const QString &migrationName
                                       , const CommandExecution::CommandExecutionContext &context) const;
-    const QStringList migrationList(const CommandExecution::CommandExecutionContext &context) const;
+    QStringList migrationList(const CommandExecution::CommandExecutionContext &context) const;
 
     bool addMigration(const QString &migrationName, const CommandExecution::CommandExecutionContext &context) const;
     bool removeMigration(const QString &migrationName, const CommandExecution::CommandExecutionContext &context) const;

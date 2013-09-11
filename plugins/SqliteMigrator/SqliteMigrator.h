@@ -29,12 +29,26 @@
 #include "CommandExecution/CommandExecutionServiceRepository.h"
 
 #ifndef SQLITEMIGRATOR_DLL_EXPORT
+#   ifdef Q_OS_WIN
+#       ifdef _BUILDING_QSQLMIGRATOR_DLL
+#           define SQLITEMIGRATOR_DLL_EXPORT __declspec(dllexport)
+#       else
+#           define SQLITEMIGRATOR_DLL_EXPORT __declspec(dllimport)
+#       endif
+#   else
+#       define SQLITEMIGRATOR_DLL_EXPORT __attribute__ ((visibility("default")))
+#   endif // Q_OS_WIN
+#endif // QX_DLL_EXPORT_HELPER
+
+/*
+#ifndef SQLITEMIGRATOR_DLL_EXPORT
 # ifdef _BUILDING_SQLITEMIGRATOR_DLL
 #  define SQLITEMIGRATOR_DLL_EXPORT __declspec(dllexport)
 # else
 #  define SQLITEMIGRATOR_DLL_EXPORT __declspec(dllimport)
 # endif
 #endif
+*/
 
 namespace SqliteMigrator {
 

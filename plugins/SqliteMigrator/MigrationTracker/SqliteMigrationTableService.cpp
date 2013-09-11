@@ -39,7 +39,7 @@ SqliteMigrationTableService::SqliteMigrationTableService()
 {
 }
 
-const bool SqliteMigrationTableService::canRevertStrucuturalChangesUsingTransactions() const
+bool SqliteMigrationTableService::canRevertStrucuturalChangesUsingTransactions() const
 {
     return true;
 }
@@ -51,7 +51,7 @@ bool SqliteMigrationTableService::wasMigrationExecuted(const QString &migrationN
     return this->migrationList(context).contains(migrationName);
 }
 
-const QStringList SqliteMigrationTableService::migrationList(const CommandExecutionContext &context) const
+QStringList SqliteMigrationTableService::migrationList(const CommandExecutionContext &context) const
 {
     this->initDb(context);
 

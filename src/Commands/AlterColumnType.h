@@ -36,7 +36,7 @@ public:
     explicit AlterColumnType(const QString &columnName, const QString &tableName
                              , const QString &newType, const QString &oldType = "");
 
-    const bool hasOldType() const;
+    bool hasOldType() const;
     const QString &columnName() const;
     const QString &newType() const;
     const QString &oldType() const;

@@ -29,8 +29,8 @@ namespace CommandExecution {
 
 CommandExecutionContext::CommandExecutionContext(const QSqlDatabase &database, const MigrationExecution::MigrationExecutionConfig &migrationConfig)
     : m_database(database)
-    , m_isUndoUsed(false)
     , m_migrationConfig(migrationConfig)
+    , m_isUndoUsed(false)
 {
 }
 

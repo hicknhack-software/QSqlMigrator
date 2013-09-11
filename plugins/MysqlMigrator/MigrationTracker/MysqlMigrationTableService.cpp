@@ -37,7 +37,7 @@ MysqlMigrationTableService::MysqlMigrationTableService()
 {
 }
 
-const bool MysqlMigrationTableService::canRevertStrucuturalChangesUsingTransactions() const
+bool MysqlMigrationTableService::canRevertStrucuturalChangesUsingTransactions() const
 {
     return false;
 }
@@ -49,7 +49,7 @@ bool MysqlMigrationTableService::wasMigrationExecuted(const QString &migrationNa
     return this->migrationList(context).contains(migrationName);
 }
 
-const QStringList MysqlMigrationTableService::migrationList(const CommandExecution::CommandExecutionContext &context) const
+QStringList MysqlMigrationTableService::migrationList(const CommandExecution::CommandExecutionContext &context) const
 {
     this->initDb(context);
 

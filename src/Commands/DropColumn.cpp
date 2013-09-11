@@ -81,7 +81,7 @@ const QString &DropColumn::columnName() const
     }
 }
 
-const bool DropColumn::hasColumn() const
+bool DropColumn::hasColumn() const
 {
     return m_hasColumn;
 }

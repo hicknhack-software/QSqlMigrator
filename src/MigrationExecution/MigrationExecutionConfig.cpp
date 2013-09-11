@@ -32,10 +32,10 @@ namespace MigrationExecution {
 MigrationExecutionConfig::MigrationExecutionConfig(const QString &migrationTableName
                                                    , const QString &temporaryTablePrefix
                                                    , const QString &migrationTablePrefix)
-    : createDatabase(false)
-    , migrationVersionTableName(migrationTableName)
+    : migrationVersionTableName(migrationTableName)
     , migrationTablePrefix(migrationTablePrefix)
     , temporaryTablePrefix(temporaryTablePrefix)
+    , createDatabase(false)
 {
 }
 

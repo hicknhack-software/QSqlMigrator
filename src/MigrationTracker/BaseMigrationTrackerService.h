@@ -37,9 +37,9 @@ class QSQLMIGRATOR_DLL_EXPORT BaseMigrationTrackerService
 public:
     virtual ~BaseMigrationTrackerService() {}
 
-    virtual const bool canRevertStrucuturalChangesUsingTransactions() const = 0;
+    virtual bool canRevertStrucuturalChangesUsingTransactions() const = 0;
 
-    virtual const QStringList migrationList(const CommandExecution::CommandExecutionContext &context) const = 0;
+    virtual QStringList migrationList(const CommandExecution::CommandExecutionContext &context) const = 0;
 
     virtual bool wasMigrationExecuted(const QString &migrationName
                                       , const CommandExecution::CommandExecutionContext &context) const = 0;

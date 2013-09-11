@@ -49,7 +49,7 @@ public:
      const QString &migrationTableName() const;
      const QString &migrationTablePrefix() const;
      const QString &temporaryTablePrefix() const;
-     const bool migrationCreateTable() const;
+     bool migrationCreateTable() const;
 
      void setDatabaseType(const QString &databaseType);
      void setDatabaseHostName(const QString &host);

@@ -12,14 +12,15 @@ CONFIG += dll
 DEFINES += _BUILDING_QSQLMIGRATOR_DLL
 DEFINES += LOG_PREFIX=\\\"[QSqlMigrator]\\\"
 
-QSQLMIGRATOR_ROOT = $$quote($$PWD)/..
+QSQLMIGRATOR_ROOT = $$quote($$PWD)/../
 LIB_PATH = $$QSQLMIGRATOR_ROOT/bin
 DESTDIR = $$LIB_PATH
 
 INCLUDEPATH += $$QSQLMIGRATOR_ROOT/src
 
-win32:CONFIG(release, debug|release): TARGET = QSqlMigrator
-else:win32:CONFIG(debug, debug|release): TARGET = QSqlMigratord
+#its the same target for each os
+CONFIG(release, debug|release): TARGET = QSqlMigrator
+else:CONFIG(debug, debug|release): TARGET = QSqlMigratord
 
 SOURCES += \
 	 QSqlMigrator/QSqlMigratorService.cpp \

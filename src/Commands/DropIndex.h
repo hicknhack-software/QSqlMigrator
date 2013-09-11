@@ -37,7 +37,7 @@ public:
     explicit DropIndex(const QString &name);
     explicit DropIndex(const Structure::Index &index);
 
-    const bool hasIndex() const;
+    bool hasIndex() const;
     const Structure::Index &index() const;
     const QString &name() const;
     static const QString &typeName();

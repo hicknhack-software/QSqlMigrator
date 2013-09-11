@@ -16,22 +16,26 @@ QSQLMIGRATOR_ROOT = $$quote($$PWD)/../..
 
 LIB_PATH = $$QSQLMIGRATOR_ROOT/bin
 DESTDIR = $$LIB_PATH
-LIBS += -L$$LIB_PATH
+win32: LIBS += -L$$LIB_PATH
+unix: LIBS += -L$$LIB_PATH -Wl,-rpath,$$LIB_PATH
 
 INCLUDEPATH += $$QSQLMIGRATOR_ROOT/plugins
 
-win32:CONFIG(release, debug|release): TARGET = MysqlMigrator
-else:win32:CONFIG(debug, debug|release): TARGET = MysqlMigratord
+#its the same target for each os
+CONFIG(release, debug|release): TARGET = MysqlMigrator
+else:CONFIG(debug, debug|release): TARGET = MysqlMigratord
 
 # depends QSqlMigrator.lib {
-win32:CONFIG(release, debug|release): LIBS += -lQSqlMigrator
-else:win32:CONFIG(debug, debug|release): LIBS += -lQSqlMigratord
+CONFIG(release, debug|release): LIBS += -lQSqlMigrator
+else:CONFIG(debug, debug|release): LIBS += -lQSqlMigratord
 
 INCLUDEPATH += $$QSQLMIGRATOR_ROOT/src
 DEPENDPATH += $$DESTDIR
 
 win32:CONFIG(release, debug|release): PRE_TARGETDEPS += $$LIB_PATH/QSqlMigrator.lib
 else:win32:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$LIB_PATH/QSqlMigratord.lib
+else:unix:CONFIG(release, debug|release): PRE_TARGETDEPS += $$LIB_PATH/libQSqlMigrator.so
+else:unix:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$LIB_PATH/libQSqlMigratord.so
 # }
 
 SOURCES += \

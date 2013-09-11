@@ -68,7 +68,7 @@ private:
     QSharedPointer<QString> m_defaultValue;
     QString m_name;
     QString m_sqlType;
-    const Attributes m_attributes;
+    /* const */ Attributes m_attributes;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Column::Attributes)
