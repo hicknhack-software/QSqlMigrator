@@ -136,15 +136,15 @@ bool MigrationExecutionService::isMigrationRemembered(const QString &migrationNa
                                                       , Direction direction) const
 {
     CommandExecution::CommandExecutionContext serviceContext(*(context.database()), context.migrationConfig());
-    bool isExecuted = context.baseMigrationTableService()->
-            wasMigrationExecuted(migrationName, serviceContext);
+    MigrationTableServicePtr tableService = context.baseMigrationTableService();
+    bool isExecuted = tableService->wasMigrationExecuted(migrationName, serviceContext);
 
     switch (direction) {
     case Up:
         return isExecuted;
 
     case Down:
-        return (! isExecuted);
+        return (!isExecuted);
 
     default:
         return true;
@@ -156,13 +156,13 @@ bool MigrationExecutionService::rememberMigration(const QString &migrationName
                                                   , Direction direction) const
 {
     CommandExecution::CommandExecutionContext serviceContext(*(context.database()), context.migrationConfig());
-
+    MigrationTableServicePtr tableService = context.baseMigrationTableService();
     switch (direction) {
     case Up:
-        return context.baseMigrationTableService()->addMigration(migrationName, serviceContext);
+        return tableService->addMigration(migrationName, serviceContext);
 
     case Down:
-        return context.baseMigrationTableService()->removeMigration(migrationName, serviceContext);
+        return tableService->removeMigration(migrationName, serviceContext);
 
     default:
         return false;

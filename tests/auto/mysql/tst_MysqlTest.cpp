@@ -114,6 +114,10 @@ void MysqlTest::init()
 
     m_context.database()->setDatabaseName(MYSQLTEST_DATABASE_NAME);
     m_context.database()->open();
+
+    MigrationTableServicePtr migrationTableService = m_context.baseMigrationTableService();
+    CommandExecution::CommandExecutionContext serviceContext(*(m_context.database()), m_context.migrationConfig());
+    QVERIFY2(migrationTableService->ensureVersionTable(serviceContext), "MigrationVersionTable should be created");
 }
 
 void MysqlTest::cleanup()

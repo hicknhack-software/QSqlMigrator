@@ -47,16 +47,14 @@ bool SqliteMigrationTableService::canRevertStrucuturalChangesUsingTransactions()
 bool SqliteMigrationTableService::wasMigrationExecuted(const QString &migrationName
                                                                , const CommandExecutionContext &context) const
 {
-    this->initDb(context);
     return this->migrationList(context).contains(migrationName);
 }
 
 QStringList SqliteMigrationTableService::migrationList(const CommandExecutionContext &context) const
 {
-    this->initDb(context);
-
+    QString versionTableName = context.migrationConfig().migrationVersionTableName;
     QSqlQuery query = context.database().exec("SELECT version FROM "
-                                              + context.migrationConfig().migrationVersionTableName);
+                                              + versionTableName);
 
     QStringList lMigrationList;
     if (query.lastError().isValid()) {
@@ -72,14 +70,12 @@ QStringList SqliteMigrationTableService::migrationList(const CommandExecutionCon
 bool SqliteMigrationTableService::addMigration(const QString &migrationName, const CommandExecutionContext &context
                                                ) const
 {
-    this->initDb(context);
-
-    QString sQuery = "INSERT INTO %1 VALUES ('%2')";
-    sQuery = sQuery.arg(context.migrationConfig().migrationVersionTableName
-                        , migrationName);
-    QSqlQuery query = context.database().exec(sQuery);
-    if (query.lastError().isValid()) {
-        ::qDebug() << Q_FUNC_INFO << query.lastError().text();
+    QString versionTableName = context.migrationConfig().migrationVersionTableName;
+    QString query = "INSERT INTO %1 VALUES ('%2')";
+    query = query.arg(versionTableName, migrationName);
+    QSqlQuery sqlQuery = context.database().exec(query);
+    if (sqlQuery.lastError().isValid()) {
+        ::qDebug() << Q_FUNC_INFO << sqlQuery.lastError().text();
         return false;
     }
     return true;
@@ -88,30 +84,33 @@ bool SqliteMigrationTableService::addMigration(const QString &migrationName, con
 bool SqliteMigrationTableService::removeMigration(const QString &migrationName, const CommandExecutionContext &context
                                                   ) const
 {
-    this->initDb(context);
-
-    QString sQuery = "DELETE FROM %1 WHERE version = '%2'";
-    sQuery = sQuery.arg(context.migrationConfig().migrationVersionTableName
-                        , migrationName);
-    QSqlQuery query = context.database().exec(sQuery);
-    if (query.lastError().isValid()) {
-        ::qDebug() << Q_FUNC_INFO << query.lastError().text();
+    QString versionTableName = context.migrationConfig().migrationVersionTableName;
+    QString query = "DELETE FROM %1 WHERE version = '%2'";
+    query = query.arg(versionTableName, migrationName);
+    QSqlQuery sqlQuery = context.database().exec(query);
+    if (sqlQuery.lastError().isValid()) {
+        ::qDebug() << Q_FUNC_INFO << sqlQuery.lastError().text();
         return false;
     }
     return true;
 }
 
-void SqliteMigrationTableService::initDb(const CommandExecutionContext &context) const
+bool SqliteMigrationTableService::ensureVersionTable(const CommandExecutionContext &context) const
 {
-    ::qDebug() << "init DB";
     QStringList tables = context.database().tables(QSql::AllTables);
-    QString sTableName = context.migrationConfig().migrationVersionTableName;
-    if (!tables.contains(sTableName)) {
-        QString sQuery = "CREATE TABLE %1 (version VARCHAR(255) PRIMARY KEY)";
-        QSqlQuery query = context.database().exec(sQuery.arg(sTableName));
-        if (query.lastError().isValid())
-            ::qDebug() << Q_FUNC_INFO << query.lastError().text();
+    QString versionTableName = context.migrationConfig().migrationVersionTableName;
+    if(!tables.contains(versionTableName))
+    {
+        QString query = "CREATE TABLE %1 (version VARCHAR(255) PRIMARY KEY)";
+        ::qDebug() << "creating migrationVersion table: " << versionTableName;
+        QSqlQuery sqlQuery = context.database().exec(query.arg(versionTableName));
+        if (sqlQuery.lastError().isValid())
+        {
+            ::qDebug() << Q_FUNC_INFO << sqlQuery.lastError().text();
+            return false;
+        }
     }
+    return true;
 }
 
 } // namespace MigrationTracker

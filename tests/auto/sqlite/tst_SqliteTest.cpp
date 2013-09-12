@@ -91,6 +91,10 @@ void SqliteTest::cleanupTestCase()
 void SqliteTest::init()
 {
     m_context.database()->open();
+
+    MigrationTableServicePtr migrationTableService = m_context.baseMigrationTableService();
+    CommandExecution::CommandExecutionContext serviceContext(*(m_context.database()), m_context.migrationConfig());
+    QVERIFY2(migrationTableService->ensureVersionTable(serviceContext), "MigrationVersionTable should be created");
 }
 
 void SqliteTest::cleanup()

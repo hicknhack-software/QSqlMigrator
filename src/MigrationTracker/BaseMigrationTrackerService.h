@@ -49,6 +49,8 @@ public:
 
     virtual bool removeMigration(const QString &migrationName
                                  , const CommandExecution::CommandExecutionContext &context) const = 0;
+
+    virtual bool ensureVersionTable(const CommandExecution::CommandExecutionContext &context) const = 0;
 };
 
 } // namespace MigrationTracker

@@ -106,6 +106,10 @@ void ApiTest::cleanupTestCase()
 void ApiTest::init()
 {
     m_context.database()->open();
+
+    MigrationTableServicePtr migrationTableService = m_context.baseMigrationTableService();
+    CommandExecution::CommandExecutionContext serviceContext(*(m_context.database()), m_context.migrationConfig());
+    QVERIFY2(migrationTableService->ensureVersionTable(serviceContext), "MigrationVersionTable should be created");
 }
 
 void ApiTest::cleanup()
@@ -203,6 +207,8 @@ void ApiTest::testApplyAll()
     QVERIFY2(tables.contains("users"), "table 'users' should be created during migration");
     QVERIFY2(tables.contains("addresses"), "table 'addresses' should be created during migration");
     QVERIFY2(tables.contains("cars"), "table 'cars' should be created during migration");
+
+    QFile::copy(API_DATABASE_FILENAME, "vorher.sqlite3");
 }
 
 void ApiTest::testMigrateTo()
@@ -220,6 +226,9 @@ void ApiTest::testMigrateTo()
              , "two tables should be added during second migrateTo(), makes three (+ migrationTable) tables overall");
     QVERIFY2(tables.contains("addresses"), "table 'addresses' should be created during migration");
     QVERIFY2(tables.contains("cars"), "table 'cars' should be created during migration");
+
+    QFile::copy(API_DATABASE_FILENAME, "hier.sqlite3");
+
 }
 
 void ApiTest::testMissingMigrations()

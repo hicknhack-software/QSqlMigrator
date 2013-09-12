@@ -31,7 +31,7 @@ using namespace MigrationExecution;
 
 BasicTest::BasicTest()
     : m_context(QMap<QString, const Migration*>())
-{
+{ 
 }
 
 void BasicTest::testCreateTable()

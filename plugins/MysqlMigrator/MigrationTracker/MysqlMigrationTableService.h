@@ -44,8 +44,7 @@ public:
     bool addMigration(const QString &migrationName, const CommandExecution::CommandExecutionContext &context) const;
     bool removeMigration(const QString &migrationName, const CommandExecution::CommandExecutionContext &context) const;
 
-private:
-    void initDb(const CommandExecution::CommandExecutionContext &context) const;
+    bool ensureVersionTable(const CommandExecution::CommandExecutionContext &context) const;
 };
 
 } // namespace MigrationTracker

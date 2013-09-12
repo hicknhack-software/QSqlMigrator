@@ -37,6 +37,8 @@
 
 #include "CommandExecution/CustomCommandService.h"
 
+#include "MigrationTracker/MysqlMigrationTableService.h"
+
 namespace MysqlMigrator {
 
 using namespace CommandExecution;
