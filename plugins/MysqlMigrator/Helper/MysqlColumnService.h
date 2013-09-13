@@ -38,11 +38,11 @@ class MysqlColumnService
 public:
     MysqlColumnService();
 
-    const QString generateColumnDefinitionSql(const Structure::Column &column) const;
-    const QString generateColumnDefinitionSql(const QList<Structure::Column> &columnList) const;
-    const QString generateIndexColumnDefinitionSql(const QString &columnName
+    QString generateColumnDefinitionSql(const Structure::Column &column) const;
+    QString generateColumnDefinitionSql(const QList<Structure::Column> &columnList) const;
+    QString generateIndexColumnDefinitionSql(const QString &columnName
                                                    , const Structure::Index::SortOrder &sortOrder) const;
-    const QString generateIndexColumnDefinitionSql(const Structure::Index::IndexHash &columns) const;
+    QString generateIndexColumnDefinitionSql(const Structure::Index::IndexHash &columns) const;
 };
 
 } // namespace Helper

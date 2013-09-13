@@ -58,12 +58,12 @@ const MigrationExecutionContext::NameMigrationMap &MigrationExecutionContext::mi
     return m_migrations;
 }
 
-const CommandServiceRepositoryPtr MigrationExecutionContext::commandServiceRepository() const
+CommandServiceRepositoryPtr MigrationExecutionContext::commandServiceRepository() const
 {
     return m_commandServiceRepository;
 }
 
-const MigrationTableServicePtr MigrationExecutionContext::baseMigrationTableService() const
+MigrationTableServicePtr MigrationExecutionContext::baseMigrationTableService() const
 {
     return m_migrtaionTableService;
 }

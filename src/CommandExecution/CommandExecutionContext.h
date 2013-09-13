@@ -39,7 +39,7 @@ class QSQLMIGRATOR_DLL_EXPORT CommandExecutionContext
 public:
     CommandExecutionContext(const QSqlDatabase database, const MigrationExecution::MigrationExecutionConfig &migrationConfig);
 
-    const QSqlDatabase database() const;
+    QSqlDatabase database() const;
 
     //! \return true, when undo command will be used
     bool isUndoUsed() const;

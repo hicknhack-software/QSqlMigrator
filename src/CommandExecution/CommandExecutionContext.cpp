@@ -34,7 +34,7 @@ CommandExecutionContext::CommandExecutionContext(const QSqlDatabase database, co
 {
 }
 
-const QSqlDatabase CommandExecutionContext::database() const
+QSqlDatabase CommandExecutionContext::database() const
 {
     return m_database;
 }

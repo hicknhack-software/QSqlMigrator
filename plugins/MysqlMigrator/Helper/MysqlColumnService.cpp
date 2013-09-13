@@ -36,7 +36,7 @@ MysqlColumnService::MysqlColumnService()
 {
 }
 
-const QString MysqlColumnService::generateColumnDefinitionSql(const Column &column) const
+QString MysqlColumnService::generateColumnDefinitionSql(const Column &column) const
 {
     QStringList sqlColumnOptions;
     if (!column.isNullable()) {
@@ -62,7 +62,7 @@ const QString MysqlColumnService::generateColumnDefinitionSql(const Column &colu
                                    , sqlColumnOptions.join(" "));
 }
 
-const QString MysqlColumnService::generateColumnDefinitionSql(const QList<Column> &columnList) const
+QString MysqlColumnService::generateColumnDefinitionSql(const QList<Column> &columnList) const
 {
     QStringList sqlColumnDefinitions;
     foreach (Column column, columnList) {
@@ -71,7 +71,7 @@ const QString MysqlColumnService::generateColumnDefinitionSql(const QList<Column
     return sqlColumnDefinitions.join(", ");
 }
 
-const QString MysqlColumnService::generateIndexColumnDefinitionSql(const QString &columnName
+QString MysqlColumnService::generateIndexColumnDefinitionSql(const QString &columnName
                                                                      , const Index::SortOrder &sortOrder) const
 {
     QString sqlSortOrder;
@@ -90,7 +90,7 @@ const QString MysqlColumnService::generateIndexColumnDefinitionSql(const QString
     return QString("%1 %2").arg(columnName, sqlSortOrder);
 }
 
-const QString MysqlColumnService::generateIndexColumnDefinitionSql(const Index::IndexHash &columns) const
+QString MysqlColumnService::generateIndexColumnDefinitionSql(const Index::IndexHash &columns) const
 {
     QStringList sqlIndexColumnDefinitions;
     QHashIterator<QString, Index::SortOrder> i(columns);

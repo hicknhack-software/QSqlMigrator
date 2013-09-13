@@ -57,8 +57,8 @@ public:
      MigrationExecutionContext(const NameMigrationMap &migrations, const MigrationExecutionConfig &migrationConfig);
      MigrationExecutionContext(const NameMigrationMap &migrations);
 
-     const MigrationTableServicePtr baseMigrationTableService() const;
-     const CommandServiceRepositoryPtr commandServiceRepository() const;
+     MigrationTableServicePtr baseMigrationTableService() const;
+     CommandServiceRepositoryPtr commandServiceRepository() const;
      QSqlDatabase database() const;
      const MigrationExecutionConfig &migrationConfig() const;
      const NameMigrationMap &migrationMap() const;

@@ -35,7 +35,7 @@ SqliteColumnService::SqliteColumnService()
 {
 }
 
-const QString SqliteColumnService::generateColumnDefinitionSql(const Column &column) const
+QString SqliteColumnService::generateColumnDefinitionSql(const Column &column) const
 {
     QStringList sqlColumnOptions;
     if (!column.isNullable()) {
@@ -58,7 +58,7 @@ const QString SqliteColumnService::generateColumnDefinitionSql(const Column &col
     return QString("%1 %2 %3").arg(column.name(), column.sqlType(), sqlColumnOptions.join(" "));
 }
 
-const QString SqliteColumnService::generateColumnDefinitionSql(const QList<Column> &columnList) const
+QString SqliteColumnService::generateColumnDefinitionSql(const QList<Column> &columnList) const
 {
     QStringList sqlColumnDefinitions;
     foreach (Column column, columnList) {
@@ -67,7 +67,7 @@ const QString SqliteColumnService::generateColumnDefinitionSql(const QList<Colum
     return sqlColumnDefinitions.join(", ");
 }
 
-const QString SqliteColumnService::generateIndexColumnDefinitionSql(const QString &columnName
+QString SqliteColumnService::generateIndexColumnDefinitionSql(const QString &columnName
                                                                       , const Index::SortOrder &sortOrder) const
 {
     QString sqlSortOrder;
@@ -86,7 +86,7 @@ const QString SqliteColumnService::generateIndexColumnDefinitionSql(const QStrin
     return QString("%1 %2").arg(columnName, sqlSortOrder);
 }
 
-const QString SqliteColumnService::generateIndexColumnDefinitionSql(const Index::IndexHash &columns) const
+QString SqliteColumnService::generateIndexColumnDefinitionSql(const Index::IndexHash &columns) const
 {
     QStringList sqlIndexColumnDefinitions;
     QHashIterator<QString, Index::SortOrder> i(columns);
