@@ -55,14 +55,10 @@ bool MigrationExecutionService::execute(const QString &migrationName
         return true; // everything ok
     }
 
-    DatabasePtr database = migrationContext.database();
-    if(!database) {
-        ::qDebug() << LOG_PREFIX << Q_FUNC_INFO << "database is 0!";
-        return false;
-    }
+    QSqlDatabase database = migrationContext.database();
 
     const MigrationExecutionConfig &migrationConfig = migrationContext.migrationConfig();
-    CommandExecution::CommandExecutionContext context(*database, migrationConfig);
+    CommandExecution::CommandExecutionContext context(database, migrationConfig);
     CommandPtrList undoCommands;
     if(migrationName.isEmpty()) {
         ::qWarning() << LOG_PREFIX << "migrationName is empty";
@@ -78,9 +74,9 @@ bool MigrationExecutionService::execute(const QString &migrationName
 
     bool haveTransaction = false;
     if (migrationTableService->canRevertStrucuturalChangesUsingTransactions()) {
-        if (!database->transaction()) {
+        if (!database.transaction()) {
             ::qWarning() << LOG_PREFIX << "starting transaction failed";
-            ::qWarning() << LOG_PREFIX << database->lastError();
+            ::qWarning() << LOG_PREFIX << database.lastError();
             return false; // no transaction
         }
         haveTransaction = true;
@@ -98,13 +94,13 @@ bool MigrationExecutionService::execute(const QString &migrationName
         this->rememberMigration(migrationName, migrationContext, direction);
 
         if(haveTransaction) {
-            return database->commit();
+            return database.commit();
         }
         return true;
     }
 
     if (haveTransaction) {
-        database->rollback();
+        database.rollback();
     } else if (context.isUndoUsed()) {
         context.setIsUndoUsed(false);
         m_execution.batch(undoCommands, CommandExecution::CommandExecutionService::Up
@@ -135,7 +131,7 @@ bool MigrationExecutionService::isMigrationRemembered(const QString &migrationNa
                                                       , const MigrationExecutionContext &context
                                                       , Direction direction) const
 {
-    CommandExecution::CommandExecutionContext serviceContext(*(context.database()), context.migrationConfig());
+    CommandExecution::CommandExecutionContext serviceContext(context.database(), context.migrationConfig());
     MigrationTableServicePtr tableService = context.baseMigrationTableService();
     bool isExecuted = tableService->wasMigrationExecuted(migrationName, serviceContext);
 
@@ -155,7 +151,7 @@ bool MigrationExecutionService::rememberMigration(const QString &migrationName
                                                   , const MigrationExecutionContext &context
                                                   , Direction direction) const
 {
-    CommandExecution::CommandExecutionContext serviceContext(*(context.database()), context.migrationConfig());
+    CommandExecution::CommandExecutionContext serviceContext(context.database(), context.migrationConfig());
     MigrationTableServicePtr tableService = context.baseMigrationTableService();
     switch (direction) {
     case Up:

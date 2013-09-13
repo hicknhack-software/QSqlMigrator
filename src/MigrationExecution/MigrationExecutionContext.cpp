@@ -43,7 +43,7 @@ MigrationExecutionContext::MigrationExecutionContext(const MigrationExecutionCon
 {
 }
 
-const DatabasePtr MigrationExecutionContext::database() const
+QSqlDatabase MigrationExecutionContext::database() const
 {
     return m_database;
 }
@@ -68,7 +68,7 @@ const MigrationTableServicePtr MigrationExecutionContext::baseMigrationTableServ
     return m_migrtaionTableService;
 }
 
-void MigrationExecutionContext::setDatabase(QSharedPointer<QSqlDatabase> database)
+void MigrationExecutionContext::setDatabase(QSqlDatabase database)
 {
     m_database = database;
 }

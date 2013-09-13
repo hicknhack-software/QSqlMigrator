@@ -79,22 +79,21 @@ void ApiTest::initTestCase()
     //TODO der gesamte Kontext kann automatish aus der DB-Config erstellt werden.
     //dazu müssen ein entsprechendes Objekt und ein zugehöriger Service erstellt werden
 
-    DatabasePtr sqlDatabase = DatabasePtr(new QSqlDatabase);
-    *sqlDatabase = QSqlDatabase::addDatabase(API_DRIVERNAME);
-    sqlDatabase->setDatabaseName(API_DATABASE);
+    QSqlDatabase database = QSqlDatabase::addDatabase(API_DRIVERNAME);
+    database.setDatabaseName(API_DATABASE);
 
     CommandServiceRepositoryPtr commandRepository = SqliteMigrator::commandServiceRepository();
     MigrationTableServicePtr migrationTableService(new MigrationTracker::SqliteMigrationTableService);
 
     m_context.setCommandServiceRepository(commandRepository);
     m_context.setBaseMigrationTableService(migrationTableService);
-    m_context.setDatabase(sqlDatabase);
+    m_context.setDatabase(database);
 }
 
 void ApiTest::cleanupTestCase()
 {
-    if (m_context.database()->isOpen()) {
-        m_context.database()->close();
+    if (m_context.database().isOpen()) {
+        m_context.database().close();
     }
     if (!QString(API_DATABASE_FILENAME).isEmpty()) {
         if (QFile::exists(API_DATABASE_FILENAME)) {
@@ -105,16 +104,16 @@ void ApiTest::cleanupTestCase()
 
 void ApiTest::init()
 {
-    m_context.database()->open();
+    m_context.database().open();
 
     MigrationTableServicePtr migrationTableService = m_context.baseMigrationTableService();
-    CommandExecution::CommandExecutionContext serviceContext(*(m_context.database()), m_context.migrationConfig());
+    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig());
     QVERIFY2(migrationTableService->ensureVersionTable(serviceContext), "MigrationVersionTable should be created");
 }
 
 void ApiTest::cleanup()
 {
-    m_context.database()->close();
+    m_context.database().close();
     if (!QString(API_DATABASE_FILENAME).isEmpty()) {
         QFile::remove(API_DATABASE_FILENAME);
     }
@@ -160,7 +159,7 @@ void ApiTest::testAppliedMigrations()
     QVERIFY2(sAppliedMigrations.size() == 0, "no migration could be applied yet!");
 
     MigrationTracker::SqliteMigrationTableService tableService;
-    CommandExecution::CommandExecutionContext serviceContext(*(m_context.database()), m_context.migrationConfig());
+    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig());
     tableService.addMigration(sDefinedMigrations.at(0), serviceContext);
     sAppliedMigrations = manager.appliedMigrations(m_context);
     QVERIFY2(sAppliedMigrations.size() == 1, "one migration should be shown as applied");
@@ -176,7 +175,7 @@ void ApiTest::testLastAppliedMigration()
     QVERIFY2(sLastAppliedMigration.isEmpty(), "no Migration could be applied yet!");
 
     MigrationTracker::SqliteMigrationTableService tableService;
-    CommandExecution::CommandExecutionContext serviceContext(*(m_context.database()), m_context.migrationConfig());
+    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig());
     tableService.addMigration(sDefinedMigrations.at(1), serviceContext);
     sLastAppliedMigration = manager.lastAppliedMigration(m_context);
     QVERIFY2(sLastAppliedMigration == sDefinedMigrations.at(1), "second defined migration was applied last!");
@@ -193,7 +192,7 @@ void ApiTest::testApplyMigration()
     QSqlMigrator::QSqlMigratorService manager;
     bool bSuccess = manager.applyMigration("M20132201_175827_CreateAddresses", m_context);
     QVERIFY2(bSuccess, "applyMigration should return true");
-    QStringList tables = m_context.database()->tables(QSql::Tables);
+    QStringList tables = m_context.database().tables(QSql::Tables);
     QVERIFY2(tables.contains("addresses"), "table 'addresses' should be created during migration");
     QVERIFY2(tables.size() == 2, "only one table (+ migrationTable) should be created");
 }
@@ -203,7 +202,7 @@ void ApiTest::testApplyAll()
     QSqlMigrator::QSqlMigratorService manager;
     bool bSuccess = manager.applyAll(m_context);
     QVERIFY2(bSuccess, "applyAll should return true");
-    QStringList tables = m_context.database()->tables();
+    QStringList tables = m_context.database().tables();
     QVERIFY2(tables.contains("users"), "table 'users' should be created during migration");
     QVERIFY2(tables.contains("addresses"), "table 'addresses' should be created during migration");
     QVERIFY2(tables.contains("cars"), "table 'cars' should be created during migration");
@@ -216,12 +215,12 @@ void ApiTest::testMigrateTo()
     QSqlMigrator::QSqlMigratorService manager;
     bool bSuccess = manager.migrateTo("M20131501_191807_CreateUsers", m_context);
     QVERIFY2(bSuccess, "migrateTo should return true");
-    QStringList tables = m_context.database()->tables(QSql::Tables);
+    QStringList tables = m_context.database().tables(QSql::Tables);
     QVERIFY2(tables.size() == 2, "one table (+ migrationTable) should be created yet");
     QVERIFY2(tables.contains("users"), "table 'users' should be created during migration");
     bSuccess = manager.migrateTo("M20132201_180943_CreateCars", m_context);
     QVERIFY2(bSuccess, "migrateTo should return true");
-    tables = m_context.database()->tables(QSql::Tables);
+    tables = m_context.database().tables(QSql::Tables);
     QVERIFY2(tables.size() == 4
              , "two tables should be added during second migrateTo(), makes three (+ migrationTable) tables overall");
     QVERIFY2(tables.contains("addresses"), "table 'addresses' should be created during migration");
@@ -235,7 +234,7 @@ void ApiTest::testMissingMigrations()
 {
     QSqlMigrator::QSqlMigratorService manager;
     MigrationTracker::SqliteMigrationTableService tableService;
-    CommandExecution::CommandExecutionContext serviceContext(*(m_context.database()), m_context.migrationConfig());
+    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig());
     tableService.addMigration("M20132301_103512_MissingMigration", serviceContext);
     QStringList sDefinedMigrations = manager.definedMigrations(m_context);
     QStringList sAppliedMigrations = manager.appliedMigrations(m_context);
@@ -256,7 +255,7 @@ void ApiTest::testRevertMigration()
     QVERIFY2(bSuccess, "applyAll should return true");
     bSuccess = manager.revertMigration("M20132201_180943_CreateCars", m_context);
     QVERIFY2(bSuccess, "revertMigration should return true");
-    QStringList tables = m_context.database()->tables(QSql::Tables);
+    QStringList tables = m_context.database().tables(QSql::Tables);
     QVERIFY2(tables.contains("users"), "table 'users' should be created during migration");
     QVERIFY2(tables.contains("addresses"), "table 'addresses' should be created during migration");
     QVERIFY2(!tables.contains("cars"), "table 'cars' should be dropped during revertMigration");
@@ -268,7 +267,7 @@ void ApiTest::testUnappliedMigrations()
     QSqlMigrator::QSqlMigratorService manager;
     QStringList sDefinedMigrations = manager.definedMigrations(m_context);
     MigrationTracker::SqliteMigrationTableService tableService;
-    CommandExecution::CommandExecutionContext serviceContext(*(m_context.database()), m_context.migrationConfig());
+    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig());
     tableService.addMigration(sDefinedMigrations.at(0), serviceContext);
     tableService.addMigration(sDefinedMigrations.at(2), serviceContext);
     tableService.addMigration(sDefinedMigrations.at(3), serviceContext);

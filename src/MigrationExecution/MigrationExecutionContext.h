@@ -30,6 +30,7 @@
 
 #include <QMap>
 #include <QSharedPointer>
+#include <QSqlDatabase>
 
 class QSqlDatabase;
 
@@ -45,7 +46,6 @@ class BaseMigrationTrackerService;
 
 namespace MigrationExecution {
 
-typedef QSharedPointer<QSqlDatabase> DatabasePtr;
 typedef QSharedPointer<CommandExecution::CommandExecutionServiceRepository> CommandServiceRepositoryPtr;
 typedef QSharedPointer<MigrationTracker::BaseMigrationTrackerService> MigrationTableServicePtr;
 
@@ -59,19 +59,19 @@ public:
 
      const MigrationTableServicePtr baseMigrationTableService() const;
      const CommandServiceRepositoryPtr commandServiceRepository() const;
-     const DatabasePtr database() const;
+     QSqlDatabase database() const;
      const MigrationExecutionConfig &migrationConfig() const;
      const NameMigrationMap &migrationMap() const;
 
      void setBaseMigrationTableService(MigrationTableServicePtr baseMigrationTableService);
      void setCommandServiceRepository(CommandServiceRepositoryPtr commandServiceRepository);
-     void setDatabase(QSharedPointer<QSqlDatabase> database);
+     void setDatabase(QSqlDatabase database);
 
 private:
      const NameMigrationMap m_migrations;
      MigrationExecutionConfig m_migrationConfig;
      CommandServiceRepositoryPtr m_commandServiceRepository;
-     DatabasePtr m_database;
+     QSqlDatabase m_database;
      MigrationTableServicePtr m_migrtaionTableService;
 };
 

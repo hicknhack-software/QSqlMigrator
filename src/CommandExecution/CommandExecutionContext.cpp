@@ -27,14 +27,14 @@
 
 namespace CommandExecution {
 
-CommandExecutionContext::CommandExecutionContext(const QSqlDatabase &database, const MigrationExecution::MigrationExecutionConfig &migrationConfig)
+CommandExecutionContext::CommandExecutionContext(const QSqlDatabase database, const MigrationExecution::MigrationExecutionConfig &migrationConfig)
     : m_database(database)
     , m_migrationConfig(migrationConfig)
     , m_isUndoUsed(false)
 {
 }
 
-const QSqlDatabase &CommandExecutionContext::database() const
+const QSqlDatabase CommandExecutionContext::database() const
 {
     return m_database;
 }

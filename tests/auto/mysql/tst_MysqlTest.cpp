@@ -70,13 +70,12 @@ void MysqlTest::initTestCase()
     const QString absoluteApplicationPath = QDir(applicationPath).absolutePath();
     QCoreApplication::addLibraryPath( absoluteApplicationPath ); // wichtig damit die Treiber gefunden werden
 
-    QSqlDatabase *db = new QSqlDatabase;
-    *db = QSqlDatabase::addDatabase(MYSQL_DRIVERNAME);
-    DatabasePtr sqlDatabase = DatabasePtr(db);
-    sqlDatabase->setHostName(MYSQL_HOSTNAME);
-    sqlDatabase->setPort(MYSQL_HOSTPORT);
-    sqlDatabase->setUserName(MYSQL_USERNAME);
-    sqlDatabase->setPassword(MYSQL_PASSWORD);
+
+    QSqlDatabase database =QSqlDatabase::addDatabase(MYSQL_DRIVERNAME);
+    database.setHostName(MYSQL_HOSTNAME);
+    database.setPort(MYSQL_HOSTPORT);
+    database.setUserName(MYSQL_USERNAME);
+    database.setPassword(MYSQL_PASSWORD);
 
     CommandServiceRepositoryPtr commandRepository = MysqlMigrator::commandServiceRepository();
 
@@ -85,51 +84,51 @@ void MysqlTest::initTestCase()
 
     m_context.setCommandServiceRepository(commandRepository);
     m_context.setBaseMigrationTableService(migrationTableService);
-    m_context.setDatabase(sqlDatabase);
+    m_context.setDatabase(database);
 
     ::qDebug() << "running test for MySQL";
 }
 
 void MysqlTest::cleanupTestCase()
 {
-    m_context.database()->close();
-    m_context.database()->setDatabaseName(MYSQL_STRUCTURE_DATABASE);
-    m_context.database()->open();
+    m_context.database().close();
+    m_context.database().setDatabaseName(MYSQL_STRUCTURE_DATABASE);
+    m_context.database().open();
     QSqlQuery query;
     if (!query.exec(QString("DROP DATABASE IF EXISTS %1").arg(MYSQLTEST_DATABASE_NAME))) {
          ::qDebug() << query.lastError();
     }
-    m_context.database()->close();
+    m_context.database().close();
 }
 
 void MysqlTest::init()
 {
-    m_context.database()->setDatabaseName(MYSQL_STRUCTURE_DATABASE);
-    m_context.database()->open();
+    m_context.database().setDatabaseName(MYSQL_STRUCTURE_DATABASE);
+    m_context.database().open();
     QSqlQuery query;
     if (!query.exec(QString("CREATE DATABASE %1").arg(MYSQLTEST_DATABASE_NAME))) {
          ::qDebug() << query.lastError();
     }
-    m_context.database()->close();
+    m_context.database().close();
 
-    m_context.database()->setDatabaseName(MYSQLTEST_DATABASE_NAME);
-    m_context.database()->open();
+    m_context.database().setDatabaseName(MYSQLTEST_DATABASE_NAME);
+    m_context.database().open();
 
     MigrationTableServicePtr migrationTableService = m_context.baseMigrationTableService();
-    CommandExecution::CommandExecutionContext serviceContext(*(m_context.database()), m_context.migrationConfig());
+    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig());
     QVERIFY2(migrationTableService->ensureVersionTable(serviceContext), "MigrationVersionTable should be created");
 }
 
 void MysqlTest::cleanup()
 {
-    m_context.database()->close();
-    m_context.database()->setDatabaseName(MYSQL_STRUCTURE_DATABASE);
-    m_context.database()->open();
+    m_context.database().close();
+    m_context.database().setDatabaseName(MYSQL_STRUCTURE_DATABASE);
+    m_context.database().open();
     QSqlQuery query;
     if (!query.exec(QString("DROP DATABASE IF EXISTS %1").arg(MYSQLTEST_DATABASE_NAME))) {
          ::qDebug() << query.lastError();
     }
-    m_context.database()->close();
+    m_context.database().close();
 }
 
 void MysqlTest::testAlterColumnType()
@@ -143,11 +142,11 @@ void MysqlTest::testAlterColumnType()
                          .add(Column("col2", "varchar(23)"))
                          ));
 
-    CommandExecution::CommandExecutionContext serviceContext(*(m_context.database()), m_context.migrationConfig());
+    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig());
     CommandExecution::CommandExecutionService execution;
     execution.execute(command, CommandExecution::CommandExecutionService::Up, m_context.commandServiceRepository() , serviceContext);
 
-    QStringList lTables = m_context.database()->tables(QSql::Tables);
+    QStringList lTables = m_context.database().tables(QSql::Tables);
     QVERIFY2(lTables.contains("testtable1"), "testtable should be created during migration!");
 
     //TODO insert some data
@@ -158,7 +157,7 @@ void MysqlTest::testAlterColumnType()
 
     //check if old column was removed and new column included successfully
     bool bColumnRetyped = false;
-    QSqlQuery query = m_context.database()->exec("DESCRIBE testtable1");
+    QSqlQuery query = m_context.database().exec("DESCRIBE testtable1");
     QSqlError error = query.lastError();
     QVERIFY2(!error.isValid(), "query should run without any error");
     if (error.isValid()) {
@@ -195,17 +194,17 @@ void MysqlTest::testCreateIndex()
                          .addColumn("col2")
                          ));
 
-    CommandExecution::CommandExecutionContext serviceContext(*(m_context.database()), m_context.migrationConfig());
+    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig());
     CommandExecution::CommandExecutionService execution;
     execution.execute(command, CommandExecution::CommandExecutionService::Up, m_context.commandServiceRepository() , serviceContext);
     execution.execute(command2, CommandExecution::CommandExecutionService::Up, m_context.commandServiceRepository() , serviceContext);
 
-    QStringList lTables = m_context.database()->tables(QSql::Tables);
+    QStringList lTables = m_context.database().tables(QSql::Tables);
     QVERIFY2(lTables.contains("testtable1"), "testtable should be created during migration!");
 
     //check if index was created successfully
     bool bIndexPresent = false;
-    QSqlQuery query = m_context.database()->exec("SHOW INDEXES FROM testtable1");
+    QSqlQuery query = m_context.database().exec("SHOW INDEXES FROM testtable1");
     QSqlError error = query.lastError();
     QVERIFY2(!error.isValid(), "query should run without any error");
     if (error.isValid()) {
@@ -232,11 +231,11 @@ void MysqlTest::testDropColumn()
                          .add(Column("col2", "varchar(23)"))
                          ));
 
-    CommandExecution::CommandExecutionContext serviceContext(*(m_context.database()), m_context.migrationConfig());
+    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig());
     CommandExecution::CommandExecutionService execution;
     execution.execute(command, CommandExecution::CommandExecutionService::Up, m_context.commandServiceRepository() , serviceContext);
 
-    QStringList lTables = m_context.database()->tables(QSql::Tables);
+    QStringList lTables = m_context.database().tables(QSql::Tables);
     QVERIFY2(lTables.contains("testtable1"), "testtable should be created during migration!");
 
     //TODO insert some data
@@ -247,7 +246,7 @@ void MysqlTest::testDropColumn()
 
     //check if index was created successfully
     bool bColumnRemoved = false;
-    QSqlQuery query = m_context.database()->exec("DESCRIBE testtable1");
+    QSqlQuery query = m_context.database().exec("DESCRIBE testtable1");
     QSqlError error = query.lastError();
     QVERIFY2(!error.isValid(), "query should run without any error");
     if (error.isValid()) {
@@ -277,11 +276,11 @@ void MysqlTest::testRenameColumn()
                          .add(Column("col2", "varchar(23)"))
                          ));
 
-    CommandExecution::CommandExecutionContext serviceContext(*(m_context.database()), m_context.migrationConfig());
+    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig());
     CommandExecution::CommandExecutionService execution;
     execution.execute(command, CommandExecution::CommandExecutionService::Up, m_context.commandServiceRepository() , serviceContext);
 
-    QStringList lTables = m_context.database()->tables(QSql::Tables);
+    QStringList lTables = m_context.database().tables(QSql::Tables);
     QVERIFY2(lTables.contains("testtable1"), "testtable should be created during migration!");
 
     //TODO insert some data
@@ -292,7 +291,7 @@ void MysqlTest::testRenameColumn()
 
     //check if old column was removed and new column included successfully
     bool bColumnRenamed = false;
-    QSqlQuery query = m_context.database()->exec("DESCRIBE testtable1");
+    QSqlQuery query = m_context.database().exec("DESCRIBE testtable1");
     QSqlError error = query.lastError();
     QVERIFY2(!error.isValid(), "query should run without any error");
     if (error.isValid()) {
