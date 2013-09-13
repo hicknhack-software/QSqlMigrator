@@ -39,9 +39,8 @@ class MysqlDbReader
 public:
     MysqlDbReader();
 
-    //TODO !!!make context const!!!
-    const Structure::Table getTableDefinition(const QString &tableName
-                                              , CommandExecution::CommandExecutionContext &context) const;
+    Structure::Table getTableDefinition(const QString &tableName
+                                        , const CommandExecution::CommandExecutionContext &context) const;
 };
 
 } // namespace Helper

@@ -39,8 +39,8 @@ MysqlDbReader::MysqlDbReader()
 {
 }
 
-const Structure::Table MysqlDbReader::getTableDefinition(const QString &tableName
-                                                         , CommandExecution::CommandExecutionContext &context) const
+Structure::Table MysqlDbReader::getTableDefinition(const QString &tableName
+                                                   , const CommandExecution::CommandExecutionContext &context) const
 {
     Table table = Table(tableName);
     QString sQueryString = QString("DESCRIBE %1").arg(tableName);

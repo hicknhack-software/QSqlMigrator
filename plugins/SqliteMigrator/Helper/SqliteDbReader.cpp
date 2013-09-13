@@ -39,8 +39,8 @@ SqliteDbReader::SqliteDbReader()
 {
 }
 
-const Table SqliteDbReader::getTableDefinition(const QString &tableName
-                                                , CommandExecution::CommandExecutionContext &context) const
+Table SqliteDbReader::getTableDefinition(const QString &tableName
+                                         ,const CommandExecution::CommandExecutionContext &context) const
 {
     Table table = Table(tableName);
     QString sQueryString = QString("PRAGMA table_info(%1)").arg(tableName);
