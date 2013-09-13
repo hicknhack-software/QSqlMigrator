@@ -67,7 +67,9 @@ bool QSqlMigratorService::migrateTo(const QString &migrationName, const Migratio
         if (migrationName < this->lastAppliedMigration(context)) {
             bSuccess = migrator.execute(this->lastAppliedMigration(context), context, MigrationExecutionService::Down);
         } else {
-            bSuccess = migrator.execute(this->unappliedMigrations(context).first(), context, MigrationExecutionService::Up);
+            QStringList unapplied = this->unappliedMigrations(context);
+            if(!unapplied.empty())
+                bSuccess = migrator.execute(unapplied.first(), context, MigrationExecutionService::Up);
         }
     }
     return bSuccess;
