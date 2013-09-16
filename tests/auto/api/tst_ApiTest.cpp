@@ -82,12 +82,8 @@ void ApiTest::initTestCase()
     QSqlDatabase database = QSqlDatabase::addDatabase(API_DRIVERNAME);
     database.setDatabaseName(API_DATABASE);
 
-    CommandServiceRepositoryPtr commandRepository = SqliteMigrator::commandServiceRepository();
-    MigrationTableServicePtr migrationTableService(new MigrationTracker::SqliteMigrationTableService);
-
-    m_context.setCommandServiceRepository(commandRepository);
-    m_context.setBaseMigrationTableService(migrationTableService);
-    m_context.setDatabase(database);
+    bool buildContextSuccess = SqliteMigrator::buildContext(m_context, database);
+    QVERIFY2(buildContextSuccess, "context should correctly builded");
 }
 
 void ApiTest::cleanupTestCase()
@@ -227,7 +223,6 @@ void ApiTest::testMigrateTo()
     QVERIFY2(tables.contains("cars"), "table 'cars' should be created during migration");
 
     QFile::copy(API_DATABASE_FILENAME, "hier.sqlite3");
-
 }
 
 void ApiTest::testMissingMigrations()

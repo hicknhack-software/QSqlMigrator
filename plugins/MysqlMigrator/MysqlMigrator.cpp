@@ -38,6 +38,8 @@
 #include "CommandExecution/CustomCommandService.h"
 
 #include "MigrationTracker/MysqlMigrationTableService.h"
+#include "MigrationExecution/MigrationExecutionContext.h"
+
 
 namespace MysqlMigrator {
 
@@ -58,6 +60,22 @@ QSharedPointer<CommandExecutionServiceRepository> commandServiceRepository()
     commandRepository->add(BaseCommandServicePtr(new CustomCommandService));
 
     return commandRepository;
+}
+
+using namespace MigrationExecution;
+
+bool buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDatabase database)
+{
+    CommandServiceRepositoryPtr commandRepository = MysqlMigrator::commandServiceRepository();
+
+    MigrationTableServicePtr migrationTableService =
+            MigrationTableServicePtr(new MigrationTracker::MysqlMigrationTableService);
+
+    context.setCommandServiceRepository(commandRepository);
+    context.setBaseMigrationTableService(migrationTableService);
+    context.setDatabase(database);
+
+    return true;
 }
 
 } // namespace MysqlMigrator

@@ -102,7 +102,7 @@ bool SqliteMigrationTableService::ensureVersionTable(const CommandExecutionConte
     if(!tables.contains(versionTableName))
     {
         QString query = "CREATE TABLE %1 (version VARCHAR(255) PRIMARY KEY)";
-        ::qDebug() << "creating migrationVersion table: " << versionTableName;
+        ::qDebug() << "creating: " << versionTableName;
         QSqlQuery sqlQuery = context.database().exec(query.arg(versionTableName));
         if (sqlQuery.lastError().isValid())
         {

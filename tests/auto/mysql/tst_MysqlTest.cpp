@@ -71,20 +71,14 @@ void MysqlTest::initTestCase()
     QCoreApplication::addLibraryPath( absoluteApplicationPath ); // wichtig damit die Treiber gefunden werden
 
 
-    QSqlDatabase database =QSqlDatabase::addDatabase(MYSQL_DRIVERNAME);
+    QSqlDatabase database = QSqlDatabase::addDatabase(MYSQL_DRIVERNAME);
     database.setHostName(MYSQL_HOSTNAME);
     database.setPort(MYSQL_HOSTPORT);
     database.setUserName(MYSQL_USERNAME);
     database.setPassword(MYSQL_PASSWORD);
 
-    CommandServiceRepositoryPtr commandRepository = MysqlMigrator::commandServiceRepository();
-
-    MigrationTableServicePtr migrationTableService =
-              MigrationTableServicePtr(new MigrationTracker::MysqlMigrationTableService);
-
-    m_context.setCommandServiceRepository(commandRepository);
-    m_context.setBaseMigrationTableService(migrationTableService);
-    m_context.setDatabase(database);
+    bool buildContextSuccess = MysqlMigrator::buildContext(m_context, database);
+    QVERIFY2(buildContextSuccess, "context should correctly builded");
 
     ::qDebug() << "running test for MySQL";
 }

@@ -28,6 +28,7 @@
 
 #include "CommandExecution/CommandExecutionServiceRepository.h"
 #include <Qt>
+#include <QSqlDatabase>
 
 #ifndef SQLITEMIGRATOR_DLL_EXPORT
 #   ifdef Q_OS_WIN
@@ -41,9 +42,16 @@
 #   endif // Q_OS_WIN
 #endif // SQLITEMIGRATOR_DLL_EXPORT
 
+
+namespace MigrationExecution {
+class MigrationExecutionContext;
+}
+
 namespace SqliteMigrator {
 
 QSharedPointer<CommandExecution::CommandExecutionServiceRepository> SQLITEMIGRATOR_DLL_EXPORT commandServiceRepository();
+
+bool buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDatabase database);
 
 } // namespace SqliteMigrator
 

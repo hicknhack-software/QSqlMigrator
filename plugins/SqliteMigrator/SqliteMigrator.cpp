@@ -36,6 +36,10 @@
 #include "SqliteMigrator/CommandExecution/SqliteRenameTableService.h"
 
 #include "CommandExecution/CustomCommandService.h"
+#include "MigrationExecution/MigrationExecutionContext.h"
+#include "MigrationTracker/SqliteMigrationTableService.h"
+
+#include <QSqlDatabase>
 
 namespace SqliteMigrator {
 
@@ -56,6 +60,20 @@ QSharedPointer<CommandExecutionServiceRepository> commandServiceRepository()
     commandRepository->add(BaseCommandServicePtr(new CustomCommandService));
 
     return commandRepository;
+}
+
+using namespace MigrationExecution;
+
+bool buildContext(MigrationExecutionContext &context, QSqlDatabase database)
+{
+    CommandServiceRepositoryPtr commandRepository = SqliteMigrator::commandServiceRepository();
+    MigrationTableServicePtr migrationTableService(new MigrationTracker::SqliteMigrationTableService);
+
+    context.setCommandServiceRepository(commandRepository);
+    context.setBaseMigrationTableService(migrationTableService);
+    context.setDatabase(database);
+
+    return true;
 }
 
 } // namespace SqliteMigrator

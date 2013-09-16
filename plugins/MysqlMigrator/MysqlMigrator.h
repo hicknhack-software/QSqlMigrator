@@ -27,7 +27,9 @@
 #define MYSQLMIGRATOR_H
 
 #include "CommandExecution/CommandExecutionServiceRepository.h"
-#include "MigrationExecution/MigrationExecutionContext.h"
+
+#include <QSqlDatabase>
+
 
 #ifndef MYSQLMIGRATOR_DLL_EXPORT
 # ifdef Q_OS_WIN
@@ -41,9 +43,16 @@
 # endif // Q_OS_WIN
 #endif // QX_DLL_EXPORT_HELPER
 
+
+namespace MigrationExecution {
+class MigrationExecutionContext;
+}
+
 namespace MysqlMigrator {
 
 QSharedPointer<CommandExecution::CommandExecutionServiceRepository> MYSQLMIGRATOR_DLL_EXPORT commandServiceRepository();
+
+bool buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDatabase database);
 
 } // namespace MysqlMigrator
 

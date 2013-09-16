@@ -25,7 +25,6 @@
 ****************************************************************************/
 #include "../BasicTest/BasicTest.h"
 #include "SqliteMigrator/SqliteMigrator.h"
-#include "SqliteMigrator/MigrationTracker/SqliteMigrationTableService.h"
 
 #include "SqliteConfig.h"
 
@@ -63,16 +62,11 @@ SqliteTest::SqliteTest()
 
 void SqliteTest::initTestCase()
 {
-
     QSqlDatabase database = QSqlDatabase::addDatabase(SQLITE_DRIVERNAME);
     database.setDatabaseName(SQLITE_DATABASE_FILE);
 
-    CommandServiceRepositoryPtr commandRepository = SqliteMigrator::commandServiceRepository();
-    MigrationTableServicePtr migrationTableService(new MigrationTracker::SqliteMigrationTableService);
-
-    m_context.setCommandServiceRepository(commandRepository);
-    m_context.setBaseMigrationTableService(migrationTableService);
-    m_context.setDatabase(database);
+    bool buildContextSuccess = SqliteMigrator::buildContext(m_context, database);
+    QVERIFY2(buildContextSuccess, "context should correctly builded");
 
     ::qDebug() << "running test for SQLite";
 }
