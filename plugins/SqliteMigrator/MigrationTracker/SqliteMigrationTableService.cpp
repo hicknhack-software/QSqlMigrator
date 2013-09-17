@@ -25,6 +25,8 @@
 ****************************************************************************/
 #include "SqliteMigrator/MigrationTracker/SqliteMigrationTableService.h"
 
+#include "MigrationExecution/MigrationExecutionContext.h"
+
 #include <QDebug>
 #include <QSqlError>
 #include <QSqlQuery>
@@ -95,7 +97,7 @@ bool SqliteMigrationTableService::removeMigration(const QString &migrationName, 
     return true;
 }
 
-bool SqliteMigrationTableService::ensureVersionTable(const CommandExecutionContext &context) const
+bool SqliteMigrationTableService::ensureVersionTable(const MigrationExecution::MigrationExecutionContext &context) const
 {
     QStringList tables = context.database().tables(QSql::AllTables);
     QString versionTableName = context.migrationConfig().migrationVersionTableName;

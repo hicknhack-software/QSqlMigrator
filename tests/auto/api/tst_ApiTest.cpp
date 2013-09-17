@@ -38,6 +38,7 @@
 using namespace Migrations;
 using namespace MigrationExecution;
 
+
 class ApiTest : public QObject
 {
     Q_OBJECT
@@ -68,22 +69,13 @@ private:
     MigrationExecutionContext m_context;
 };
 
-ApiTest::ApiTest()
-    : m_context(MigrationRepository::migrations(), MigrationExecutionConfig())
+ApiTest::ApiTest() : m_context (MigrationRepository::migrations(), MigrationExecutionConfig())
 {
 }
 
-
 void ApiTest::initTestCase()
 {
-    //TODO der gesamte Kontext kann automatish aus der DB-Config erstellt werden.
-    //dazu müssen ein entsprechendes Objekt und ein zugehöriger Service erstellt werden
-
-    QSqlDatabase database = QSqlDatabase::addDatabase(API_DRIVERNAME);
-    database.setDatabaseName(API_DATABASE);
-
-    bool buildContextSuccess = SqliteMigrator::buildContext(m_context, database);
-    QVERIFY2(buildContextSuccess, "context should correctly builded");
+    ::qDebug() << "running test for Api";
 }
 
 void ApiTest::cleanupTestCase()
@@ -93,26 +85,35 @@ void ApiTest::cleanupTestCase()
     }
     if (!QString(API_DATABASE_FILENAME).isEmpty()) {
         if (QFile::exists(API_DATABASE_FILENAME)) {
-           QFile::remove(API_DATABASE_FILENAME);
+            QFile::remove(API_DATABASE_FILENAME);
         }
     }
 }
 
 void ApiTest::init()
 {
-    m_context.database().open();
+    QSqlDatabase database;
+    if(!QSqlDatabase::contains(/*default-connection*/)) {
+        database = QSqlDatabase::addDatabase(API_DRIVERNAME);
+        database.setDatabaseName(API_DATABASE);
+    }
+    else
+        database = m_context.database();
 
-    MigrationTableServicePtr migrationTableService = m_context.baseMigrationTableService();
-    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig());
-    QVERIFY2(migrationTableService->ensureVersionTable(serviceContext), "MigrationVersionTable should be created");
+    bool success = SqliteMigrator::buildContext(m_context, database);
+    QVERIFY2(success, "context should be builded correctly!");
 }
 
 void ApiTest::cleanup()
 {
-    m_context.database().close();
+    if (m_context.database().isOpen()) {
+        m_context.database().close();
+    }
     if (!QString(API_DATABASE_FILENAME).isEmpty()) {
         QFile::remove(API_DATABASE_FILENAME);
     }
+
+    QSqlDatabase::removeDatabase(API_DATABASE);
 }
 
 void ApiTest::testRegistrationMacro()

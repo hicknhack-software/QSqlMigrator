@@ -26,6 +26,7 @@
 #include "MysqlMigrator/MigrationTracker/MysqlMigrationTableService.h"
 
 #include "MysqlMigrator/Helper/MysqlQuoteService.h"
+#include "MigrationExecution/MigrationExecutionContext.h"
 
 #include <QDebug>
 #include <QSqlError>
@@ -99,7 +100,7 @@ bool MysqlMigrationTableService::removeMigration(const QString &migrationName
     return true;
 }
 
-bool MysqlMigrationTableService::ensureVersionTable(const CommandExecution::CommandExecutionContext &context) const
+bool MysqlMigrationTableService::ensureVersionTable(const MigrationExecution::MigrationExecutionContext &context) const
 {
     QStringList tables = context.database().tables(QSql::AllTables);
     QString versionTableName = context.migrationConfig().migrationVersionTableName;

@@ -30,6 +30,10 @@
 
 #include <QStringList>
 
+namespace MigrationExecution{
+class MigrationExecutionContext;
+}
+
 namespace MigrationTracker {
 
 class QSQLMIGRATOR_DLL_EXPORT BaseMigrationTrackerService
@@ -50,7 +54,7 @@ public:
     virtual bool removeMigration(const QString &migrationName
                                  , const CommandExecution::CommandExecutionContext &context) const = 0;
 
-    virtual bool ensureVersionTable(const CommandExecution::CommandExecutionContext &context) const = 0;
+    virtual bool ensureVersionTable(const MigrationExecution::MigrationExecutionContext &context) const = 0;
 };
 
 } // namespace MigrationTracker

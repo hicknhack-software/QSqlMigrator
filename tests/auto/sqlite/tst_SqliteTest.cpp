@@ -62,12 +62,6 @@ SqliteTest::SqliteTest()
 
 void SqliteTest::initTestCase()
 {
-    QSqlDatabase database = QSqlDatabase::addDatabase(SQLITE_DRIVERNAME);
-    database.setDatabaseName(SQLITE_DATABASE_FILE);
-
-    bool buildContextSuccess = SqliteMigrator::buildContext(m_context, database);
-    QVERIFY2(buildContextSuccess, "context should correctly builded");
-
     ::qDebug() << "running test for SQLite";
 }
 
@@ -83,16 +77,23 @@ void SqliteTest::cleanupTestCase()
 
 void SqliteTest::init()
 {
-    m_context.database().open();
+    QSqlDatabase database;
+    if(!QSqlDatabase::contains(/*default-connection*/)) {
+        database = QSqlDatabase::addDatabase(SQLITE_DRIVERNAME);
+        database.setDatabaseName(SQLITE_DATABASE_FILE);
+    }
+    else
+        database = m_context.database();
 
-    MigrationTableServicePtr migrationTableService = m_context.baseMigrationTableService();
-    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig());
-    QVERIFY2(migrationTableService->ensureVersionTable(serviceContext), "MigrationVersionTable should be created");
+    bool success = SqliteMigrator::buildContext(m_context, database);
+    QVERIFY2(success, "context should be builded correctly!");
 }
 
 void SqliteTest::cleanup()
 {
-    m_context.database().close();
+    if (m_context.database().isOpen()) {
+        m_context.database().close();
+    }
     QFile::remove(SQLITE_DATABASE_FILE);
 }
 

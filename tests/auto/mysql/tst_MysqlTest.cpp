@@ -58,6 +58,9 @@ private Q_SLOTS:
     void testCreateIndex();
     void testDropColumn();
     void testRenameColumn();
+
+private:
+    QSqlDatabase m_structure_database;
 };
 
 MysqlTest::MysqlTest()
@@ -70,59 +73,61 @@ void MysqlTest::initTestCase()
     const QString absoluteApplicationPath = QDir(applicationPath).absolutePath();
     QCoreApplication::addLibraryPath( absoluteApplicationPath ); // wichtig damit die Treiber gefunden werden
 
-
-    QSqlDatabase database = QSqlDatabase::addDatabase(MYSQL_DRIVERNAME);
-    database.setHostName(MYSQL_HOSTNAME);
-    database.setPort(MYSQL_HOSTPORT);
-    database.setUserName(MYSQL_USERNAME);
-    database.setPassword(MYSQL_PASSWORD);
-
-    bool buildContextSuccess = MysqlMigrator::buildContext(m_context, database);
-    QVERIFY2(buildContextSuccess, "context should correctly builded");
+    m_structure_database = QSqlDatabase::addDatabase(MYSQL_DRIVERNAME);
+    m_structure_database.setHostName(MYSQL_HOSTNAME);
+    m_structure_database.setPort(MYSQL_HOSTPORT);
+    m_structure_database.setUserName(MYSQL_USERNAME);
+    m_structure_database.setPassword(MYSQL_PASSWORD);
+    m_structure_database.setDatabaseName(MYSQL_STRUCTURE_DATABASE);
 
     ::qDebug() << "running test for MySQL";
 }
 
 void MysqlTest::cleanupTestCase()
 {
-    m_context.database().close();
-    m_context.database().setDatabaseName(MYSQL_STRUCTURE_DATABASE);
-    m_context.database().open();
+    if (m_context.database().isOpen()) {
+        m_context.database().close();
+    }
+
+    m_structure_database.database().open();
     QSqlQuery query;
     if (!query.exec(QString("DROP DATABASE IF EXISTS %1").arg(MYSQLTEST_DATABASE_NAME))) {
          ::qDebug() << query.lastError();
     }
-    m_context.database().close();
+    m_structure_database.database().close();
 }
 
 void MysqlTest::init()
 {
-    m_context.database().setDatabaseName(MYSQL_STRUCTURE_DATABASE);
-    m_context.database().open();
+    m_structure_database.database().open();
     QSqlQuery query;
     if (!query.exec(QString("CREATE DATABASE %1").arg(MYSQLTEST_DATABASE_NAME))) {
-         ::qDebug() << query.lastError();
+        ::qDebug() << query.lastError();
     }
-    m_context.database().close();
+    m_structure_database.database().close();
 
-    m_context.database().setDatabaseName(MYSQLTEST_DATABASE_NAME);
-    m_context.database().open();
+    QSqlDatabase database = QSqlDatabase::addDatabase(MYSQL_DRIVERNAME, "context_connection");
+    database.setHostName(MYSQL_HOSTNAME);
+    database.setPort(MYSQL_HOSTPORT);
+    database.setUserName(MYSQL_USERNAME);
+    database.setPassword(MYSQL_PASSWORD);
+    database.setDatabaseName(MYSQLTEST_DATABASE_NAME);
 
-    MigrationTableServicePtr migrationTableService = m_context.baseMigrationTableService();
-    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig());
-    QVERIFY2(migrationTableService->ensureVersionTable(serviceContext), "MigrationVersionTable should be created");
+    bool buildContextSuccess = MysqlMigrator::buildContext(m_context, database);
+    QVERIFY2(buildContextSuccess, "context should correctly builded");
 }
 
 void MysqlTest::cleanup()
 {
-    m_context.database().close();
-    m_context.database().setDatabaseName(MYSQL_STRUCTURE_DATABASE);
-    m_context.database().open();
+    if (m_context.database().isOpen()) {
+        m_context.database().close();
+    }
+    m_structure_database.database().open();
     QSqlQuery query;
     if (!query.exec(QString("DROP DATABASE IF EXISTS %1").arg(MYSQLTEST_DATABASE_NAME))) {
          ::qDebug() << query.lastError();
     }
-    m_context.database().close();
+    m_structure_database.database().close();
 }
 
 void MysqlTest::testAlterColumnType()

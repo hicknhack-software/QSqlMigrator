@@ -75,7 +75,11 @@ bool buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDa
     context.setBaseMigrationTableService(migrationTableService);
     context.setDatabase(database);
 
-    return true;
+    bool success = false;
+    if( context.database().open() ) {
+        success = migrationTableService->ensureVersionTable(context);
+    }
+    return success;
 }
 
 } // namespace MysqlMigrator
