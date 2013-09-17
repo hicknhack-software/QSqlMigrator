@@ -29,6 +29,8 @@
 #include "CommandExecution/CommandExecutionServiceRepository.h"
 #include <Qt>
 #include <QSqlDatabase>
+#include <QUuid>
+
 
 #ifndef SQLITEMIGRATOR_DLL_EXPORT
 #   ifdef Q_OS_WIN

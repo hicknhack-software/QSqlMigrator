@@ -106,12 +106,17 @@ void MysqlTest::init()
     }
     m_structure_database.database().close();
 
-    QSqlDatabase database = QSqlDatabase::addDatabase(MYSQL_DRIVERNAME, "context_connection");
-    database.setHostName(MYSQL_HOSTNAME);
-    database.setPort(MYSQL_HOSTPORT);
-    database.setUserName(MYSQL_USERNAME);
-    database.setPassword(MYSQL_PASSWORD);
-    database.setDatabaseName(MYSQLTEST_DATABASE_NAME);
+    QSqlDatabase database;
+    if(!QSqlDatabase::contains("context_connection")) {
+        database = QSqlDatabase::addDatabase(MYSQL_DRIVERNAME, "context_connection");
+        database.setHostName(MYSQL_HOSTNAME);
+        database.setPort(MYSQL_HOSTPORT);
+        database.setUserName(MYSQL_USERNAME);
+        database.setPassword(MYSQL_PASSWORD);
+        database.setDatabaseName(MYSQLTEST_DATABASE_NAME);
+    }
+    else
+        database =  m_context.database();
 
     bool buildContextSuccess = MysqlMigrator::buildContext(m_context, database);
     QVERIFY2(buildContextSuccess, "context should correctly builded");

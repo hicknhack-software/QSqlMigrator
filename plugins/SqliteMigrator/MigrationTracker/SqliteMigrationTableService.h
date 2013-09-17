@@ -45,6 +45,10 @@ public:
     bool removeMigration(const QString &migrationName, const CommandExecution::CommandExecutionContext &context) const;
 
     bool ensureVersionTable(const MigrationExecution::MigrationExecutionContext &context) const;
+
+    bool isMigrationLocked(const MigrationExecution::MigrationExecutionContext &) const;
+    bool makeExclusiveMigrationLock(const MigrationExecution::MigrationExecutionContext &) const;
+    bool releaseExclusiveMigrationLock(const MigrationExecution::MigrationExecutionContext &) const;
 };
 
 } // namespace MigrationTracker

@@ -39,15 +39,32 @@ namespace QSqlMigrator {
 /*!
  * \brief The QSqlMigratorService class is used to control all relevant features of the QSqlMigrator.
  * The User should use this service within it's own applications.
+ *
+ * context c;
+ * if( ! missingMigrations(c).empty() ) exit(1);
+ * if( ! unappliedMigrations(c).empty() ) {
+ *    DatabaseLock lock(c);
+ *    applyAll(c);
+ *    // or exit(1);
+ * }
+ * // here all migrations are applied
+ *
  */
 class QSQLMIGRATOR_DLL_EXPORT QSqlMigratorService
 {
 public:
+    /*! \return names of all migrations that have been applied */
     QStringList appliedMigrations(const MigrationExecution::MigrationExecutionContext &context) const;
+    /*! \return names of all defined and registered migrations */
     QStringList definedMigrations(const MigrationExecution::MigrationExecutionContext &context) const;
+    /*! \return name the last migration that was applied */
     QString lastAppliedMigration(const MigrationExecution::MigrationExecutionContext &context) const;
+    /*! \return names of all migrations that are applied but are not registered */
     QStringList missingMigrations(const MigrationExecution::MigrationExecutionContext &context) const;
+    /*! \return names of all migrations that need to be applied */
     QStringList unappliedMigrations(const MigrationExecution::MigrationExecutionContext &context) const;
+
+
 
     bool applyAll(const MigrationExecution::MigrationExecutionContext &context) const;
     bool applyMigration(const QString &migrationName, const MigrationExecution::MigrationExecutionContext &context) const;

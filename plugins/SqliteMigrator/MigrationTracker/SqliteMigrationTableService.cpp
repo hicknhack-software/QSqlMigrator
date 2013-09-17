@@ -33,6 +33,7 @@
 #include <QSqlRecord>
 #include <QVariant>
 
+
 using namespace CommandExecution;
 
 namespace MigrationTracker {
@@ -101,8 +102,7 @@ bool SqliteMigrationTableService::ensureVersionTable(const MigrationExecution::M
 {
     QStringList tables = context.database().tables(QSql::AllTables);
     QString versionTableName = context.migrationConfig().migrationVersionTableName;
-    if(!tables.contains(versionTableName))
-    {
+    if(!tables.contains(versionTableName)) {
         QString query = "CREATE TABLE %1 (version VARCHAR(255) PRIMARY KEY)";
         ::qDebug() << "creating: " << versionTableName;
         QSqlQuery sqlQuery = context.database().exec(query.arg(versionTableName));

@@ -28,6 +28,7 @@
 #include "QSqlMigrator/QSqlMigratorService.h"
 #include "SqliteMigrator/SqliteMigrator.h"
 #include "SqliteMigrator/MigrationTracker/SqliteMigrationTableService.h"
+#include "SqliteMigrator/DatabaseLock.h"
 
 #include "ApiConfig.h"
 
@@ -49,6 +50,8 @@ public:
 private Q_SLOTS:
     void initTestCase();
     void init();
+
+    void testLockDatabase();
 
     void testRegistrationMacro();
     void testDefinedMigrations();
@@ -112,9 +115,22 @@ void ApiTest::cleanup()
     if (!QString(API_DATABASE_FILENAME).isEmpty()) {
         QFile::remove(API_DATABASE_FILENAME);
     }
-
-    QSqlDatabase::removeDatabase(API_DATABASE);
 }
+
+void ApiTest::testLockDatabase()
+{
+    {
+        SqliteMigrator::DatabaseLock lock(m_context);
+        QVERIFY2(lock.isExclusiveLocked(), "can NOT lock database!");
+
+        SqliteMigrator::DatabaseLock lock2(m_context);
+        QVERIFY2(!lock2.isExclusiveLocked(), "a second lock should fail!");
+    }
+
+    SqliteMigrator::DatabaseLock lock3(m_context);
+    QVERIFY2(lock3.isExclusiveLocked(), "a third lock should now locked!");
+}
+
 
 void ApiTest::testRegistrationMacro()
 {
@@ -203,8 +219,6 @@ void ApiTest::testApplyAll()
     QVERIFY2(tables.contains("users"), "table 'users' should be created during migration");
     QVERIFY2(tables.contains("addresses"), "table 'addresses' should be created during migration");
     QVERIFY2(tables.contains("cars"), "table 'cars' should be created during migration");
-
-    QFile::copy(API_DATABASE_FILENAME, "vorher.sqlite3");
 }
 
 void ApiTest::testMigrateTo()
@@ -222,8 +236,6 @@ void ApiTest::testMigrateTo()
              , "two tables should be added during second migrateTo(), makes three (+ migrationTable) tables overall");
     QVERIFY2(tables.contains("addresses"), "table 'addresses' should be created during migration");
     QVERIFY2(tables.contains("cars"), "table 'cars' should be created during migration");
-
-    QFile::copy(API_DATABASE_FILENAME, "hier.sqlite3");
 }
 
 void ApiTest::testMissingMigrations()

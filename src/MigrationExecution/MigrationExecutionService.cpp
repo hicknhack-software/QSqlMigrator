@@ -38,6 +38,8 @@
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QtCore>
+#include <Qt>
+
 
 using namespace Commands;
 
