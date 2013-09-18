@@ -27,10 +27,11 @@
 #define DATABASELOCK_H
 
 #include "CommandExecution/CommandExecutionServiceRepository.h"
+
 #include <QObject>
+#include "SqliteMigrator.h"
 #include <QUuid>
 #include <QString>
-
 
 namespace MigrationExecution {
 class MigrationExecutionContext;
@@ -54,7 +55,7 @@ class RefreshLockIsLivingInvoker;
  * }
  *
  */
-class DatabaseLock : public QObject
+class SQLITEMIGRATOR_DLL_EXPORT DatabaseLock : public QObject
 {
     Q_OBJECT
 

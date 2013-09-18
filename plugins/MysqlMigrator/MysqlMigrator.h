@@ -52,7 +52,7 @@ namespace MysqlMigrator {
 
 QSharedPointer<CommandExecution::CommandExecutionServiceRepository> MYSQLMIGRATOR_DLL_EXPORT commandServiceRepository();
 
-bool buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDatabase database);
+bool MYSQLMIGRATOR_DLL_EXPORT buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDatabase database);
 
 } // namespace MysqlMigrator
 
