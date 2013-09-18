@@ -53,7 +53,7 @@ namespace SqliteMigrator {
 
 QSharedPointer<CommandExecution::CommandExecutionServiceRepository> SQLITEMIGRATOR_DLL_EXPORT commandServiceRepository();
 
-bool buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDatabase database);
+bool SQLITEMIGRATOR_DLL_EXPORT buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDatabase database);
 
 } // namespace SqliteMigrator
 

@@ -43,10 +43,10 @@
 
 namespace SqliteMigrator {
 
-using namespace CommandExecution;
-
-QSharedPointer<CommandExecutionServiceRepository> commandServiceRepository()
+QSharedPointer<CommandExecution::CommandExecutionServiceRepository> commandServiceRepository()
 {
+    using namespace CommandExecution;
+
     QSharedPointer<CommandExecutionServiceRepository> commandRepository(new CommandExecutionServiceRepository);
     commandRepository->add(BaseCommandServicePtr(new SqliteAddColumnService));
     commandRepository->add(BaseCommandServicePtr(new SqliteAlterColumnTypeService));
@@ -62,10 +62,10 @@ QSharedPointer<CommandExecutionServiceRepository> commandServiceRepository()
     return commandRepository;
 }
 
-using namespace MigrationExecution;
-
-bool buildContext(MigrationExecutionContext &context, QSqlDatabase database)
+bool buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDatabase database)
 {
+    using namespace MigrationExecution;
+
     CommandServiceRepositoryPtr commandRepository = SqliteMigrator::commandServiceRepository();
     MigrationTableServicePtr migrationTableService(new MigrationTracker::SqliteMigrationTableService);
 

@@ -2,9 +2,10 @@
 #define DATABASELOCK_H
 
 #include "CommandExecution/CommandExecutionServiceRepository.h"
+#include "SqliteMigrator.h"
+
 #include <QSqlDatabase>
 #include <QUuid>
-
 
 namespace MigrationExecution {
 class MigrationExecutionContext;
@@ -12,7 +13,7 @@ class MigrationExecutionContext;
 
 namespace SqliteMigrator {
 
-class DatabaseLock
+class SQLITEMIGRATOR_DLL_EXPORT DatabaseLock
 {
     enum
     {

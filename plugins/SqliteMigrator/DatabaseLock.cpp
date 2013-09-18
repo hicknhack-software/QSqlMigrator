@@ -33,7 +33,7 @@
 #include <QUuid>
 
 
-#ifdef Q_WIN_OS
+#ifdef Q_OS_WIN
 #include <windows.h> // Sleep
 #else
 #include <unistd.h>  // usleep

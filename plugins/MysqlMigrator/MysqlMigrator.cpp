@@ -43,10 +43,10 @@
 
 namespace MysqlMigrator {
 
-using namespace CommandExecution;
-
-QSharedPointer<CommandExecutionServiceRepository> commandServiceRepository()
+QSharedPointer<CommandExecution::CommandExecutionServiceRepository> commandServiceRepository()
 {
+    using namespace CommandExecution;
+
     QSharedPointer<CommandExecutionServiceRepository> commandRepository(new CommandExecutionServiceRepository);
     commandRepository->add(BaseCommandServicePtr(new MysqlAddColumnService));
     commandRepository->add(BaseCommandServicePtr(new MysqlAlterColumnTypeService));
@@ -62,10 +62,10 @@ QSharedPointer<CommandExecutionServiceRepository> commandServiceRepository()
     return commandRepository;
 }
 
-using namespace MigrationExecution;
-
 bool buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDatabase database)
 {
+    using namespace MigrationExecution;
+
     CommandServiceRepositoryPtr commandRepository = MysqlMigrator::commandServiceRepository();
 
     MigrationTableServicePtr migrationTableService =
