@@ -5,8 +5,8 @@
 #-------------------------------------------------
 
 QT       += sql
-
 QT       -= gui
+CONFIG     += qt
 
 TEMPLATE = lib
 CONFIG += dll
@@ -38,6 +38,7 @@ else:unix:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$LIB_PATH/libQSqlMigr
 # }
 
 SOURCES += \
+         DatabaseLock.cpp \
 	 CommandExecution/SqliteRenameTableService.cpp \
 	 CommandExecution/SqliteRenameColumnService.cpp \
 	 CommandExecution/SqliteDropTableService.cpp \
@@ -51,10 +52,10 @@ SOURCES += \
 	 Helper/SqliteDbReader.cpp \
 	 Helper/SqliteColumnService.cpp \
 	 MigrationTracker/SqliteMigrationTableService.cpp \
-	 SqliteMigrator.cpp \
-    DatabaseLock.cpp
+         SqliteMigrator.cpp
 
 HEADERS += \
+         DatabaseLock.h \
 	 CommandExecution/SqliteRenameTableService.h \
 	 CommandExecution/SqliteRenameColumnService.h \
 	 CommandExecution/SqliteDropTableService.h \
@@ -68,8 +69,7 @@ HEADERS += \
 	 Helper/SqliteDbReader.h \
 	 Helper/SqliteColumnService.h \
 	 MigrationTracker/SqliteMigrationTableService.h \
-	 SqliteMigrator.h \
-    DatabaseLock.h
+         SqliteMigrator.h
 
 unix:!symbian {
 	 maemo5 {

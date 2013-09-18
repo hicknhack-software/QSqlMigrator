@@ -119,16 +119,26 @@ void ApiTest::cleanup()
 
 void ApiTest::testLockDatabase()
 {
+    QString dummyLockFileName = m_context.database().databaseName() + SqliteMigrator::lockFileNameExtension;
+    QFile dummyLockFile(dummyLockFileName);
+    dummyLockFile.open(QIODevice::WriteOnly);
+    dummyLockFile.write("dummy lock");
+    {
+        SqliteMigrator::DatabaseLock dummy_lock_releaser(m_context);
+    }
+    QVERIFY2(!QFile::exists(dummyLockFileName), "dummy lock file shold NO more exist!");
+
+
     {
         SqliteMigrator::DatabaseLock lock(m_context);
-        QVERIFY2(lock.isExclusiveLocked(), "can NOT lock database!");
+        QVERIFY2(lock, "can NOT lock database!");
 
         SqliteMigrator::DatabaseLock lock2(m_context);
-        QVERIFY2(!lock2.isExclusiveLocked(), "a second lock should fail!");
+        QVERIFY2(!lock2, "a second lock should fail!");
     }
 
     SqliteMigrator::DatabaseLock lock3(m_context);
-    QVERIFY2(lock3.isExclusiveLocked(), "a third lock should now locked!");
+    QVERIFY2(lock3, "a third lock should now locked!");
 }
 
 
