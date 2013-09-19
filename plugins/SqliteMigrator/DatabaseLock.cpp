@@ -37,9 +37,10 @@
 
 #ifdef Q_OS_WIN
 #include <windows.h> // Sleep
+#define SleepSec(sec) Sleep(sec * 1000)
 #else
 #include <unistd.h>  // sleep
-#define Sleep(sec) sleep(sec)
+#define SleepSec(sec) usleep(sec * 1000 * 1000)
 #endif
 
 
@@ -107,7 +108,7 @@ bool DatabaseLock::makeWaitForLock() const
         if(tryReleaseOutOfDateLock())
             return makeLock();
 
-        Sleep(tryInterval);
+        SleepSec(tryInterval);
         ::qDebug() << m_uuid << "try to lock db, but database is locked from other process";
 
         if(m_timeOutTryGetLock == i) {
