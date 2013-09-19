@@ -39,7 +39,7 @@
 #include <windows.h> // Sleep
 #define SleepSec(sec) Sleep(sec * 1000)
 #else
-#include <unistd.h>  // sleep
+#include <unistd.h>  // usleep
 #define SleepSec(sec) usleep(sec * 1000 * 1000)
 #endif
 
