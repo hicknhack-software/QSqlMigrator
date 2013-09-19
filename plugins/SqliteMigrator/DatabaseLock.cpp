@@ -39,7 +39,7 @@
 #include <windows.h> // Sleep
 #define SleepSec(sec) Sleep(sec * 1000)
 #else
-#include <unistd.h>  // usleep
+#include <unistd.h>  // sleep
 #define SleepSec(sec) usleep(sec * 1000 * 1000)
 #endif
 
@@ -93,6 +93,7 @@ SqliteMigrator::DatabaseLock::operator bool() const
     return isExclusiveLocked();
 }
 
+static const QString lockFileNameExtension = ".qsqlm_lock";
 QString DatabaseLock::buildLockFileName(const MigrationExecution::MigrationExecutionContext &context)
 {
     QString migrationLockFileName = context.database().databaseName();
@@ -135,7 +136,7 @@ bool DatabaseLock::tryReleaseOutOfDateLock() const
 
     QDateTime lastModified = QFileInfo(m_lockFileName).lastModified();
     ::qDebug() << "current lock last update" << lastModified;
-    if(lastModified.addSecs(otherLockIsOfDateAfter) < QDateTime::currentDateTime()) {
+    if(lastModified.addSecs(otherLockIsOutOfDateAfter) < QDateTime::currentDateTime()) {
         ::qWarning() << m_uuid << "release out of date lock";
         return releaseLock();
     }
