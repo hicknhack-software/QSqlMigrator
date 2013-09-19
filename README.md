@@ -28,7 +28,7 @@ Windows:
 
 Linux:
 - GCC 4.8.1 and Qt 4.8.5
-- MinGw 4.8.1 and Qt 4.8.5 (should also work on windows)
+- MinGW 4.8.1 and Qt 4.8.5 (should also work on windows)
 
 You will need a working database driver plugin for your database, both for qt and the sql migrator.
 Hint: Our tests include instructions to create the qt sql driver plugin
