@@ -25,7 +25,7 @@ It has been successfully tested with:
 
 Windows: 
 - Visual Studio 2010 compiler - Qt 4.8.4 and Qt 5.0.0.
-- 
+
 Linux:
 - GCC 4.8.1 and Qt 4.8.5
 - MinGw 4.8.1 and Qt 4.8.5 (should also work on windows)
