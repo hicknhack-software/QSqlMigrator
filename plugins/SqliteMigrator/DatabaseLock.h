@@ -39,8 +39,6 @@ class MigrationExecutionContext;
 
 namespace SqliteMigrator {
 
-static const QString lockFileNameExtension = ".qsqlm_lock";
-
 class RefreshLockIsLivingInvoker;
 
 /*!
@@ -63,8 +61,8 @@ class SQLITEMIGRATOR_DLL_EXPORT DatabaseLock : public QObject
     enum IN_SEC
     {
         tryInterval = 1,
-        timeOut = 5,
-        otherLockIsOfDateAfter = 4,
+        timeOut = 10,
+        otherLockIsOutOfDateAfter = 4,
         refreshLockIsLivingInterval = 1
     };
 
@@ -79,9 +77,9 @@ public:
     /*! auto release lock */
     ~DatabaseLock();
 
-private:
     static QString buildLockFileName(const MigrationExecution::MigrationExecutionContext &context);
 
+private:
     bool makeWaitForLock() const;
     bool isCurrentlyLocked() const;
     bool tryReleaseOutOfDateLock() const;
