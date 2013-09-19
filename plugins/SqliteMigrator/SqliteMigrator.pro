@@ -6,7 +6,6 @@
 
 QT       += sql
 QT       -= gui
-CONFIG     += qt
 
 TEMPLATE = lib
 CONFIG += dll
@@ -31,8 +30,8 @@ else:CONFIG(debug, debug|release): LIBS += -lQSqlMigratord
 INCLUDEPATH += $$QSQLMIGRATOR_ROOT/src
 DEPENDPATH += $$DESTDIR
 
-win32:CONFIG(release, debug|release): PRE_TARGETDEPS += $$LIB_PATH/QSqlMigrator.lib
-else:win32:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$LIB_PATH/QSqlMigratord.lib
+win32:CONFIG(release, debug|release): PRE_TARGETDEPS += $$LIB_PATH/QSqlMigrator.dll
+else:win32:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$LIB_PATH/QSqlMigratord.dll
 else:unix:CONFIG(release, debug|release): PRE_TARGETDEPS += $$LIB_PATH/libQSqlMigrator.so
 else:unix:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$LIB_PATH/libQSqlMigratord.so
 # }
