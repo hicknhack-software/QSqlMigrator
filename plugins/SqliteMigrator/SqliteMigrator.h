@@ -29,7 +29,6 @@
 #include "CommandExecution/CommandExecutionServiceRepository.h"
 #include <Qt>
 #include <QSqlDatabase>
-#include <QUuid>
 
 
 #ifndef SQLITEMIGRATOR_DLL_EXPORT
@@ -53,6 +52,21 @@ namespace SqliteMigrator {
 
 QSharedPointer<CommandExecution::CommandExecutionServiceRepository> SQLITEMIGRATOR_DLL_EXPORT commandServiceRepository();
 
+/*!
+ * \brief   Use this function to setup your excution context for sqlite migrations.
+ *
+ * Example:
+ *
+ * MigrationExecutionContext c( ... );  // ... have a look at his interface
+ *
+ * QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+ * db.setDatabaseName("sample_db.sqlite3");
+ *
+ * if(SqliteMigrator::buildContext(c, db)) {
+ *      // do something with the context
+ * }
+ *
+ */
 bool SQLITEMIGRATOR_DLL_EXPORT buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDatabase database);
 
 } // namespace SqliteMigrator

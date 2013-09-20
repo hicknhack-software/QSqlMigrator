@@ -51,7 +51,7 @@ private Q_SLOTS:
     void initTestCase();
     void init();
 
-    void testDatabaseWithLockFile();
+    void testDatabaseLock();
 
     void testRegistrationMacro();
     void testDefinedMigrations();
@@ -116,7 +116,7 @@ void ApiTest::cleanup()
     }
 }
 
-void ApiTest::testDatabaseWithLockFile()
+void ApiTest::testDatabaseLock()
 {
     QString dummyLockFileName = SqliteMigrator::DatabaseLock::buildLockFileName(m_context);
     QFile dummyLockFile(dummyLockFileName);
