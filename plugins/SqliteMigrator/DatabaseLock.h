@@ -41,13 +41,21 @@ namespace SqliteMigrator {
 
 class RefreshLockIsLivingInvoker;
 
+// OPEN:
+// P1: what are good default times?
+// P2: do the user need the option to set a own timeout?
+
 /*!
- * \brief   The DatabaseLock trys to lock a database for QSqlMigritor processes.
- *          You have to check if you got the lock ( see example )
+ * \brief   The DatabaseLock trys to lock a database for this QSqlMigritor processes.
+ *          You have to check if you got the lock ( see example with operator bool ).
  *
- * unsigned int time_out_to_get_lock = 60;
+ *          The lock will be automatically released on deconstruction.
+ *
+ * Example:
+ *
+ * unsigned int timeOutToGetLock = 60;
  * context c;
- * DatabaseLock lock(c, time_out_to_get_lock);
+ * DatabaseLock lock(c, timeOutToGetLock);
  * if(lock) {
  *    // do mirgration stuff
  * }
@@ -57,44 +65,47 @@ class SQLITEMIGRATOR_DLL_EXPORT DatabaseLock : public QObject
 {
     Q_OBJECT
 
-    // TODO what are good default times?
+    // P1: what are good default times?
     enum IN_SEC
     {
-        tryInterval = 1,
+        tryGetLockInterval = 1,
         timeOut = 10,
         otherLockIsOutOfDateAfter = 4,
         refreshLockIsLivingInterval = 1
     };
 
 public:
-    /*! try to make a unique lock for the database in the context */
+    /*! try to make a lock for the database in the context */                         // P2: do the user need the option to set a own timeout?
     DatabaseLock(MigrationExecution::MigrationExecutionContext &context, unsigned int timeOutTryGetLock = timeOut);
 
-    /*! is successful locked */
-    bool isExclusiveLocked() const;
+    /*! return true if the lock is successful set for this process */
     operator bool () const;
 
-    /*! auto release lock */
+    /*! auto release the own lock */
     ~DatabaseLock();
 
+    /*! return the lock file name which will be used for this migration context */
     static QString buildLockFileName(const MigrationExecution::MigrationExecutionContext &context);
 
 private:
-    bool makeWaitForLock() const;
+    QString ownProcessInfo() const;
+
+    bool tryMakeWaitForLock() const;
     bool isCurrentlyLocked() const;
     bool tryReleaseOutOfDateLock() const;
-    bool makeLock() const;
-    bool writeUuuid() const;
+    bool tryMakeLock() const;
+    bool tryWriteUuidToLockFile() const;
     bool tryReleaseOwnLock() const;
-    bool releaseLock() const;
+    bool tryReleaseAnyLock() const;
+
 
     const QUuid m_uuid;
     const QString m_lockFileName;
     const unsigned int m_timeOutTryGetLock;
     bool m_lockedSuccessful;
 
-    RefreshLockIsLivingInvoker* m_refreshLockIsLivingInvoker;
 
+    RefreshLockIsLivingInvoker* m_refreshLockIsLivingInvoker;
     friend class RefreshLockIsLivingInvoker;
 private slots:
     bool refreshLockIsLiving() const;

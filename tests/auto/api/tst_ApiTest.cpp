@@ -51,7 +51,7 @@ private Q_SLOTS:
     void initTestCase();
     void init();
 
-    void testLockDatabase();
+    void testDatabaseWithLockFile();
 
     void testRegistrationMacro();
     void testDefinedMigrations();
@@ -61,7 +61,6 @@ private Q_SLOTS:
     void testApplyAll();
     void testMigrateTo();
     void testMissingMigrations();
-
     void testRevertMigration();
     void testUnappliedMigrations();
 
@@ -117,29 +116,29 @@ void ApiTest::cleanup()
     }
 }
 
-void ApiTest::testLockDatabase()
+void ApiTest::testDatabaseWithLockFile()
 {
     QString dummyLockFileName = SqliteMigrator::DatabaseLock::buildLockFileName(m_context);
     QFile dummyLockFile(dummyLockFileName);
     {
         dummyLockFile.open(QIODevice::WriteOnly);
-        dummyLockFile.write("dummy lock");
-    }
-    {
+        dummyLockFile.write("test dummy lock");
+        dummyLockFile.close();
+
         SqliteMigrator::DatabaseLock dummyLockReleaser(m_context);
     }
     QVERIFY2(!QFile::exists(dummyLockFileName), "dummy lock file shold NO more exist!");
 
     {
-        SqliteMigrator::DatabaseLock lock(m_context);
-        QVERIFY2(lock, "can NOT lock database!");
+        SqliteMigrator::DatabaseLock lockA(m_context);
+        QVERIFY2(lockA, "lockA shold be successful got the lock!");
 
-        SqliteMigrator::DatabaseLock lock2(m_context);
-        QVERIFY2(!lock2, "a second lock should fail!");
+        SqliteMigrator::DatabaseLock lockB(m_context);
+        QVERIFY2(!lockB, "lockB should not got the lock, lockA should still have the lock!");
     }
 
-    SqliteMigrator::DatabaseLock lock3(m_context);
-    QVERIFY2(lock3, "a third lock should now locked!");
+    SqliteMigrator::DatabaseLock lockC(m_context);
+    QVERIFY2(lockC, "lockC shold be successful got the lock!");
 }
 
 
