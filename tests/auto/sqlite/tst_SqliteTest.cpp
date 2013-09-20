@@ -112,8 +112,8 @@ void SqliteTest::testAlterColumnType()
     CommandExecution::CommandExecutionService execution;
     execution.execute(command, CommandExecution::CommandExecutionService::Up, m_context.commandServiceRepository() , serviceContext);
 
-    QStringList lTables = m_context.database().tables(QSql::Tables);
-    QVERIFY2(lTables.contains("testtable1"), "testtable should be created during migration!");
+    QStringList tables = m_context.database().tables(QSql::Tables);
+    QVERIFY2(tables.contains("testtable1"), "testtable should be created during migration!");
 
     //TODO insert some data
 
@@ -122,7 +122,7 @@ void SqliteTest::testAlterColumnType()
     execution.execute(command2, CommandExecution::CommandExecutionService::Up, m_context.commandServiceRepository() , serviceContext);
 
     //check if old column was removed and new column included successfully
-    bool bColumnRetyped = false;
+    bool columnRetyped = false;
     QSqlQuery query = m_context.database().exec("PRAGMA table_info(testtable1)");
     QSqlError error = query.lastError();
     QVERIFY2(!error.isValid(), "query should run without any error");
@@ -132,11 +132,11 @@ void SqliteTest::testAlterColumnType()
         while (query.next()) {
             QString type = query.value(2).toString();
             if (type == "varchar(42)") {
-                bColumnRetyped = true;
+                columnRetyped = true;
             }
         }
     }
-    QVERIFY2(bColumnRetyped, "col1 should be retyped to varchar(42) during migration");
+    QVERIFY2(columnRetyped, "col1 should be retyped to varchar(42) during migration");
 
     //TODO check if test data was copied correctly
 }
@@ -165,11 +165,11 @@ void SqliteTest::testCreateIndex()
     execution.execute(command, CommandExecution::CommandExecutionService::Up, m_context.commandServiceRepository() , serviceContext);
     execution.execute(command2, CommandExecution::CommandExecutionService::Up, m_context.commandServiceRepository() , serviceContext);
 
-    QStringList lTables = m_context.database().tables(QSql::Tables);
-    QVERIFY2(lTables.contains("testtable1"), "testtable should be created during migration!");
+    QStringList tables = m_context.database().tables(QSql::Tables);
+    QVERIFY2(tables.contains("testtable1"), "testtable should be created during migration!");
 
     //check if index was created successfully
-    bool bIndexPresent = false;
+    bool indexPresent = false;
     QSqlQuery query = m_context.database().exec("PRAGMA index_list(testtable1)");
     QSqlError error = query.lastError();
     QVERIFY2(!error.isValid(), "query should run without any error");
@@ -179,11 +179,11 @@ void SqliteTest::testCreateIndex()
         while (query.next()) {
             QString name = query.value(1).toString();
             if (name == "index1") {
-                bIndexPresent = true;
+                indexPresent = true;
             }
         }
     }
-    QVERIFY2(bIndexPresent, "index1 should be created during CreateIndex");
+    QVERIFY2(indexPresent, "index1 should be created during CreateIndex");
 }
 
 void SqliteTest::testDropColumn()
@@ -201,8 +201,8 @@ void SqliteTest::testDropColumn()
     CommandExecution::CommandExecutionService execution;
     execution.execute(command, CommandExecution::CommandExecutionService::Up, m_context.commandServiceRepository() , serviceContext);
 
-    QStringList lTables = m_context.database().tables(QSql::Tables);
-    QVERIFY2(lTables.contains("testtable1"), "testtable should be created during migration!");
+    QStringList tables = m_context.database().tables(QSql::Tables);
+    QVERIFY2(tables.contains("testtable1"), "testtable should be created during migration!");
 
     //TODO insert some data
 
@@ -211,7 +211,7 @@ void SqliteTest::testDropColumn()
     execution.execute(command2, CommandExecution::CommandExecutionService::Up, m_context.commandServiceRepository() , serviceContext);
 
     //check if index was created successfully
-    bool bColumnRemoved = false;
+    bool columnRemoved = false;
     QSqlQuery query = m_context.database().exec("PRAGMA table_info(testtable1)");
     QSqlError error = query.lastError();
     QVERIFY2(!error.isValid(), "query should run without any error");
@@ -221,12 +221,12 @@ void SqliteTest::testDropColumn()
         while (query.next()) {
             QString name = query.value(1).toString();
             if (name == "col1") {
-                bColumnRemoved = false;
+                columnRemoved = false;
             }
         }
-        bColumnRemoved = true;
+        columnRemoved = true;
     }
-    QVERIFY2(bColumnRemoved, "col1 should be removed during migration");
+    QVERIFY2(columnRemoved, "col1 should be removed during migration");
 
     //TODO check if test data was copied correctly
 }
@@ -246,8 +246,8 @@ void SqliteTest::testRenameColumn()
     CommandExecution::CommandExecutionService execution;
     execution.execute(command, CommandExecution::CommandExecutionService::Up, m_context.commandServiceRepository() , serviceContext);
 
-    QStringList lTables = m_context.database().tables(QSql::Tables);
-    QVERIFY2(lTables.contains("testtable1"), "testtable should be created during migration!");
+    QStringList tables = m_context.database().tables(QSql::Tables);
+    QVERIFY2(tables.contains("testtable1"), "testtable should be created during migration!");
 
     //TODO insert some data
 
@@ -256,7 +256,7 @@ void SqliteTest::testRenameColumn()
     execution.execute(command2, CommandExecution::CommandExecutionService::Up, m_context.commandServiceRepository() , serviceContext);
 
     //check if old column was removed and new column included successfully
-    bool bColumnRenamed = false;
+    bool columnRenamed = false;
     QSqlQuery query = m_context.database().exec("PRAGMA table_info(testtable1)");
     QSqlError error = query.lastError();
     QVERIFY2(!error.isValid(), "query should run without any error");
@@ -267,11 +267,11 @@ void SqliteTest::testRenameColumn()
             QString name = query.value(1).toString();
             QVERIFY2(name != "col1", "col1 should be removed during migration");
             if (name == "new_column1") {
-                bColumnRenamed = true;
+                columnRenamed = true;
             }
         }
     }
-    QVERIFY2(bColumnRenamed, "col1 should be renamed to new_colum1 during migration");
+    QVERIFY2(columnRenamed, "col1 should be renamed to new_colum1 during migration");
 
     //TODO check if test data was copied correctly
 }

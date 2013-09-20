@@ -50,8 +50,8 @@ RenameColumn::RenameColumn(const QString &name, const QString &newName, const QS
 
 const QString &RenameColumn::typeName()
 {
-    static QString sTypename("RenameColumn");
-    return sTypename;
+    static QString typeName("RenameColumn");
+    return typeName;
 }
 
 const QString &RenameColumn::name() const

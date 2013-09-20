@@ -63,8 +63,8 @@ const Structure::Column &DropColumn::column() const
 
 const QString &DropColumn::typeName()
 {
-    static QString sTypename("DropColumn");
-    return sTypename;
+    static QString typeName("DropColumn");
+    return typeName;
 }
 
 const QString &DropColumn::tableName() const

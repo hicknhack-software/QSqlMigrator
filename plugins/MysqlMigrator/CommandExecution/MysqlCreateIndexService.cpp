@@ -52,14 +52,14 @@ bool MysqlCreateIndexService::up(const Commands::ConstCommandPtr &command
     QSharedPointer<const Commands::CreateIndex> createIndex(command.staticCast<const Commands::CreateIndex>());
 
     Helper::MysqlColumnService columnService;
-    QString sColumnDefinition = columnService.generateIndexColumnDefinitionSql(createIndex->index().columns());
+    QString columnDefinition = columnService.generateIndexColumnDefinitionSql(createIndex->index().columns());
 
-    QString sCreateQuery = QString("CREATE INDEX %1 ON %2 (%3)")
+    QString createQuery = QString("CREATE INDEX %1 ON %2 (%3)")
             .arg(Helper::MysqlQuoteService::quoteTableName(createIndex->index().name())
                  , Helper::MysqlQuoteService::quoteTableName(createIndex->index().tableName())
-                 , sColumnDefinition);
+                 , columnDefinition);
 
-    return CommandExecution::BaseCommandExecutionService::executeQuery(sCreateQuery, context);
+    return CommandExecution::BaseCommandExecutionService::executeQuery(createQuery, context);
 }
 
 bool MysqlCreateIndexService::isUpValid(const Commands::ConstCommandPtr &command

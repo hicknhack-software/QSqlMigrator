@@ -52,8 +52,8 @@ AlterColumnType::AlterColumnType(const QString &columnName, const QString &table
 
 const QString &AlterColumnType::typeName()
 {
-    static QString sTypename("AlterColumnType");
-    return sTypename;
+    static QString typeName("AlterColumnType");
+    return typeName;
 }
 
 const QString &AlterColumnType::tableName() const

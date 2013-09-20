@@ -35,8 +35,8 @@ CreateIndex::CreateIndex(const Structure::Index &index)
 
 const QString &CreateIndex::typeName()
 {
-    static QString sTypename("CreateIndex");
-    return sTypename;
+    static QString typeName("CreateIndex");
+    return typeName;
 }
 
 const Structure::Index &CreateIndex::index() const

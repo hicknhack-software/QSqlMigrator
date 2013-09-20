@@ -68,22 +68,22 @@ bool MysqlAlterColumnTypeService::up(const Commands::ConstCommandPtr &command
     }
 
     Helper::MysqlColumnService columnService;
-    QString sColumnDefinition = columnService.generateColumnDefinitionSql(*modifiedColumn);
+    QString columnDefinition = columnService.generateColumnDefinitionSql(*modifiedColumn);
 
-    QString sAlterQuery = QString("ALTER TABLE %1 MODIFY COLUMN %2")
+    QString alterQuery = QString("ALTER TABLE %1 MODIFY COLUMN %2")
             .arg(Helper::MysqlQuoteService::quoteTableName(alterColumnType->tableName())
-                 , sColumnDefinition);
+                 , columnDefinition);
 
-    bool bSuccess = CommandExecution::BaseCommandExecutionService::executeQuery(sAlterQuery, context);
+    bool success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
 
-    if (bSuccess && context.isUndoUsed()) {
+    if (success && context.isUndoUsed()) {
         Commands::CommandPtr undoCommand(new Commands::AlterColumnType(alterColumnType->columnName()
                                                                        , alterColumnType->tableName()
                                                                        , originalType));
         context.setUndoCommand(undoCommand);
     }
 
-    return bSuccess;
+    return success;
 }
 
 bool MysqlAlterColumnTypeService::isUpValid(const Commands::ConstCommandPtr &command

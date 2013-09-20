@@ -119,14 +119,14 @@ bool MigrationExecutionService::executeBatch(const QStringList &migrationList
         return true; // No migrations present, no need to do anything
     }
 
-    bool bSuccess = true;
+    bool success = true;
     foreach (const QString &migrationName, migrationList) {
-        bSuccess &= this->execute(migrationName, context, direction);
-        if (!bSuccess) {
+        success &= this->execute(migrationName, context, direction);
+        if (!success) {
             break;
         }
     }
-    return bSuccess;
+    return success;
 }
 
 bool MigrationExecutionService::isMigrationRemembered(const QString &migrationName

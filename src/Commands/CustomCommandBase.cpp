@@ -38,8 +38,8 @@ CustomCommandBase::CustomCommandBase(const QString &commandName)
 
 const QString &CustomCommandBase::typeName()
 {
-    static QString sTypename("CustomCommand");
-    return sTypename;
+    static QString typeName("CustomCommand");
+    return typeName;
 }
 
 QString CustomCommandBase::customName() const

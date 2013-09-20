@@ -48,9 +48,9 @@ bool MysqlDropIndexService::up(const Commands::ConstCommandPtr &command, Command
 {
     QSharedPointer<const Commands::DropIndex> dropIndex(command.staticCast<const Commands::DropIndex>());
 
-    QString sDropQuery = QString("DROP INDEX %1").arg(dropIndex->name());
+    QString dropQuery = QString("DROP INDEX %1").arg(dropIndex->name());
 
-    return CommandExecution::BaseCommandExecutionService::executeQuery(sDropQuery, context);
+    return CommandExecution::BaseCommandExecutionService::executeQuery(dropQuery, context);
 }
 
 bool MysqlDropIndexService::isUpValid(const Commands::ConstCommandPtr &command, const CommandExecution::CommandExecutionContext &context) const

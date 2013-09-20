@@ -47,8 +47,8 @@ void BasicTest::testCreateTable()
     CommandExecution::CommandExecutionService execution;
     execution.execute(command, CommandExecution::CommandExecutionService::Up, m_context.commandServiceRepository(), serviceContext);
 
-    QStringList lTables = m_context.database().tables(QSql::Tables);
-    QVERIFY2(lTables.contains("testtable1"), "testtable should be created during migration!");
+    QStringList tables = m_context.database().tables(QSql::Tables);
+    QVERIFY2(tables.contains("testtable1"), "testtable should be created during migration!");
 }
 
 void BasicTest::testDropTable()
@@ -64,8 +64,8 @@ void BasicTest::testDropTable()
     CommandExecution::CommandExecutionService execution;
     execution.execute(command, CommandExecution::CommandExecutionService::Up, m_context.commandServiceRepository(), serviceContext);
 
-    QStringList lTables = m_context.database().tables(QSql::Tables);
-    QVERIFY2(lTables.contains("testtable1"), "testtable should be created during migration!");
+    QStringList tables = m_context.database().tables(QSql::Tables);
+    QVERIFY2(tables.contains("testtable1"), "testtable should be created during migration!");
 
     Commands::CommandPtr command2(
                 new Commands::DropTable(
@@ -76,8 +76,8 @@ void BasicTest::testDropTable()
 
     execution.execute(command2, CommandExecution::CommandExecutionService::Up, m_context.commandServiceRepository(), serviceContext);
 
-    lTables = m_context.database().tables(QSql::Tables);
-    QVERIFY2(!lTables.contains("testtable1"), "testtable should be droped during migration!");
+    tables = m_context.database().tables(QSql::Tables);
+    QVERIFY2(!tables.contains("testtable1"), "testtable should be droped during migration!");
 }
 
 void BasicTest::testTransaction()
@@ -117,15 +117,15 @@ void BasicTest::testTransaction()
     migrationContext.setBaseMigrationTableService(m_context.baseMigrationTableService());
     migrationContext.setCommandServiceRepository(m_context.commandServiceRepository());
 
-    bool bSuccess = migrator.execute("Migration No1", migrationContext);
-    QVERIFY2(bSuccess, "migration should work!");
+    bool success = migrator.execute("Migration No1", migrationContext);
+    QVERIFY2(success, "migration should work!");
 
-    bSuccess = migrator.execute("Migration No2", migrationContext);
-    QVERIFY2(!bSuccess, "migration should fail!");
-    QStringList lTables = m_context.database().tables(QSql::Tables);
-    QVERIFY2(lTables.contains("testtable1")
+    success = migrator.execute("Migration No2", migrationContext);
+    QVERIFY2(!success, "migration should fail!");
+    QStringList tables = m_context.database().tables(QSql::Tables);
+    QVERIFY2(tables.contains("testtable1")
              , "testtable should be created during migrtaion No 1!");
-    QVERIFY2(!lTables.contains("testtable2")
+    QVERIFY2(!tables.contains("testtable2")
              , "testtable should be deleted during rollback!");
 }
 
@@ -166,15 +166,15 @@ void BasicTest::testUndoCreateTable()
     migrationContext.setBaseMigrationTableService(m_context.baseMigrationTableService());
     migrationContext.setCommandServiceRepository(m_context.commandServiceRepository());
 
-    bool bSuccess = migrator.execute("Migration No1", migrationContext);
-    QVERIFY2(bSuccess, "migration should work!");
+    bool success = migrator.execute("Migration No1", migrationContext);
+    QVERIFY2(success, "migration should work!");
 
-    bSuccess = migrator.execute("Migration No2", migrationContext);
-    QVERIFY2(!bSuccess, "migration should fail!");
-    QStringList lTables = m_context.database().tables(QSql::Tables);
-    QVERIFY2(lTables.contains("testtable1")
+    success = migrator.execute("Migration No2", migrationContext);
+    QVERIFY2(!success, "migration should fail!");
+    QStringList tables = m_context.database().tables(QSql::Tables);
+    QVERIFY2(tables.contains("testtable1")
              , "testtable should be created during migrtaion No 1!");
-    QVERIFY2(!lTables.contains("testtable2")
+    QVERIFY2(!tables.contains("testtable2")
              , "testtable should be deleted during rollback!");
 }
 
@@ -221,15 +221,15 @@ void BasicTest::testUndoDropTable()
     migrationContext.setBaseMigrationTableService(m_context.baseMigrationTableService());
     migrationContext.setCommandServiceRepository(m_context.commandServiceRepository());
 
-    bool bSuccess = migrator.execute("Migration No1", migrationContext);
-    QVERIFY2(bSuccess, "migration should work!");
+    bool success = migrator.execute("Migration No1", migrationContext);
+    QVERIFY2(success, "migration should work!");
 
-    bSuccess = migrator.execute("Migration No2", migrationContext);
-    QVERIFY2(!bSuccess, "migration should fail!");
-    QStringList lTables = m_context.database().tables(QSql::Tables);
-    QVERIFY2(lTables.contains("testtable1")
+    success = migrator.execute("Migration No2", migrationContext);
+    QVERIFY2(!success, "migration should fail!");
+    QStringList tables = m_context.database().tables(QSql::Tables);
+    QVERIFY2(tables.contains("testtable1")
              , "testtable should be re-created during undo!");
-    QVERIFY2(!lTables.contains("testtable2")
+    QVERIFY2(!tables.contains("testtable2")
              , "testtable should be deleted during rollback!");
 }
 
@@ -259,20 +259,20 @@ void BasicTest::testMigrationDirections()
     migrationContext.setBaseMigrationTableService(m_context.baseMigrationTableService());
     migrationContext.setCommandServiceRepository(m_context.commandServiceRepository());
 
-    bool bSuccess = migrator.execute("Migration No1", migrationContext);
-    QVERIFY2(bSuccess, "Migration should work!");
-    QStringList lTables = m_context.database().tables(QSql::Tables);
-    QVERIFY2(lTables.contains("testtable1"), "testtable should be created during migration!");
+    bool success = migrator.execute("Migration No1", migrationContext);
+    QVERIFY2(success, "Migration should work!");
+    QStringList tables = m_context.database().tables(QSql::Tables);
+    QVERIFY2(tables.contains("testtable1"), "testtable should be created during migration!");
 
-    bSuccess = migrator.execute("Migration No2", migrationContext);
-    QVERIFY2(bSuccess, "Migration should work!");
-    lTables = m_context.database().tables(QSql::Tables);
-    QVERIFY2(lTables.contains("testtable2"), "testtable should be created during migration!");
+    success = migrator.execute("Migration No2", migrationContext);
+    QVERIFY2(success, "Migration should work!");
+    tables = m_context.database().tables(QSql::Tables);
+    QVERIFY2(tables.contains("testtable2"), "testtable should be created during migration!");
 
-    bSuccess = migrator.execute("Migration No2", migrationContext, MigrationExecution::MigrationExecutionService::Down);
-    QVERIFY2(bSuccess, "Migration should work!");
-    lTables = m_context.database().tables(QSql::Tables);
-    QVERIFY2(!lTables.contains("testtable2"), "testtable2 should be deleted during migration!");
+    success = migrator.execute("Migration No2", migrationContext, MigrationExecution::MigrationExecutionService::Down);
+    QVERIFY2(success, "Migration should work!");
+    tables = m_context.database().tables(QSql::Tables);
+    QVERIFY2(!tables.contains("testtable2"), "testtable2 should be deleted during migration!");
 }
 
 void BasicTest::testDropTableRevert()
@@ -297,15 +297,15 @@ void BasicTest::testDropTableRevert()
     migrationContext.setBaseMigrationTableService(m_context.baseMigrationTableService());
     migrationContext.setCommandServiceRepository(m_context.commandServiceRepository());
 
-    bool bSuccess = migrator.execute("Migration No1", migrationContext);
-    QVERIFY2(bSuccess, "migration should work!");
+    bool success = migrator.execute("Migration No1", migrationContext);
+    QVERIFY2(success, "migration should work!");
 
-    QStringList lTables = m_context.database().tables(QSql::Tables);
-    QVERIFY2(lTables.contains("testtable1"), "testtable should be created during migration!");
+    QStringList tables = m_context.database().tables(QSql::Tables);
+    QVERIFY2(tables.contains("testtable1"), "testtable should be created during migration!");
 
-    bSuccess = migrator.execute("Migration No2", migrationContext);
-    QVERIFY2(!bSuccess, "migration should fail!");
+    success = migrator.execute("Migration No2", migrationContext);
+    QVERIFY2(!success, "migration should fail!");
 
-    lTables = m_context.database().tables(QSql::Tables);
-    QVERIFY2(lTables.contains("testtable1"), "testtable should be recreated during rollback!");
+    tables = m_context.database().tables(QSql::Tables);
+    QVERIFY2(tables.contains("testtable1"), "testtable should be recreated during rollback!");
 }

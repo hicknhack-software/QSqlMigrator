@@ -53,19 +53,19 @@ bool MysqlCreateTableService::up(const Commands::ConstCommandPtr &command, Comma
     QSharedPointer<const Commands::CreateTable> createTable(command.staticCast<const Commands::CreateTable>());
 
     Helper::MysqlColumnService columnService;
-    QString sColumnDefinition = columnService.generateColumnDefinitionSql(createTable->table().columns());
+    QString columnDefinition = columnService.generateColumnDefinitionSql(createTable->table().columns());
 
-    QString sCreateQuery = QString("CREATE TABLE %1 (%2)")
+    QString createQuery = QString("CREATE TABLE %1 (%2)")
             .arg(Helper::MysqlQuoteService::quoteTableName(createTable->table().name())
-                 , sColumnDefinition);
+                 , columnDefinition);
 
-    bool bSuccess = CommandExecution::BaseCommandExecutionService::executeQuery(sCreateQuery, context);
+    bool success = CommandExecution::BaseCommandExecutionService::executeQuery(createQuery, context);
 
-    if (bSuccess && context.isUndoUsed()) {
+    if (success && context.isUndoUsed()) {
         context.setUndoCommand(Commands::CommandPtr(new Commands::DropTable(createTable->table())));
     }
 
-    return bSuccess;
+    return success;
 }
 
 bool MysqlCreateTableService::isUpValid(const Commands::ConstCommandPtr &command, const CommandExecutionContext &context) const

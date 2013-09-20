@@ -49,25 +49,25 @@ bool SqliteAlterColumnService::run(const Structure::Table &origTable, const Stru
     QString tempTableName = QString("%1%2").arg(context.migrationConfig().temporaryTablePrefix
                                                 , origTable.name());
 
-    bool bSuccess;
+    bool success;
     Commands::CommandPtr renameTable = Commands::CommandPtr(
                 new Commands::RenameTable(origTable.name(), tempTableName));
     SqliteRenameTableService renameTableService;
-    bSuccess = renameTableService.up(renameTable, context);
-    if (!bSuccess) {return false;}
+    success = renameTableService.up(renameTable, context);
+    if (!success) {return false;}
 
     Commands::CommandPtr createTable = Commands::CommandPtr(new Commands::CreateTable(newTable));
     SqliteCreateTableService createTableService;
-    bSuccess = createTableService.up(createTable, context);
-    if (!bSuccess) {return false;}
+    success = createTableService.up(createTable, context);
+    if (!success) {return false;}
 
     //TODO check is "SELECT colX as colY" statement is necessary!
-    QString sCopyQuery = QString("INSERT INTO %1 SELECT %2 FROM %3").arg(newTable.name()
+    QString copyQuery = QString("INSERT INTO %1 SELECT %2 FROM %3").arg(newTable.name()
                                                                          , origTable.joinedColumnNames()
                                                                          , tempTableName);
     ::qDebug() << "complete query-string looks like:";
-    ::qDebug() << sCopyQuery;
-    QSqlQuery query = context.database().exec(sCopyQuery);
+    ::qDebug() << copyQuery;
+    QSqlQuery query = context.database().exec(copyQuery);
     QSqlError error = query.lastError();
     if (error.isValid()) {
         ::qDebug() << Q_FUNC_INFO << error.text();
@@ -76,9 +76,9 @@ bool SqliteAlterColumnService::run(const Structure::Table &origTable, const Stru
 
     Commands::CommandPtr dropTable = Commands::CommandPtr(new Commands::DropTable(tempTableName));
     SqliteDropTableService dropTableService;
-    bSuccess = dropTableService.up(dropTable, context);
+    success = dropTableService.up(dropTable, context);
 
-    return bSuccess;
+    return success;
 }
 
 } // namespace CommandExecution

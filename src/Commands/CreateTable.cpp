@@ -35,8 +35,8 @@ CreateTable::CreateTable(const Structure::Table &table)
 
 const QString &CreateTable::typeName()
 {
-    static QString sTypename("CreateTable");
-    return sTypename;
+    static QString typeName("CreateTable");
+    return typeName;
 }
 
 const Structure::Table &CreateTable::table() const

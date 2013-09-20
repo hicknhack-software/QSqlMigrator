@@ -58,12 +58,12 @@ bool MysqlDropTableService::up(const Commands::ConstCommandPtr &command
     Helper::MysqlDbReader dbReader;
     Structure::Table origTable = dbReader.getTableDefinition(dropTable->tableName(), context);
 
-    QString sDropQuery = QString("DROP TABLE %1")
+    QString dropQuery = QString("DROP TABLE %1")
             .arg(Helper::MysqlQuoteService::quoteTableName(dropTable->tableName()));
 
-    bool bSuccess = CommandExecution::BaseCommandExecutionService::executeQuery(sDropQuery, context);
+    bool success = CommandExecution::BaseCommandExecutionService::executeQuery(dropQuery, context);
 
-    if (bSuccess) {
+    if (success) {
         if (dropTable->hasTable()) {
             context.setUndoCommand(Commands::CommandPtr(new Commands::CreateTable(dropTable->table())));
         } else {
@@ -71,7 +71,7 @@ bool MysqlDropTableService::up(const Commands::ConstCommandPtr &command
         }
     }
 
-    return bSuccess;
+    return success;
 }
 
 bool MysqlDropTableService::isUpValid(const Commands::ConstCommandPtr &command, const CommandExecutionContext &context) const

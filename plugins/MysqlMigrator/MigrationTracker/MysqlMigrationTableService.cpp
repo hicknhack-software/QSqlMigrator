@@ -57,15 +57,15 @@ QStringList MysqlMigrationTableService::migrationList(const CommandExecution::Co
     QSqlQuery sqlQuery = context.database().exec("SELECT version FROM "
                                                  + Helper::MysqlQuoteService::quoteTableName(versionTableName));
 
-    QStringList lMigrationList;
+    QStringList migrationList;
     if (sqlQuery.lastError().isValid()) {
         ::qDebug() << Q_FUNC_INFO << sqlQuery.lastError().text();
     } else {
         while (sqlQuery.next()) {
-            lMigrationList << sqlQuery.value(0).toString();
+            migrationList << sqlQuery.value(0).toString();
         }
     }
-    return lMigrationList;
+    return migrationList;
 }
 
 bool MysqlMigrationTableService::addMigration(const QString &migrationName

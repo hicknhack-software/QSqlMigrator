@@ -36,12 +36,12 @@ SqliteAddUser::SqliteAddUser(int id, const QString &userName, const QString &use
 
 bool SqliteAddUser::up(const QSqlDatabase &database) const
 {
-    QString sInsertQuery("INSERT INTO users (id, name, email, password_encrypted) VALUES ('%1', '%2', '%3', '%4')");
-    sInsertQuery = sInsertQuery.arg(m_id).arg(m_userName).arg(m_userMail).arg(m_password);
+    QString insertQuery("INSERT INTO users (id, name, email, password_encrypted) VALUES ('%1', '%2', '%3', '%4')");
+    insertQuery = insertQuery.arg(m_id).arg(m_userName).arg(m_userMail).arg(m_password);
 
     ::qDebug() << "complete query-string looks like:";
-    ::qDebug() << sInsertQuery;
-    QSqlQuery query = database.exec(sInsertQuery);
+    ::qDebug() << insertQuery;
+    QSqlQuery query = database.exec(insertQuery);
     QSqlError error = query.lastError();
     if (error.isValid()) {
          ::qDebug() << Q_FUNC_INFO << error.text();

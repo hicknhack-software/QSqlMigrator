@@ -67,18 +67,18 @@ bool MysqlDropColumnService::up(const Commands::ConstCommandPtr &command, Comman
         }
     }
 
-    QString sAlterQuery = QString("ALTER TABLE %1 DROP COLUMN %2")
+    QString alterQuery = QString("ALTER TABLE %1 DROP COLUMN %2")
             .arg(Helper::MysqlQuoteService::quoteTableName(dropColumn->tableName())
                  , Helper::MysqlQuoteService::quoteColumnName(dropColumn->columnName()));
 
-    bool bSuccess = CommandExecution::BaseCommandExecutionService::executeQuery(sAlterQuery, context);
+    bool success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
 
-    if (bSuccess && context.isUndoUsed()) {
+    if (success && context.isUndoUsed()) {
         context.setUndoCommand(Commands::CommandPtr(new Commands::AddColumn(*originalColumn
                                                                             , dropColumn->tableName())));
     }
 
-    return bSuccess;
+    return success;
 }
 
 bool MysqlDropColumnService::isUpValid(const Commands::ConstCommandPtr &command, const CommandExecution::CommandExecutionContext &context) const

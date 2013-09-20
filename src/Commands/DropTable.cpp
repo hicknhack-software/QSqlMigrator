@@ -53,8 +53,8 @@ const QString &DropTable::tableName() const
 
 const QString &DropTable::typeName()
 {
-    static QString sTypename("DropTable");
-    return sTypename;
+    static QString typeName("DropTable");
+    return typeName;
 }
 
 bool DropTable::hasTable() const

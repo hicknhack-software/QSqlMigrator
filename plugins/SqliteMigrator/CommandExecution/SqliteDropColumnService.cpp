@@ -63,29 +63,29 @@ bool SqliteDropColumnService::up(const Commands::ConstCommandPtr &command
     QString tempTableName = QString("%1%2").arg(context.migrationConfig().temporaryTablePrefix
                                                 , dropColumn->tableName());
 
-    bool bSuccess;
+    bool success;
     Commands::CommandPtr renameTable = Commands::CommandPtr(
                 new Commands::RenameTable(dropColumn->tableName(), tempTableName));
     SqliteRenameTableService renameTableService;
-    bSuccess = renameTableService.up(renameTable, context);
-    if (!bSuccess) {return false;}
+    success = renameTableService.up(renameTable, context);
+    if (!success) {return false;}
 
     Commands::CommandPtr createTable = Commands::CommandPtr(new Commands::CreateTable(table));
     SqliteCreateTableService createTableService;
-    bSuccess = createTableService.up(createTable, context);
-    if (!bSuccess) {return false;}
+    success = createTableService.up(createTable, context);
+    if (!success) {return false;}
 
-    QString sCopyQuery = QString("INSERT INTO %1 SELECT %2 FROM %3").arg(table.name()
+    QString copyQuery = QString("INSERT INTO %1 SELECT %2 FROM %3").arg(table.name()
                                                                          , table.joinedColumnNames()
                                                                          , tempTableName);
-    bSuccess = CommandExecution::BaseCommandExecutionService::executeQuery(sCopyQuery, context);
-    if (!bSuccess) {return false;}
+    success = CommandExecution::BaseCommandExecutionService::executeQuery(copyQuery, context);
+    if (!success) {return false;}
 
     Commands::CommandPtr dropTable = Commands::CommandPtr(new Commands::DropTable(tempTableName));
     SqliteDropTableService dropTableService;
-    bSuccess = dropTableService.up(dropTable, context);
+    success = dropTableService.up(dropTable, context);
 
-    return bSuccess;
+    return success;
 }
 
 bool SqliteDropColumnService::isUpValid(const Commands::ConstCommandPtr &command

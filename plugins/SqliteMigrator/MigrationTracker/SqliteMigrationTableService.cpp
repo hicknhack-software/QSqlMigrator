@@ -59,15 +59,15 @@ QStringList SqliteMigrationTableService::migrationList(const CommandExecutionCon
     QSqlQuery query = context.database().exec("SELECT version FROM "
                                               + versionTableName);
 
-    QStringList lMigrationList;
+    QStringList migrationList;
     if (query.lastError().isValid()) {
         ::qDebug() << Q_FUNC_INFO << query.lastError().text();
     } else {
         while (query.next()) {
-            lMigrationList << query.value(0).toString();
+            migrationList << query.value(0).toString();
         }
     }
-    return lMigrationList;
+    return migrationList;
 }
 
 bool SqliteMigrationTableService::addMigration(const QString &migrationName, const CommandExecutionContext &context

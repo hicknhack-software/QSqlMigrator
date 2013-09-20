@@ -41,8 +41,8 @@ AddColumn::AddColumn(const Structure::Column &column, const QString &tableName)
 
 const QString &AddColumn::typeName()
 {
-    static QString sTypename("AddColumn");
-    return sTypename;
+    static QString typeName("AddColumn");
+    return typeName;
 }
 
 const QString &AddColumn::tableName() const

@@ -45,9 +45,9 @@ bool SqliteRenameTableService::up(const Commands::ConstCommandPtr &command, Comm
 {
     QSharedPointer<const Commands::RenameTable> renameTable(command.staticCast<const Commands::RenameTable>());
 
-    QString sAlterQuery = QString("ALTER TABLE %1 RENAME TO %2").arg(renameTable->name(), renameTable->newName());
+    QString alterQuery = QString("ALTER TABLE %1 RENAME TO %2").arg(renameTable->name(), renameTable->newName());
 
-    return CommandExecution::BaseCommandExecutionService::executeQuery(sAlterQuery, context);
+    return CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
 }
 
 bool SqliteRenameTableService::isUpValid(const Commands::ConstCommandPtr &command, const CommandExecution::CommandExecutionContext &context) const

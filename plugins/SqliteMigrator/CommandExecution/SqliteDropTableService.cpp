@@ -48,9 +48,9 @@ const QString &SqliteDropTableService::commandType() const
 bool SqliteDropTableService::up(const Commands::ConstCommandPtr &command, CommandExecution::CommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::DropTable> dropTable(command.staticCast<const Commands::DropTable>());
-    QString sDropQuery = QString("DROP TABLE %1").arg(dropTable->tableName());
+    QString dropQuery = QString("DROP TABLE %1").arg(dropTable->tableName());
 
-    return CommandExecution::BaseCommandExecutionService::executeQuery(sDropQuery, context);
+    return CommandExecution::BaseCommandExecutionService::executeQuery(dropQuery, context);
 }
 
 bool SqliteDropTableService::isUpValid(const Commands::ConstCommandPtr &command, const CommandExecution::CommandExecutionContext &context) const

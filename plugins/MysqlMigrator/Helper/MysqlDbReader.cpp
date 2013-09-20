@@ -43,36 +43,36 @@ Structure::Table MysqlDbReader::getTableDefinition(const QString &tableName
                                                    , const CommandExecution::CommandExecutionContext &context) const
 {
     Table table = Table(tableName);
-    QString sQueryString = QString("DESCRIBE %1").arg(tableName);
-    QSqlQuery query = context.database().exec(sQueryString);
+    QString queryString = QString("DESCRIBE %1").arg(tableName);
+    QSqlQuery query = context.database().exec(queryString);
     QSqlError error = query.lastError();
     if (error.isValid()) {
         ::qDebug() << Q_FUNC_INFO << error.text();
     } else {
         while (query.next()) {
-            QString sName = query.value(0).toString();
-            QString sType = query.value(1).toString();
-            bool bNull = query.value(2).toBool();
-            QString sKey = query.value(3).toString();
-            QString sDefaultValue = query.value(4).toString();
-            QString sExtra = query.value(5).toString();
+            QString name = query.value(0).toString();
+            QString type = query.value(1).toString();
+            bool null = query.value(2).toBool();
+            QString key = query.value(3).toString();
+            QString defaultValue = query.value(4).toString();
+            QString extra = query.value(5).toString();
 
             Column::Attributes attr = Column::None;
-            if (!bNull) {
+            if (!null) {
                 attr |= Column::NotNullable;
             }
-            if (sKey == "PRI") {
+            if (key == "PRI") {
                 attr |= Column::Primary;
-            } else if (sKey == "UNI") {
+            } else if (key == "UNI") {
                 attr |= Column::Unique;
             }
-            if (sExtra == "auto_increment") {
+            if (extra == "auto_increment") {
                 attr |= Column::AutoIncrement;
             }
 
-            Column col = Column(sName, sType, attr);
-            if (!sDefaultValue.isEmpty()) {
-                col.setDefault(sDefaultValue);
+            Column col = Column(name, type, attr);
+            if (!defaultValue.isEmpty()) {
+                col.setDefault(defaultValue);
             }
             table.add(col);
         }

@@ -43,30 +43,30 @@ Table SqliteDbReader::getTableDefinition(const QString &tableName
                                          ,const CommandExecution::CommandExecutionContext &context) const
 {
     Table table = Table(tableName);
-    QString sQueryString = QString("PRAGMA table_info(%1)").arg(tableName);
-    QSqlQuery query = context.database().exec(sQueryString);
+    QString queryString = QString("PRAGMA table_info(%1)").arg(tableName);
+    QSqlQuery query = context.database().exec(queryString);
     QSqlError error = query.lastError();
     if (error.isValid()) {
         ::qDebug() << Q_FUNC_INFO << error.text();
     } else {
         while (query.next()) {
-            QString sName = query.value(1).toString();
-            QString sType = query.value(2).toString();
-            bool bNotNull = query.value(3).toBool();
-            QString sDefaultValue = query.value(4).toString();
-            bool bPrimaryKey = query.value(5).toBool();
+            QString name = query.value(1).toString();
+            QString type = query.value(2).toString();
+            bool notNull = query.value(3).toBool();
+            QString defaultValue = query.value(4).toString();
+            bool primaryKey = query.value(5).toBool();
 
             Column::Attributes attr = Column::None;
-            if (bNotNull) {
+            if (notNull) {
                 attr |= Column::NotNullable;
             }
-            if (bPrimaryKey) {
+            if (primaryKey) {
                 attr |= Column::Primary;
             }
 
-            Column col = Column(sName, sType, attr);
-            if (!sDefaultValue.isEmpty()) {
-                col.setDefault(sDefaultValue);
+            Column col = Column(name, type, attr);
+            if (!defaultValue.isEmpty()) {
+                col.setDefault(defaultValue);
             }
             table.add(col);
         }

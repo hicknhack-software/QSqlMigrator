@@ -51,10 +51,10 @@ bool SqliteCreateTableService::up(const Commands::ConstCommandPtr &command
     QSharedPointer<const Commands::CreateTable> createTable(command.staticCast<const Commands::CreateTable>());
 
     Helper::SqliteColumnService columnService;
-    QString sColumnDefinition = columnService.generateColumnDefinitionSql(createTable->table().columns());
-    QString sCreateQuery = QString("CREATE TABLE %1 (%2)").arg(createTable->table().name(), sColumnDefinition);
+    QString columnDefinition = columnService.generateColumnDefinitionSql(createTable->table().columns());
+    QString createQuery = QString("CREATE TABLE %1 (%2)").arg(createTable->table().name(), columnDefinition);
 
-    return CommandExecution::BaseCommandExecutionService::executeQuery(sCreateQuery, context);
+    return CommandExecution::BaseCommandExecutionService::executeQuery(createQuery, context);
 }
 
 

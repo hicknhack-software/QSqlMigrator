@@ -45,8 +45,8 @@ RenameTable::RenameTable(const QString &name, const QString &newName)
 
 const QString &RenameTable::typeName()
 {
-    static QString sTypename("RenameTable");
-    return sTypename;
+    static QString typeName("RenameTable");
+    return typeName;
 }
 
 const QString &RenameTable::name() const

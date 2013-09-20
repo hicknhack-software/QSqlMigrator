@@ -52,12 +52,12 @@ bool MysqlAddColumnService::up(const Commands::ConstCommandPtr &command
     QSharedPointer<const Commands::AddColumn> addColumn(command.staticCast<const Commands::AddColumn>());
 
     Helper::MysqlColumnService columnService;
-    QString sColumnDefinition = columnService.generateColumnDefinitionSql(addColumn->column());
-    QString sAlterQuery = QString("ALTER TABLE %1 ADD COLUMN %2")
+    QString columnDefinition = columnService.generateColumnDefinitionSql(addColumn->column());
+    QString alterQuery = QString("ALTER TABLE %1 ADD COLUMN %2")
             .arg(Helper::MysqlQuoteService::quoteTableName(addColumn->tableName())
-                 , sColumnDefinition);
+                 , columnDefinition);
 
-    return CommandExecution::BaseCommandExecutionService::executeQuery(sAlterQuery, context);
+    return CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
 }
 
 bool MysqlAddColumnService::isUpValid(const Commands::ConstCommandPtr &command

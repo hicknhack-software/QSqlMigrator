@@ -67,23 +67,23 @@ bool MysqlRenameColumnService::up(const Commands::ConstCommandPtr &command
     }
 
     Helper::MysqlColumnService columnService;
-    QString sColumnDefinition = columnService.generateColumnDefinitionSql(*modifiedColumn);
+    QString columnDefinition = columnService.generateColumnDefinitionSql(*modifiedColumn);
 
-    QString sAlterQuery = QString("ALTER TABLE %1 CHANGE COLUMN %2 %3")
+    QString alterQuery = QString("ALTER TABLE %1 CHANGE COLUMN %2 %3")
             .arg(Helper::MysqlQuoteService::quoteTableName(renameColumn->tableName())
                  , renameColumn->name()
-                 , sColumnDefinition);
+                 , columnDefinition);
 
-    bool bSuccess = CommandExecution::BaseCommandExecutionService::executeQuery(sAlterQuery, context);
+    bool success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
 
-    if (bSuccess && context.isUndoUsed()) {
+    if (success && context.isUndoUsed()) {
         context.setUndoCommand(Commands::CommandPtr(new Commands::RenameColumn(
                                                         renameColumn->newName()
                                                         , renameColumn->name()
                                                         , renameColumn->tableName())));
     }
 
-    return bSuccess;
+    return success;
 }
 
 bool MysqlRenameColumnService::isUpValid(const Commands::ConstCommandPtr &command

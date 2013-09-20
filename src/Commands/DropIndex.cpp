@@ -59,8 +59,8 @@ const Structure::Index &DropIndex::index() const
 
 const QString &DropIndex::typeName()
 {
-    static QString sTypename("DropIndex");
-    return sTypename;
+    static QString typeName("DropIndex");
+    return typeName;
 }
 
 const QString &DropIndex::name() const

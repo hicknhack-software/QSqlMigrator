@@ -48,11 +48,11 @@ bool MysqlRenameTableService::up(const Commands::ConstCommandPtr &command
 {
     QSharedPointer<const Commands::RenameTable> renameTable(command.staticCast<const Commands::RenameTable>());
 
-    QString sAlterQuery = QString("ALTER TABLE %1 RENAME TO %2")
+    QString alterQuery = QString("ALTER TABLE %1 RENAME TO %2")
             .arg(Helper::MysqlQuoteService::quoteTableName(renameTable->name())
                  , Helper::MysqlQuoteService::quoteTableName(renameTable->newName()));
 
-    return CommandExecution::BaseCommandExecutionService::executeQuery(sAlterQuery, context);
+    return CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
 }
 
 bool MysqlRenameTableService::isUpValid(const Commands::ConstCommandPtr &command

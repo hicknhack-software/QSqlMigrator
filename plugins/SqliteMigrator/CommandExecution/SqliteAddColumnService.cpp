@@ -51,10 +51,10 @@ bool SqliteAddColumnService::up(const Commands::ConstCommandPtr &command
     QSharedPointer<const Commands::AddColumn> addColumn(command.staticCast<const Commands::AddColumn>());
 
     Helper::SqliteColumnService columnService;
-    QString sColumnDefinition = columnService.generateColumnDefinitionSql(addColumn->column());
-    QString sAlterQuery = QString("ALTER TABLE %1 ADD COLUMN %2").arg(addColumn->tableName(), sColumnDefinition);
+    QString columnDefinition = columnService.generateColumnDefinitionSql(addColumn->column());
+    QString alterQuery = QString("ALTER TABLE %1 ADD COLUMN %2").arg(addColumn->tableName(), columnDefinition);
 
-    return CommandExecution::BaseCommandExecutionService::executeQuery(sAlterQuery, context);
+    return CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
 }
 
 bool SqliteAddColumnService::isUpValid(const Commands::ConstCommandPtr &command
