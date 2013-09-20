@@ -63,7 +63,7 @@ QSharedPointer<CommandExecution::CommandExecutionServiceRepository> SQLITEMIGRAT
  * db.setDatabaseName("sample_db.sqlite3");
  *
  * if(SqliteMigrator::buildContext(c, db)) {
- *      // do something with the context
+ *      // do something
  * }
  *
  */

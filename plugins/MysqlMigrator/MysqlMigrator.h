@@ -32,15 +32,15 @@
 
 
 #ifndef MYSQLMIGRATOR_DLL_EXPORT
-# ifdef Q_OS_WIN
-# ifdef _BUILDING_MYSQLMIGRATOR_DLL
-# define MYSQLMIGRATOR_DLL_EXPORT __declspec(dllexport)
-# else
-# define MYSQLMIGRATOR_DLL_EXPORT __declspec(dllimport)
-# endif
-# else
-# define MYSQLMIGRATOR_DLL_EXPORT __attribute__ ((visibility("default")))
-# endif // Q_OS_WIN
+#   ifdef Q_OS_WIN
+#       ifdef _BUILDING_MYSQLMIGRATOR_DLL
+#           define MYSQLMIGRATOR_DLL_EXPORT __declspec(dllexport)
+#       else
+#           define MYSQLMIGRATOR_DLL_EXPORT __declspec(dllimport)
+#       endif
+#   else
+#       define MYSQLMIGRATOR_DLL_EXPORT __attribute__ ((visibility("default")))
+#   endif // Q_OS_WIN
 #endif // QX_DLL_EXPORT_HELPER
 
 
@@ -52,6 +52,25 @@ namespace MysqlMigrator {
 
 QSharedPointer<CommandExecution::CommandExecutionServiceRepository> MYSQLMIGRATOR_DLL_EXPORT commandServiceRepository();
 
+/*!
+ * \brief   Use this function to setup your excution context for mysql migrations.
+ *
+ * Example:
+ *
+ * context c( ... );  // ... have a look at his interface
+ *
+ * QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
+ * db.setHostName(HOSTNAME);
+ * db.setPort(HOSTPORT);
+ * db.setUserName(USERNAME);
+ * db.setPassword(PASSWORD);
+ * db.setDatabaseName(DATABASE_NAME);
+ *
+ * if(MysqlMigrator::buildContext(c, db)) {
+ *      // do something
+ * }
+ *
+ */
 bool MYSQLMIGRATOR_DLL_EXPORT buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDatabase database);
 
 } // namespace MysqlMigrator

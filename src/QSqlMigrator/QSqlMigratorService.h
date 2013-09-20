@@ -44,7 +44,9 @@ namespace QSqlMigrator {
  * if( ! missingMigrations(c).empty() ) exit(1);
  * if( ! unappliedMigrations(c).empty() ) {
  *    DatabaseLock lock(c);
- *    applyAll(c);
+ *    if(lock)
+ *      applyAll(c);
+ *
  *    // or exit(1);
  * }
  * // here all migrations are applied
