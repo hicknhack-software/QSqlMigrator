@@ -57,7 +57,7 @@ QSharedPointer<CommandExecution::CommandExecutionServiceRepository> MYSQLMIGRATO
  *
  * Example:
  *
- * context c( ... );  // ... have a look at his interface
+ * context c;
  *
  * QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
  * db.setHostName(HOSTNAME);

@@ -57,7 +57,7 @@ QSharedPointer<CommandExecution::CommandExecutionServiceRepository> SQLITEMIGRAT
  *
  * Example:
  *
- * MigrationExecutionContext c( ... );  // ... have a look at his interface
+ * context c;
  *
  * QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
  * db.setDatabaseName("sample_db.sqlite3");

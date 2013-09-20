@@ -41,20 +41,23 @@ namespace SqliteMigrator {
 
 class RefreshLockIsLivingInvoker;
 
-// OPEN:
-// P1: what are good default times?
+// TODO:
+// P1: what are good default time values?
 // P2: do the user need the option to set a own timeout?
 
 /*!
- * \brief   The DatabaseLock trys to lock a database for this QSqlMigritor processes.
+ * \brief   The DatabaseLock try to lock a database for this QSqlMigrator process.
  *          You have to check if you got the lock ( see example with operator bool ).
  *
- *          The lock will be automatically released on deconstruction.
+ *          The lock will be done with a lock-file in the same folder where the db
+ *          is locatded.
+ *
+ *          The lock will automatically released on deconstruction.
  *
  * Example:
  *
  * unsigned int timeOutToGetLock = 60;
- * context c;
+ * context c( ... );
  * DatabaseLock lock(c, timeOutToGetLock);
  * if(lock) {
  *    // do mirgration stuff
@@ -65,7 +68,7 @@ class SQLITEMIGRATOR_DLL_EXPORT DatabaseLock : public QObject
 {
     Q_OBJECT
 
-    // P1: what are good default times?
+    // P1: what are good default time values?
     enum IN_SEC
     {
         tryGetLockInterval = 1,
@@ -78,7 +81,7 @@ public:
     /*! try to make a lock for the database in the context */                         // P2: do the user need the option to set a own timeout?
     DatabaseLock(MigrationExecution::MigrationExecutionContext &context, unsigned int timeOutTryGetLock = timeOut);
 
-    /*! return true if the lock is successful set for this process */
+    /*! return true if the lock is successfully set for this process */
     operator bool () const;
 
     /*! auto release the own lock */
