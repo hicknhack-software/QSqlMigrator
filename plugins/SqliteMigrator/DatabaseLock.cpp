@@ -99,7 +99,7 @@ QString DatabaseLock::buildLockFileName(const MigrationExecution::MigrationExecu
 QString DatabaseLock::ownProcessInfo() const
 {
     static const QString pid = "PID:";
-    return pid + m_uuid;
+    return pid + m_uuid.toString();
 }
 
 bool DatabaseLock::tryMakeWaitForLock() const
