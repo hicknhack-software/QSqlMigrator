@@ -37,6 +37,6 @@ Hint: Our tests include instructions to create the qt sql driver plugin
 Tests
 -----
 
-All tests are tight to the appropriate source modules.
+All tests are tied to the appropriate source modules.
 They will run automatically after they have been built and therefore the build will fail if the tests do not run successfully.
 Some tests require some configuration options to access the database under test.
