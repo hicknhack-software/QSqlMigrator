@@ -72,7 +72,7 @@ private:
      MigrationExecutionConfig m_migrationConfig;
      CommandServiceRepositoryPtr m_commandServiceRepository;
      QSqlDatabase m_database;
-     MigrationTableServicePtr m_migrtaionTableService;
+     MigrationTableServicePtr m_migrationTableService;
 };
 
 } // namespace MigrationExecution

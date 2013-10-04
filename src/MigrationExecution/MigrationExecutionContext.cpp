@@ -65,7 +65,7 @@ CommandServiceRepositoryPtr MigrationExecutionContext::commandServiceRepository(
 
 MigrationTableServicePtr MigrationExecutionContext::baseMigrationTableService() const
 {
-    return m_migrtaionTableService;
+    return m_migrationTableService;
 }
 
 void MigrationExecutionContext::setDatabase(QSqlDatabase database)
@@ -80,7 +80,7 @@ void MigrationExecutionContext::setCommandServiceRepository(CommandServiceReposi
 
 void MigrationExecutionContext::setBaseMigrationTableService(MigrationTableServicePtr baseMigrationTableService)
 {
-    m_migrtaionTableService = baseMigrationTableService;
+    m_migrationTableService = baseMigrationTableService;
 }
 
 } // namespace MigrationExecution
