@@ -25,6 +25,8 @@
 ****************************************************************************/
 #include "BasicTest.h"
 
+#include <QScopedPointer>
+
 using namespace Structure;
 using namespace Migrations;
 using namespace MigrationExecution;
@@ -111,7 +113,7 @@ void BasicTest::testTransaction()
     QMap<QString, const Migration*> migrationMap;
     migrationMap["Migration No1"] = &m;
     migrationMap["Migration No2"] = &m2;
-    MigrationExecutionConfig *migrationConfig = new MigrationExecutionConfig;
+    QScopedPointer<MigrationExecutionConfig> migrationConfig(new MigrationExecutionConfig);
     MigrationExecutionContext migrationContext(migrationMap, *migrationConfig);
     migrationContext.setDatabase(m_context.database());
     migrationContext.setBaseMigrationTableService(m_context.baseMigrationTableService());
@@ -215,7 +217,7 @@ void BasicTest::testUndoDropTable()
     QMap<QString, const Migration*> migrationMap;
     migrationMap["Migration No1"] = &m;
     migrationMap["Migration No2"] = &m2;
-    MigrationExecutionConfig *migrationConfig = new MigrationExecutionConfig;
+    QScopedPointer<MigrationExecutionConfig> migrationConfig(new MigrationExecutionConfig);
     MigrationExecutionContext migrationContext(migrationMap, *migrationConfig);
     migrationContext.setDatabase(m_context.database());
     migrationContext.setBaseMigrationTableService(m_context.baseMigrationTableService());
@@ -253,7 +255,7 @@ void BasicTest::testMigrationDirections()
     QMap<QString, const Migration*> migrationMap;
     migrationMap["Migration No1"] = &m;
     migrationMap["Migration No2"] = &m2;
-    MigrationExecutionConfig *migrationConfig = new MigrationExecutionConfig;
+    QScopedPointer<MigrationExecutionConfig> migrationConfig(new MigrationExecutionConfig);
     MigrationExecutionContext migrationContext(migrationMap, *migrationConfig);
     migrationContext.setDatabase(m_context.database());
     migrationContext.setBaseMigrationTableService(m_context.baseMigrationTableService());
@@ -291,7 +293,7 @@ void BasicTest::testDropTableRevert()
     QMap<QString, const Migration*> migrationMap;
     migrationMap["Migration No1"] = &m;
     migrationMap["Migration No2"] = &m2;
-    MigrationExecutionConfig *migrationConfig = new MigrationExecutionConfig;
+    QScopedPointer<MigrationExecutionConfig> migrationConfig(new MigrationExecutionConfig);
     MigrationExecutionContext migrationContext(migrationMap, *migrationConfig);
     migrationContext.setDatabase(m_context.database());
     migrationContext.setBaseMigrationTableService(m_context.baseMigrationTableService());

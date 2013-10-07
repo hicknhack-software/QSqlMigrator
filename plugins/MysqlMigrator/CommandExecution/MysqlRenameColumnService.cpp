@@ -36,6 +36,7 @@
 
 #include <QDebug>
 #include <QStringList>
+#include <QScopedPointer>
 
 namespace CommandExecution {
 
@@ -55,10 +56,10 @@ bool MysqlRenameColumnService::up(const Commands::ConstCommandPtr &command
 
     Helper::MysqlDbReader dbReader;
     Structure::Table origTable = dbReader.getTableDefinition(renameColumn->tableName(), context);
-    Structure::Column *modifiedColumn;
+    QScopedPointer<Structure::Column> modifiedColumn;
     foreach (Structure::Column column, origTable.columns()) {
         if (column.name() == renameColumn->name()) {
-            modifiedColumn = new Structure::Column(renameColumn->newName(), column.sqlType(), column.attributes());
+            modifiedColumn.reset(new Structure::Column(renameColumn->newName(), column.sqlType(), column.attributes()));
             if (column.hasDefaultValue()) {
                 modifiedColumn->setDefault(column.defaultValue());
             }

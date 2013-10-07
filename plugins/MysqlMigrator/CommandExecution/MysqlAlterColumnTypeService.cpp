@@ -35,6 +35,7 @@
 
 #include <QDebug>
 #include <QStringList>
+#include <QScopedPointer>
 
 namespace CommandExecution {
 
@@ -55,11 +56,11 @@ bool MysqlAlterColumnTypeService::up(const Commands::ConstCommandPtr &command
     Helper::MysqlDbReader dbReader;
     Structure::Table origTable = dbReader.getTableDefinition(alterColumnType->tableName(), context);
     QString originalType;
-    Structure::Column *modifiedColumn;
+    QScopedPointer<Structure::Column> modifiedColumn;
     foreach (Structure::Column column, origTable.columns()) {
         if (column.name() == alterColumnType->columnName()) {
             originalType = column.sqlType();
-            modifiedColumn = new Structure::Column(column.name(), alterColumnType->newType(), column.attributes());
+            modifiedColumn.reset(new Structure::Column(column.name(), alterColumnType->newType(), column.attributes()));
             if (column.hasDefaultValue()) {
                 modifiedColumn->setDefault(column.defaultValue());
             }

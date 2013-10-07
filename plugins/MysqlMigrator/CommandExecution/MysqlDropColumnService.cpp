@@ -38,6 +38,7 @@
 
 #include <QDebug>
 #include <QStringList>
+#include <QScopedPointer>
 
 namespace CommandExecution {
 
@@ -56,10 +57,10 @@ bool MysqlDropColumnService::up(const Commands::ConstCommandPtr &command, Comman
 
     Helper::MysqlDbReader dbReader;
     Structure::Table origTable = dbReader.getTableDefinition(dropColumn->tableName(), context);
-    Structure::Column *originalColumn;
+    QScopedPointer<Structure::Column> originalColumn;
     foreach (Structure::Column column, origTable.columns()) {
         if (column.name() == dropColumn->columnName()) {
-            originalColumn = new Structure::Column(column.name(), column.sqlType(), column.attributes());
+            originalColumn.reset(new Structure::Column(column.name(), column.sqlType(), column.attributes()));
             if (column.hasDefaultValue()) {
                 originalColumn->setDefault(column.defaultValue());
             }
