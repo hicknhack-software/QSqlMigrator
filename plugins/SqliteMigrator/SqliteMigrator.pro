@@ -8,7 +8,7 @@ QT       += sql
 QT       -= gui
 
 TEMPLATE = lib
-CONFIG += dll
+CONFIG += dll debug_and_release
 DEFINES += _BUILDING_SQLITEMIGRATOR_DLL
 
 QSQLMIGRATOR_ROOT = $$quote($$PWD)/../..
