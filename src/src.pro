@@ -8,7 +8,7 @@ QT       += core sql
 QT       -= gui
 
 TEMPLATE = lib
-CONFIG += dll
+CONFIG += dll debug_and_release
 DEFINES += _BUILDING_QSQLMIGRATOR_DLL
 DEFINES += LOG_PREFIX=\\\"[QSqlMigrator]\\\"
 
@@ -18,7 +18,6 @@ DESTDIR = $$LIB_PATH
 
 INCLUDEPATH += $$QSQLMIGRATOR_ROOT/src
 
-#its the same target for each os
 CONFIG(release, debug|release): TARGET = QSqlMigrator
 else:CONFIG(debug, debug|release): TARGET = QSqlMigratord
 

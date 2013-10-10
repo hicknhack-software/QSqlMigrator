@@ -5,11 +5,10 @@
 #-------------------------------------------------
 
 QT       += sql
-
 QT       -= gui
 
 TEMPLATE = lib
-CONFIG += dll
+CONFIG += dll debug_and_release
 DEFINES += _BUILDING_MYSQLMIGRATOR_DLL
 
 QSQLMIGRATOR_ROOT = $$quote($$PWD)/../..
@@ -21,7 +20,6 @@ unix: LIBS += -L$$LIB_PATH -Wl,-rpath,$$LIB_PATH
 
 INCLUDEPATH += $$QSQLMIGRATOR_ROOT/plugins
 
-#its the same target for each os
 CONFIG(release, debug|release): TARGET = MysqlMigrator
 else:CONFIG(debug, debug|release): TARGET = MysqlMigratord
 
