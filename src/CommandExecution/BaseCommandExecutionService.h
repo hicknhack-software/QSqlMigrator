@@ -31,6 +31,7 @@
 #include "config.h"
 
 #include <QString>
+#include <QSharedPointer>
 
 namespace CommandExecution {
 
@@ -40,15 +41,13 @@ typedef QSharedPointer<BaseCommandExecutionService> BaseCommandServicePtr;
 class QSQLMIGRATOR_DLL_EXPORT BaseCommandExecutionService
 {
 public:
+    BaseCommandExecutionService();
     virtual ~BaseCommandExecutionService() {}
 
     virtual const QString &commandType() const = 0;
 
-    virtual bool up(const Commands::ConstCommandPtr &command, CommandExecutionContext &context) const = 0;
-    virtual bool isUpValid(const Commands::ConstCommandPtr &command, const CommandExecutionContext &context) const = 0;
-
-    virtual bool down(const Commands::ConstCommandPtr &command, CommandExecutionContext &context) const;
-    virtual bool isDownValid(const Commands::ConstCommandPtr &command, const CommandExecutionContext &context) const;
+    virtual bool execute(const Commands::ConstCommandPtr &command, CommandExecutionContext &context) const = 0;
+    virtual bool isValid(const Commands::ConstCommandPtr &command, const CommandExecutionContext &context) const = 0;
 
 protected:
     bool executeQuery(const QString &queryString, const CommandExecutionContext &context) const;

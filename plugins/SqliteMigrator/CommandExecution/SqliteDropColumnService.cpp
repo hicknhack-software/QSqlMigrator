@@ -25,13 +25,12 @@
 ****************************************************************************/
 #include "SqliteMigrator/CommandExecution/SqliteDropColumnService.h"
 
-#include "SqliteMigrator/CommandExecution/SqliteAddColumnService.h"
-#include "SqliteMigrator/CommandExecution/SqliteCreateTableService.h"
-#include "SqliteMigrator/CommandExecution/SqliteDropTableService.h"
-#include "SqliteMigrator/CommandExecution/SqliteRenameTableService.h"
-#include "SqliteMigrator/Helper/SqliteDbReader.h"
+#include "SqliteMigrator/Helper/SqliteDbReaderService.h"
 
-#include "Commands/AddColumn.h"
+#include "BaseSqlMigrator/CommandExecution/BaseSqlRenameTableService.h"
+#include "BaseSqlMigrator/CommandExecution/BaseSqlCreateTableService.h"
+#include "BaseSqlMigrator/CommandExecution/BaseSqlDropTableService.h"
+
 #include "Commands/CreateTable.h"
 #include "Commands/DropColumn.h"
 #include "Commands/DropTable.h"
@@ -43,21 +42,14 @@
 namespace CommandExecution {
 
 SqliteDropColumnService::SqliteDropColumnService()
-{
-}
+{}
 
-const QString &SqliteDropColumnService::commandType() const
-{
-    return Commands::DropColumn::typeName();
-}
-
-bool SqliteDropColumnService::up(const Commands::ConstCommandPtr &command
+bool SqliteDropColumnService::execute(const Commands::ConstCommandPtr &command
                                  , CommandExecution::CommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::DropColumn> dropColumn(command.staticCast<const Commands::DropColumn>());
 
-    Helper::SqliteDbReader dbReader;
-    Structure::Table table = dbReader.getTableDefinition(dropColumn->tableName(), context);
+    Structure::Table table = context.helperAggregate().dbReaderService->getTableDefinition(dropColumn->tableName(), context.database());
     table = Structure::Table::copyWithoutColumn(table, dropColumn->columnName());
 
     QString tempTableName = QString("%1%2").arg(context.migrationConfig().temporaryTablePrefix
@@ -66,63 +58,30 @@ bool SqliteDropColumnService::up(const Commands::ConstCommandPtr &command
     bool success;
     Commands::CommandPtr renameTable = Commands::CommandPtr(
                 new Commands::RenameTable(dropColumn->tableName(), tempTableName));
-    SqliteRenameTableService renameTableService;
-    success = renameTableService.up(renameTable, context);
-    if (!success) {return false;}
+
+    BaseSqlRenameTableService renameTableService;
+    success = renameTableService.execute(renameTable, context);
+    if (!success)
+        return false;
 
     Commands::CommandPtr createTable = Commands::CommandPtr(new Commands::CreateTable(table));
-    SqliteCreateTableService createTableService;
-    success = createTableService.up(createTable, context);
-    if (!success) {return false;}
+    BaseSqlCreateTableService createTableService;
+    success = createTableService.execute(createTable, context);
+    if (!success)
+        return false;
 
     QString copyQuery = QString("INSERT INTO %1 SELECT %2 FROM %3").arg(table.name()
                                                                          , table.joinedColumnNames()
                                                                          , tempTableName);
     success = CommandExecution::BaseCommandExecutionService::executeQuery(copyQuery, context);
-    if (!success) {return false;}
+    if (!success)
+        return false;
 
     Commands::CommandPtr dropTable = Commands::CommandPtr(new Commands::DropTable(tempTableName));
-    SqliteDropTableService dropTableService;
-    success = dropTableService.up(dropTable, context);
+    BaseSqlDropTableService dropTableService;
+    success = dropTableService.execute(dropTable, context);
 
     return success;
-}
-
-bool SqliteDropColumnService::isUpValid(const Commands::ConstCommandPtr &command
-                                        , const CommandExecution::CommandExecutionContext &context) const
-{
-    QSharedPointer<const Commands::DropColumn> dropColumn(command.staticCast<const Commands::DropColumn>());
-
-    //check if table exists
-    if (!context.database().tables().contains(dropColumn->tableName())) {
-        ::qWarning() << "table doesn't exist!";
-        return false;
-    }
-    return true;
-}
-
-bool SqliteDropColumnService::down(const Commands::ConstCommandPtr &command
-                                   , CommandExecution::CommandExecutionContext &context) const
-{
-    QSharedPointer<const Commands::DropColumn> dropColumn(command.staticCast<const Commands::DropColumn>());
-    SqliteAddColumnService addColumnService;
-    return addColumnService.up(Commands::CommandPtr(new Commands::AddColumn(dropColumn->column()
-                                                                            , dropColumn->tableName()))
-                               , context);
-    return false;
-}
-
-bool SqliteDropColumnService::isDownValid(const Commands::ConstCommandPtr &command
-                                          , const CommandExecution::CommandExecutionContext &context) const
-{
-    Q_UNUSED(context);
-
-    QSharedPointer<const Commands::DropColumn> dropColumn(command.staticCast<const Commands::DropColumn>());
-    if (!dropColumn->hasColumn()) {
-        ::qWarning() << "Column information not complete! Migrating down is not possible!";
-        return false;
-    }
-    return true;
 }
 
 } // namespace CommandExecution

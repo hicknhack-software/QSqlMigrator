@@ -54,6 +54,11 @@ const QString &RenameColumn::typeName()
     return typeName;
 }
 
+CommandPtr RenameColumn::reverse() const
+{
+    return CommandPtr(new RenameColumn(newName(), name(), tableName()));
+}
+
 const QString &RenameColumn::name() const
 {
     return m_name;

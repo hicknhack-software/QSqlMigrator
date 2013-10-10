@@ -25,6 +25,8 @@
 ****************************************************************************/
 #include "DropIndex.h"
 
+#include "Commands/CreateIndex.h"
+
 #include <QDebug>
 
 namespace Commands {
@@ -61,6 +63,13 @@ const QString &DropIndex::typeName()
 {
     static QString typeName("DropIndex");
     return typeName;
+}
+
+CommandPtr DropIndex::reverse() const
+{
+    if (!hasIndex())
+        return CommandPtr();
+    return CommandPtr(new CreateIndex(index()));
 }
 
 const QString &DropIndex::name() const

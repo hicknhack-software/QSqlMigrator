@@ -42,6 +42,7 @@ public:
     const QString &columnName() const;
     const QString &tableName() const;
     static const QString &typeName();
+    CommandPtr reverse() const;
 
 private:
     const Structure::Column m_column;

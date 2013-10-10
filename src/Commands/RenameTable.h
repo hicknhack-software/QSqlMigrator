@@ -38,6 +38,7 @@ public:
     static const QString &typeName();
     const QString &name() const;
     const QString &newName() const;
+    CommandPtr reverse() const;
 
 private:
     QString m_name;

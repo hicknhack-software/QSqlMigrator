@@ -38,8 +38,8 @@ public:
     const QString &commandType() const;
 
     //INFO: modify up() and down() to be not const, if it is necessary to put UndoCommands into the context
-    bool up(const Commands::ConstCommandPtr &command, CommandExecution::CommandExecutionContext &context) const;
-    bool isUpValid(const Commands::ConstCommandPtr &command, const CommandExecution::CommandExecutionContext &context) const;
+    bool execute(const Commands::ConstCommandPtr &command, CommandExecution::CommandExecutionContext &context) const;
+    bool isValid(const Commands::ConstCommandPtr &command, const CommandExecution::CommandExecutionContext &context) const;
 
     bool down(const Commands::ConstCommandPtr &command, CommandExecution::CommandExecutionContext &context) const;
     bool isDownValid(const Commands::ConstCommandPtr &command, const CommandExecution::CommandExecutionContext &context) const;

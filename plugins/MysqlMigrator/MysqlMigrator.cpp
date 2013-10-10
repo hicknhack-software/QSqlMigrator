@@ -23,17 +23,8 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
+#include "BaseSqlMigrator/BaseSqlMigrator.h"
 #include "MysqlMigrator/MysqlMigrator.h"
-
-#include "MysqlMigrator/CommandExecution/MysqlAddColumnService.h"
-#include "MysqlMigrator/CommandExecution/MysqlAlterColumnTypeService.h"
-#include "MysqlMigrator/CommandExecution/MysqlCreateIndexService.h"
-#include "MysqlMigrator/CommandExecution/MysqlCreateTableService.h"
-#include "MysqlMigrator/CommandExecution/MysqlDropColumnService.h"
-#include "MysqlMigrator/CommandExecution/MysqlDropIndexService.h"
-#include "MysqlMigrator/CommandExecution/MysqlDropTableService.h"
-#include "MysqlMigrator/CommandExecution/MysqlRenameColumnService.h"
-#include "MysqlMigrator/CommandExecution/MysqlRenameTableService.h"
 
 #include "CommandExecution/CustomCommandService.h"
 
@@ -43,35 +34,19 @@
 
 namespace MysqlMigrator {
 
-QSharedPointer<CommandExecution::CommandExecutionServiceRepository> commandServiceRepository()
-{
-    using namespace CommandExecution;
-
-    QSharedPointer<CommandExecutionServiceRepository> commandRepository(new CommandExecutionServiceRepository);
-    commandRepository->add(BaseCommandServicePtr(new MysqlAddColumnService));
-    commandRepository->add(BaseCommandServicePtr(new MysqlAlterColumnTypeService));
-    commandRepository->add(BaseCommandServicePtr(new MysqlCreateIndexService));
-    commandRepository->add(BaseCommandServicePtr(new MysqlCreateTableService));
-    commandRepository->add(BaseCommandServicePtr(new MysqlDropColumnService));
-    commandRepository->add(BaseCommandServicePtr(new MysqlDropIndexService));
-    commandRepository->add(BaseCommandServicePtr(new MysqlDropTableService));
-    commandRepository->add(BaseCommandServicePtr(new MysqlRenameColumnService));
-    commandRepository->add(BaseCommandServicePtr(new MysqlRenameTableService));
-    commandRepository->add(BaseCommandServicePtr(new CustomCommandService));
-
-    return commandRepository;
-}
-
 bool buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDatabase database)
 {
     using namespace MigrationExecution;
 
-    CommandServiceRepositoryPtr commandRepository = MysqlMigrator::commandServiceRepository();
+    CommandServiceRepositoryPtr commandRepository = BaseSqlMigrator::commandServiceRepository();
+    Helper::HelperAggregate helperAggregate;
+    BaseSqlMigrator::createHelperAggregate(helperAggregate);
 
     MigrationTableServicePtr migrationTableService =
             MigrationTableServicePtr(new MigrationTracker::MysqlMigrationTableService);
 
     context.setCommandServiceRepository(commandRepository);
+    context.setHelperAggregate(helperAggregate);
     context.setBaseMigrationTableService(migrationTableService);
     context.setDatabase(database);
 

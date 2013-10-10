@@ -38,6 +38,7 @@ public:
 
     const Structure::Index &index() const;
     static const QString &typeName();
+    CommandPtr reverse() const;
 
 private:
     const Structure::Index m_index;

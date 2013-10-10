@@ -45,9 +45,9 @@ void BasicTest::testCreateTable()
                     .add(Column("name", "varchar(23)", Column::NotNullable))
                     ));
 
-    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig());
+    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig(), m_context.helperAggregate());
     CommandExecution::CommandExecutionService execution;
-    execution.execute(command, CommandExecution::CommandExecutionService::Up, m_context.commandServiceRepository(), serviceContext);
+    execution.execute(command, m_context.commandServiceRepository(), serviceContext);
 
     QStringList tables = m_context.database().tables(QSql::Tables);
     QVERIFY2(tables.contains("testtable1"), "testtable should be created during migration!");
@@ -62,9 +62,9 @@ void BasicTest::testDropTable()
                     .add(Column("name", "varchar(23)", Column::NotNullable))
                     ));
 
-    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig());
+    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig(), m_context.helperAggregate());
     CommandExecution::CommandExecutionService execution;
-    execution.execute(command, CommandExecution::CommandExecutionService::Up, m_context.commandServiceRepository(), serviceContext);
+    execution.execute(command, m_context.commandServiceRepository(), serviceContext);
 
     QStringList tables = m_context.database().tables(QSql::Tables);
     QVERIFY2(tables.contains("testtable1"), "testtable should be created during migration!");
@@ -76,7 +76,7 @@ void BasicTest::testDropTable()
                     .add(Column("name", "varchar(23)", Column::NotNullable))
                     ));
 
-    execution.execute(command2, CommandExecution::CommandExecutionService::Up, m_context.commandServiceRepository(), serviceContext);
+    execution.execute(command2, m_context.commandServiceRepository(), serviceContext);
 
     tables = m_context.database().tables(QSql::Tables);
     QVERIFY2(!tables.contains("testtable1"), "testtable should be droped during migration!");
@@ -118,6 +118,7 @@ void BasicTest::testTransaction()
     migrationContext.setDatabase(m_context.database());
     migrationContext.setBaseMigrationTableService(m_context.baseMigrationTableService());
     migrationContext.setCommandServiceRepository(m_context.commandServiceRepository());
+    migrationContext.setHelperAggregate(m_context.helperAggregate());
 
     bool success = migrator.execute("Migration No1", migrationContext);
     QVERIFY2(success, "migration should work!");
@@ -167,6 +168,7 @@ void BasicTest::testUndoCreateTable()
     migrationContext.setDatabase(m_context.database());
     migrationContext.setBaseMigrationTableService(m_context.baseMigrationTableService());
     migrationContext.setCommandServiceRepository(m_context.commandServiceRepository());
+    migrationContext.setHelperAggregate(m_context.helperAggregate());
 
     bool success = migrator.execute("Migration No1", migrationContext);
     QVERIFY2(success, "migration should work!");
@@ -222,6 +224,7 @@ void BasicTest::testUndoDropTable()
     migrationContext.setDatabase(m_context.database());
     migrationContext.setBaseMigrationTableService(m_context.baseMigrationTableService());
     migrationContext.setCommandServiceRepository(m_context.commandServiceRepository());
+    migrationContext.setHelperAggregate(m_context.helperAggregate());
 
     bool success = migrator.execute("Migration No1", migrationContext);
     QVERIFY2(success, "migration should work!");
@@ -260,6 +263,7 @@ void BasicTest::testMigrationDirections()
     migrationContext.setDatabase(m_context.database());
     migrationContext.setBaseMigrationTableService(m_context.baseMigrationTableService());
     migrationContext.setCommandServiceRepository(m_context.commandServiceRepository());
+    migrationContext.setHelperAggregate(m_context.helperAggregate());
 
     bool success = migrator.execute("Migration No1", migrationContext);
     QVERIFY2(success, "Migration should work!");
@@ -298,6 +302,7 @@ void BasicTest::testDropTableRevert()
     migrationContext.setDatabase(m_context.database());
     migrationContext.setBaseMigrationTableService(m_context.baseMigrationTableService());
     migrationContext.setCommandServiceRepository(m_context.commandServiceRepository());
+    migrationContext.setHelperAggregate(m_context.helperAggregate());
 
     bool success = migrator.execute("Migration No1", migrationContext);
     QVERIFY2(success, "migration should work!");

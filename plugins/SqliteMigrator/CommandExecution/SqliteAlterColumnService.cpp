@@ -25,9 +25,9 @@
 ****************************************************************************/
 #include "SqliteMigrator/CommandExecution/SqliteAlterColumnService.h"
 
-#include "SqliteMigrator/CommandExecution/SqliteCreateTableService.h"
-#include "SqliteMigrator/CommandExecution/SqliteDropTableService.h"
-#include "SqliteMigrator/CommandExecution/SqliteRenameTableService.h"
+#include "BaseSqlMigrator/CommandExecution/BaseSqlRenameTableService.h"
+#include "BaseSqlMigrator/CommandExecution/BaseSqlCreateTableService.h"
+#include "BaseSqlMigrator/CommandExecution/BaseSqlDropTableService.h"
 
 #include "Commands/DropTable.h"
 #include "Commands/CreateTable.h"
@@ -43,8 +43,9 @@ SqliteAlterColumnService::SqliteAlterColumnService()
 {
 }
 
-bool SqliteAlterColumnService::run(const Structure::Table &origTable, const Structure::Table &newTable
-                                   , CommandExecution::CommandExecutionContext &context) const
+bool SqliteAlterColumnService::execute(const Structure::Table &origTable
+                                       , const Structure::Table &newTable
+                                       , CommandExecution::CommandExecutionContext &context) const
 {
     QString tempTableName = QString("%1%2").arg(context.migrationConfig().temporaryTablePrefix
                                                 , origTable.name());
@@ -52,14 +53,16 @@ bool SqliteAlterColumnService::run(const Structure::Table &origTable, const Stru
     bool success;
     Commands::CommandPtr renameTable = Commands::CommandPtr(
                 new Commands::RenameTable(origTable.name(), tempTableName));
-    SqliteRenameTableService renameTableService;
-    success = renameTableService.up(renameTable, context);
-    if (!success) {return false;}
+    BaseSqlRenameTableService renameTableService;
+    success = renameTableService.execute(renameTable, context);
+    if (!success)
+        return false;
 
     Commands::CommandPtr createTable = Commands::CommandPtr(new Commands::CreateTable(newTable));
-    SqliteCreateTableService createTableService;
-    success = createTableService.up(createTable, context);
-    if (!success) {return false;}
+    BaseSqlCreateTableService createTableService;
+    success = createTableService.execute(createTable, context);
+    if (!success)
+        return false;
 
     //TODO check is "SELECT colX as colY" statement is necessary!
     QString copyQuery = QString("INSERT INTO %1 SELECT %2 FROM %3").arg(newTable.name()
@@ -75,8 +78,8 @@ bool SqliteAlterColumnService::run(const Structure::Table &origTable, const Stru
     }
 
     Commands::CommandPtr dropTable = Commands::CommandPtr(new Commands::DropTable(tempTableName));
-    SqliteDropTableService dropTableService;
-    success = dropTableService.up(dropTable, context);
+    BaseSqlDropTableService dropTableService;
+    success = dropTableService.execute(dropTable, context);
 
     return success;
 }

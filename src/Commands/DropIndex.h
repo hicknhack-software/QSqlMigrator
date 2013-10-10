@@ -41,6 +41,7 @@ public:
     const Structure::Index &index() const;
     const QString &name() const;
     static const QString &typeName();
+    CommandPtr reverse() const;
 
 private:
     const bool m_hasIndex;

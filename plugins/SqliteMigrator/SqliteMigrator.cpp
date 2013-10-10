@@ -23,17 +23,25 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
+#include "BaseSqlMigrator/BaseSqlMigrator.h"
 #include "SqliteMigrator/SqliteMigrator.h"
 
-#include "SqliteMigrator/CommandExecution/SqliteAddColumnService.h"
+#include "BaseSqlMigrator/CommandExecution/BaseSqlAddColumnService.h"
+#include "BaseSqlMigrator/CommandExecution/BaseSqlCreateIndexService.h"
+#include "BaseSqlMigrator/CommandExecution/BaseSqlCreateTableService.h"
+#include "BaseSqlMigrator/CommandExecution/BaseSqlDropIndexService.h"
+#include "BaseSqlMigrator/CommandExecution/BaseSqlDropTableService.h"
+#include "BaseSqlMigrator/CommandExecution/BaseSqlRenameTableService.h"
+
 #include "SqliteMigrator/CommandExecution/SqliteAlterColumnTypeService.h"
-#include "SqliteMigrator/CommandExecution/SqliteCreateIndexService.h"
-#include "SqliteMigrator/CommandExecution/SqliteCreateTableService.h"
 #include "SqliteMigrator/CommandExecution/SqliteDropColumnService.h"
-#include "SqliteMigrator/CommandExecution/SqliteDropIndexService.h"
-#include "SqliteMigrator/CommandExecution/SqliteDropTableService.h"
 #include "SqliteMigrator/CommandExecution/SqliteRenameColumnService.h"
-#include "SqliteMigrator/CommandExecution/SqliteRenameTableService.h"
+
+#include "Helper/HelperAggregate.h"
+
+#include "BaseSqlMigrator/Helper/BaseSqlQuoteService.h"
+#include "BaseSqlMigrator/Helper/BaseSqlColumnService.h"
+#include "SqliteMigrator/Helper/SqliteDbReaderService.h"
 
 #include "CommandExecution/CustomCommandService.h"
 #include "MigrationExecution/MigrationExecutionContext.h"
@@ -41,35 +49,51 @@
 
 #include <QSqlDatabase>
 
+#include <QDebug>
+
 namespace SqliteMigrator {
 
-QSharedPointer<CommandExecution::CommandExecutionServiceRepository> commandServiceRepository()
+QSharedPointer<CommandExecution::CommandExecutionServiceRepository> createCommandServiceRepository()
 {
     using namespace CommandExecution;
 
     QSharedPointer<CommandExecutionServiceRepository> commandRepository(new CommandExecutionServiceRepository);
-    commandRepository->add(BaseCommandServicePtr(new SqliteAddColumnService));
+    commandRepository->add(BaseCommandServicePtr(new BaseSqlAddColumnService));
     commandRepository->add(BaseCommandServicePtr(new SqliteAlterColumnTypeService));
-    commandRepository->add(BaseCommandServicePtr(new SqliteCreateIndexService));
-    commandRepository->add(BaseCommandServicePtr(new SqliteCreateTableService));
+    commandRepository->add(BaseCommandServicePtr(new BaseSqlCreateIndexService));
+    commandRepository->add(BaseCommandServicePtr(new BaseSqlCreateTableService));
     commandRepository->add(BaseCommandServicePtr(new SqliteDropColumnService));
-    commandRepository->add(BaseCommandServicePtr(new SqliteDropIndexService));
-    commandRepository->add(BaseCommandServicePtr(new SqliteDropTableService));
+    commandRepository->add(BaseCommandServicePtr(new BaseSqlDropIndexService));
+    commandRepository->add(BaseCommandServicePtr(new BaseSqlDropTableService));
     commandRepository->add(BaseCommandServicePtr(new SqliteRenameColumnService));
-    commandRepository->add(BaseCommandServicePtr(new SqliteRenameTableService));
+    commandRepository->add(BaseCommandServicePtr(new BaseSqlRenameTableService));
     commandRepository->add(BaseCommandServicePtr(new CustomCommandService));
 
     return commandRepository;
+}
+
+void createHelperAggregate(Helper::HelperAggregate &helperAggregate)
+{
+    ::qDebug() << "creating SQLite helper aggregate";
+
+    using namespace Helper;
+
+    helperAggregate.columnService.reset(new BaseSqlColumnService);
+    helperAggregate.dbReaderService.reset(new SqliteDbReaderService);
+    helperAggregate.quoteService.reset(new BaseSqlQuoteService);
 }
 
 bool buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDatabase database)
 {
     using namespace MigrationExecution;
 
-    CommandServiceRepositoryPtr commandRepository = SqliteMigrator::commandServiceRepository();
+    CommandServiceRepositoryPtr commandRepository = createCommandServiceRepository();
+    Helper::HelperAggregate helperAggregate;
+    createHelperAggregate(helperAggregate);
     MigrationTableServicePtr migrationTableService(new MigrationTracker::SqliteMigrationTableService);
 
     context.setCommandServiceRepository(commandRepository);
+    context.setHelperAggregate(helperAggregate);
     context.setBaseMigrationTableService(migrationTableService);
     context.setDatabase(database);
 

@@ -26,7 +26,6 @@
 #include "SqliteMigrator/CommandExecution/SqliteRenameColumnService.h"
 
 #include "SqliteMigrator/CommandExecution/SqliteAlterColumnService.h"
-#include "SqliteMigrator/Helper/SqliteDbReader.h"
 
 #include "Commands/RenameColumn.h"
 
@@ -41,18 +40,12 @@ SqliteRenameColumnService::SqliteRenameColumnService()
 {
 }
 
-const QString &SqliteRenameColumnService::commandType() const
-{
-    return Commands::RenameColumn::typeName();
-}
-
-bool SqliteRenameColumnService::up(const Commands::ConstCommandPtr &command
+bool SqliteRenameColumnService::execute(const Commands::ConstCommandPtr &command
                                    , CommandExecution::CommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::RenameColumn> renameColumn(command.staticCast<const Commands::RenameColumn>());
 
-    Helper::SqliteDbReader dbReader;
-    Table origTable = dbReader.getTableDefinition(renameColumn->tableName(), context);
+    Table origTable = context.helperAggregate().dbReaderService->getTableDefinition(renameColumn->tableName(), context.database());
     Table table = Table(renameColumn->tableName());
     foreach (Column column, origTable.columns()) {
         if (column.name() == renameColumn->name()) {
@@ -64,43 +57,7 @@ bool SqliteRenameColumnService::up(const Commands::ConstCommandPtr &command
     }
 
     SqliteAlterColumnService alterColumnService;
-    return alterColumnService.run(origTable, table, context);
-}
-
-bool SqliteRenameColumnService::isUpValid(const Commands::ConstCommandPtr &command
-                                          , const CommandExecution::CommandExecutionContext &context) const
-{
-    QSharedPointer<const Commands::RenameColumn> renameColumn(command.staticCast<const Commands::RenameColumn>());
-
-    //check if table exists
-    if (!context.database().tables().contains(renameColumn->tableName())) {
-        ::qWarning() << "table doesn't exist!";
-        return false;
-    }
-    return true;
-}
-
-bool SqliteRenameColumnService::down(const Commands::ConstCommandPtr &command
-                                     , CommandExecution::CommandExecutionContext &context) const
-{
-    QSharedPointer<const Commands::RenameColumn> renameColumn(command.staticCast<const Commands::RenameColumn>());
-    return this->up(Commands::CommandPtr(new Commands::RenameColumn(renameColumn->newName()
-                                                                    , renameColumn->name()
-                                                                    , renameColumn->tableName()))
-                    , context);
-}
-
-bool SqliteRenameColumnService::isDownValid(const Commands::ConstCommandPtr &command
-                                            , const CommandExecution::CommandExecutionContext &context) const
-{
-    QSharedPointer<const Commands::RenameColumn> renameColumn(command.staticCast<const Commands::RenameColumn>());
-
-    //check if table exists
-    if (!context.database().tables().contains(renameColumn->newName())) {
-        ::qWarning() << "table doesn't exist!";
-        return false;
-    }
-    return true;
+    return alterColumnService.execute(origTable, table, context);
 }
 
 } // namespace CommandExecution

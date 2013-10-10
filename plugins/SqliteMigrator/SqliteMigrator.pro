@@ -38,37 +38,23 @@ else:unix:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$LIB_PATH/libQSqlMigr
 
 SOURCES += \
          DatabaseLock.cpp \
-	 CommandExecution/SqliteRenameTableService.cpp \
-	 CommandExecution/SqliteRenameColumnService.cpp \
-	 CommandExecution/SqliteDropTableService.cpp \
-	 CommandExecution/SqliteDropIndexService.cpp \
 	 CommandExecution/SqliteDropColumnService.cpp \
-	 CommandExecution/SqliteCreateTableService.cpp \
-	 CommandExecution/SqliteCreateIndexService.cpp \
 	 CommandExecution/SqliteAlterColumnTypeService.cpp \
 	 CommandExecution/SqliteAlterColumnService.cpp \
-	 CommandExecution/SqliteAddColumnService.cpp \
-	 Helper/SqliteDbReader.cpp \
-	 Helper/SqliteColumnService.cpp \
-	 MigrationTracker/SqliteMigrationTableService.cpp \
-         SqliteMigrator.cpp
+     CommandExecution/SqliteRenameColumnService.cpp \
+         MigrationTracker/SqliteMigrationTableService.cpp \
+         SqliteMigrator.cpp \
+    Helper/SqliteDbReaderService.cpp
 
 HEADERS += \
          DatabaseLock.h \
-	 CommandExecution/SqliteRenameTableService.h \
-	 CommandExecution/SqliteRenameColumnService.h \
-	 CommandExecution/SqliteDropTableService.h \
-	 CommandExecution/SqliteDropIndexService.h \
 	 CommandExecution/SqliteDropColumnService.h \
-	 CommandExecution/SqliteCreateTableService.h \
-	 CommandExecution/SqliteCreateIndexService.h \
 	 CommandExecution/SqliteAlterColumnTypeService.h \
 	 CommandExecution/SqliteAlterColumnService.h \
-	 CommandExecution/SqliteAddColumnService.h \
-	 Helper/SqliteDbReader.h \
-	 Helper/SqliteColumnService.h \
-	 MigrationTracker/SqliteMigrationTableService.h \
-         SqliteMigrator.h
+     CommandExecution/SqliteRenameColumnService.h \
+         MigrationTracker/SqliteMigrationTableService.h \
+         SqliteMigrator.h \
+    Helper/SqliteDbReaderService.h
 
 unix:!symbian {
 	 maemo5 {

@@ -28,6 +28,7 @@
 
 #include "Commands/BaseCommand.h"
 #include "MigrationExecution/MigrationExecutionConfig.h"
+#include "Helper/HelperAggregate.h"
 #include "config.h"
 
 #include <QSqlDatabase>
@@ -37,14 +38,18 @@ namespace CommandExecution {
 class QSQLMIGRATOR_DLL_EXPORT CommandExecutionContext
 {
 public:
-    CommandExecutionContext(const QSqlDatabase database, const MigrationExecution::MigrationExecutionConfig &migrationConfig);
+    CommandExecutionContext(const QSqlDatabase database
+                            , const MigrationExecution::MigrationExecutionConfig &migrationConfig
+                            , const Helper::HelperAggregate &helperAggregate);
 
     QSqlDatabase database() const;
 
+    //TODO: undo-lgoic in own class
     //! \return true, when undo command will be used
     bool isUndoUsed() const;
     Commands::CommandPtr currentUndoCommand() const;
     const MigrationExecution::MigrationExecutionConfig &migrationConfig() const;
+    const Helper::HelperAggregate &helperAggregate() const;
 
     void setIsUndoUsed(bool isUndoUsed);
     void setUndoCommand(Commands::CommandPtr command);
@@ -53,6 +58,7 @@ public:
 private:
     QSqlDatabase m_database;
     const MigrationExecution::MigrationExecutionConfig m_migrationConfig;
+    const Helper::HelperAggregate m_helperAggregate;
 
     bool m_isUndoUsed;
     Commands::CommandPtr m_currentUndoCommand;

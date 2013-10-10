@@ -28,12 +28,15 @@
 
 #include "Commands/CustomCommandBase.h"
 
+#include <QSharedPointer>
+
 class SqliteAddUser : public Commands::CustomCommandBase
 {
 public:
     SqliteAddUser(int id, const QString &userName, const QString &userMail, const QString &password);
 
     bool up(const QSqlDatabase &database) const;
+    Commands::CommandPtr reverse() const;
 
 private:
     const int m_id;

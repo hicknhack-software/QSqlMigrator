@@ -41,6 +41,7 @@ public:
     const Structure::Table &table() const;
     const QString &tableName() const;
     static const QString &typeName();
+    CommandPtr reverse() const;
 
 private:
     Structure::Table m_table;

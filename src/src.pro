@@ -51,7 +51,24 @@ SOURCES += \
 	 Commands/CustomCommandBase.cpp \
     Scheme/Database.cpp \
     Scheme/DbColumn.cpp \
-    Scheme/DbTable.cpp
+    Scheme/DbTable.cpp \
+    BaseSqlMigrator/BaseSqlMigrator.cpp \
+    BaseSqlMigrator/CommandExecution/BaseSqlAddColumnService.cpp \
+    BaseSqlMigrator/CommandExecution/BaseSqlAlterColumnTypeService.cpp \
+    BaseSqlMigrator/CommandExecution/BaseSqlCreateIndexService.cpp \
+    BaseSqlMigrator/CommandExecution/BaseSqlCreateTableService.cpp \
+    BaseSqlMigrator/CommandExecution/BaseSqlDropColumnService.cpp \
+    BaseSqlMigrator/CommandExecution/BaseSqlDropIndexService.cpp \
+    BaseSqlMigrator/CommandExecution/BaseSqlDropTableService.cpp \
+    BaseSqlMigrator/CommandExecution/BaseSqlRenameColumnService.cpp \
+    BaseSqlMigrator/CommandExecution/BaseSqlRenameTableService.cpp \
+    BaseSqlMigrator/Helper/BaseSqlColumnService.cpp \
+    BaseSqlMigrator/Helper/BaseSqlQuoteService.cpp \
+    Helper/HelperAggregate.cpp \
+    Helper/ColumnService.cpp \
+    Helper/DbReaderService.cpp \
+    Helper/QuoteService.cpp \
+    BaseSqlMigrator/Helper/BaseSqlDbReaderService.cpp
 
 HEADERS += \
 	 QSqlMigrator/QSqlMigratorService.h \
@@ -86,4 +103,21 @@ HEADERS += \
 	 config.h \
     Scheme/Database.h \
     Scheme/DbColumn.h \
-    Scheme/DbTable.h
+    Scheme/DbTable.h \
+    BaseSqlMigrator/BaseSqlMigrator.h \
+    BaseSqlMigrator/CommandExecution/BaseSqlAddColumnService.h \
+    BaseSqlMigrator/CommandExecution/BaseSqlAlterColumnTypeService.h \
+    BaseSqlMigrator/CommandExecution/BaseSqlCreateIndexService.h \
+    BaseSqlMigrator/CommandExecution/BaseSqlCreateTableService.h \
+    BaseSqlMigrator/CommandExecution/BaseSqlDropColumnService.h \
+    BaseSqlMigrator/CommandExecution/BaseSqlDropIndexService.h \
+    BaseSqlMigrator/CommandExecution/BaseSqlDropTableService.h \
+    BaseSqlMigrator/CommandExecution/BaseSqlRenameColumnService.h \
+    BaseSqlMigrator/CommandExecution/BaseSqlRenameTableService.h \
+    BaseSqlMigrator/Helper/BaseSqlColumnService.h \
+    BaseSqlMigrator/Helper/BaseSqlQuoteService.h \
+    Helper/HelperAggregate.h \
+    Helper/ColumnService.h \
+    Helper/DbReaderService.h \
+    Helper/QuoteService.h \
+    BaseSqlMigrator/Helper/BaseSqlDbReaderService.h

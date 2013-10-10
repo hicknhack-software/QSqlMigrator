@@ -59,4 +59,9 @@ const QString &RenameTable::newName() const
     return m_newName;
 }
 
+CommandPtr RenameTable::reverse() const
+{
+    return CommandPtr(new RenameTable(newName(), name()));
+}
+
 } // namespace Commands

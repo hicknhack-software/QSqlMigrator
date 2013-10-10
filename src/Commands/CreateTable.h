@@ -38,6 +38,7 @@ public:
 
     const Structure::Table &table() const;
     static const QString &typeName();
+    CommandPtr reverse() const;
 
 private:
     const Structure::Table m_table;

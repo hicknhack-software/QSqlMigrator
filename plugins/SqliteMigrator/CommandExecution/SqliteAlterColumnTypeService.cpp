@@ -26,7 +26,7 @@
 #include "SqliteMigrator/CommandExecution/SqliteAlterColumnTypeService.h"
 
 #include "SqliteMigrator/CommandExecution/SqliteAlterColumnService.h"
-#include "SqliteMigrator/Helper/SqliteDbReader.h"
+#include "SqliteMigrator/Helper/SqliteDbReaderService.h"
 
 #include "Commands/AlterColumnType.h"
 
@@ -39,18 +39,13 @@ SqliteAlterColumnTypeService::SqliteAlterColumnTypeService()
 {
 }
 
-const QString &SqliteAlterColumnTypeService::commandType() const
-{
-    return Commands::AlterColumnType::typeName();
-}
-
-bool SqliteAlterColumnTypeService::up(const Commands::ConstCommandPtr &command
+bool SqliteAlterColumnTypeService::execute(const Commands::ConstCommandPtr &command
                                       , CommandExecution::CommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::AlterColumnType> alterColumnType(command.staticCast<const Commands::AlterColumnType>());
 
-    Helper::SqliteDbReader dbReader;
-    Structure::Table origTable = dbReader.getTableDefinition(alterColumnType->tableName(), context);
+    Helper::SqliteDbReaderService dbReader;
+    Structure::Table origTable = dbReader.getTableDefinition(alterColumnType->tableName(), context.database());
     Structure::Table newTable = Structure::Table(alterColumnType->tableName());
     foreach (Structure::Column column, origTable.columns()) {
         if (column.name() == alterColumnType->columnName()) {
@@ -62,44 +57,7 @@ bool SqliteAlterColumnTypeService::up(const Commands::ConstCommandPtr &command
     }
 
     SqliteAlterColumnService alterColumnService;
-    return alterColumnService.run(origTable, newTable, context);
-}
-
-bool SqliteAlterColumnTypeService::isUpValid(const Commands::ConstCommandPtr &command
-                                             , const CommandExecution::CommandExecutionContext &context) const
-{
-    QSharedPointer<const Commands::AlterColumnType> alterColumnType(command.staticCast<const Commands::AlterColumnType>());
-
-    //check if table exists
-    if (!context.database().tables().contains(alterColumnType->tableName())) {
-        ::qWarning() << "table doesn't exist!";
-        return false;
-    }
-    return true;
-}
-
-bool SqliteAlterColumnTypeService::down(const Commands::ConstCommandPtr &command
-                                        , CommandExecution::CommandExecutionContext &context) const
-{
-    QSharedPointer<const Commands::AlterColumnType> alterColumnType(command.staticCast<const Commands::AlterColumnType>());
-    return this->up(Commands::CommandPtr(new Commands::AlterColumnType(alterColumnType->columnName()
-                                                                       , alterColumnType->tableName()
-                                                                       , alterColumnType->oldType()))
-                    , context);
-}
-
-bool SqliteAlterColumnTypeService::isDownValid(const Commands::ConstCommandPtr &command
-                                               , const CommandExecution::CommandExecutionContext &context) const
-{
-    Q_UNUSED(context);
-
-    QSharedPointer<const Commands::AlterColumnType> alterColumnType(command.staticCast<const Commands::AlterColumnType>());
-
-    if (!alterColumnType->hasOldType()) {
-        ::qWarning() << "No oldType defined. Down-migration is not possible!";
-        return false;
-    }
-    return true;
+    return alterColumnService.execute(origTable, newTable, context);
 }
 
 } // namespace CommandExecution

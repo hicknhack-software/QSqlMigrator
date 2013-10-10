@@ -56,6 +56,13 @@ const QString &AlterColumnType::typeName()
     return typeName;
 }
 
+CommandPtr AlterColumnType::reverse() const
+{
+    if (!hasOldType())
+        return CommandPtr();
+    return CommandPtr(new AlterColumnType(columnName(), tableName(), oldType(), newType()));
+}
+
 const QString &AlterColumnType::tableName() const
 {
     return m_tableName;

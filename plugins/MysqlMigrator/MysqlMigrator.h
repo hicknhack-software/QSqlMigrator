@@ -50,8 +50,6 @@ class MigrationExecutionContext;
 
 namespace MysqlMigrator {
 
-QSharedPointer<CommandExecution::CommandExecutionServiceRepository> MYSQLMIGRATOR_DLL_EXPORT commandServiceRepository();
-
 /*!
  * \brief   Use this function to setup your excution context for mysql migrations.
  *

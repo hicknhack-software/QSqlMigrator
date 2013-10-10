@@ -25,6 +25,8 @@
 ****************************************************************************/
 #include "DropTable.h"
 
+#include "Commands/CreateTable.h"
+
 #include <QDebug>
 
 namespace Commands {
@@ -55,6 +57,13 @@ const QString &DropTable::typeName()
 {
     static QString typeName("DropTable");
     return typeName;
+}
+
+CommandPtr DropTable::reverse() const
+{
+    if (!hasTable())
+        return CommandPtr();
+    return CommandPtr(new CreateTable(table()));
 }
 
 bool DropTable::hasTable() const

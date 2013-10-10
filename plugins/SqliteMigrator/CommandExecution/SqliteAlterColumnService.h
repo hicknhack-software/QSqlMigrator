@@ -33,13 +33,16 @@
 
 namespace CommandExecution {
 
+/*! used only internally in other services, because SQLite can't alter columns */
+//TODO: move into Helper
 class SqliteAlterColumnService
 {
 public:
     SqliteAlterColumnService();
 
-    bool run(const Structure::Table &origTable, const Structure::Table &newTable
-             , CommandExecution::CommandExecutionContext &context) const;
+    bool execute(const Structure::Table &origTable
+                 , const Structure::Table &newTable
+                 , CommandExecution::CommandExecutionContext &context) const;
 };
 
 } // namespace CommandExecution

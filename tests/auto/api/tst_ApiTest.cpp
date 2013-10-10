@@ -182,7 +182,7 @@ void ApiTest::testAppliedMigrations()
     QVERIFY2(appliedMigrations.size() == 0, "no migration could be applied yet!");
 
     MigrationTracker::SqliteMigrationTableService tableService;
-    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig());
+    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig(), m_context.helperAggregate());
     tableService.addMigration(definedMigrations.at(0), serviceContext);
     appliedMigrations = manager.appliedMigrations(m_context);
     QVERIFY2(appliedMigrations.size() == 1, "one migration should be shown as applied");
@@ -198,7 +198,7 @@ void ApiTest::testLastAppliedMigration()
     QVERIFY2(lastAppliedMigration.isEmpty(), "no Migration could be applied yet!");
 
     MigrationTracker::SqliteMigrationTableService tableService;
-    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig());
+    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig(), m_context.helperAggregate());
     tableService.addMigration(definedMigrations.at(1), serviceContext);
     lastAppliedMigration = manager.lastAppliedMigration(m_context);
     QVERIFY2(lastAppliedMigration == definedMigrations.at(1), "second defined migration was applied last!");
@@ -252,7 +252,7 @@ void ApiTest::testMissingMigrations()
 {
     QSqlMigrator::QSqlMigratorService manager;
     MigrationTracker::SqliteMigrationTableService tableService;
-    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig());
+    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig(), m_context.helperAggregate());
     tableService.addMigration("M20132301_103512_MissingMigration", serviceContext);
     QStringList definedMigrations = manager.definedMigrations(m_context);
     QStringList appliedMigrations = manager.appliedMigrations(m_context);
@@ -285,7 +285,7 @@ void ApiTest::testUnappliedMigrations()
     QSqlMigrator::QSqlMigratorService manager;
     QStringList definedMigrations = manager.definedMigrations(m_context);
     MigrationTracker::SqliteMigrationTableService tableService;
-    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig());
+    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig(), m_context.helperAggregate());
     tableService.addMigration(definedMigrations.at(0), serviceContext);
     tableService.addMigration(definedMigrations.at(2), serviceContext);
     tableService.addMigration(definedMigrations.at(3), serviceContext);

@@ -24,6 +24,7 @@
 **
 ****************************************************************************/
 #include "AddColumn.h"
+#include "DropColumn.h"
 
 #include <QDebug>
 
@@ -43,6 +44,11 @@ const QString &AddColumn::typeName()
 {
     static QString typeName("AddColumn");
     return typeName;
+}
+
+CommandPtr AddColumn::reverse() const
+{
+    return CommandPtr(new DropColumn(column(), tableName()));
 }
 
 const QString &AddColumn::tableName() const

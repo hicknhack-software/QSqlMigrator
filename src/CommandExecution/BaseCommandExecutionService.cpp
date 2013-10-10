@@ -31,19 +31,8 @@
 
 namespace CommandExecution {
 
-bool BaseCommandExecutionService::down(const Commands::ConstCommandPtr &command, CommandExecutionContext &context) const
-{
-    Q_UNUSED(command);
-    Q_UNUSED(context);
-    return true;
-}
-
-bool BaseCommandExecutionService::isDownValid(const Commands::ConstCommandPtr &command, const CommandExecutionContext &context) const
-{
-    Q_UNUSED(command);
-    Q_UNUSED(context);
-    return false;
-}
+BaseCommandExecutionService::BaseCommandExecutionService()
+{}
 
 bool BaseCommandExecutionService::executeQuery(const QString &queryString, const CommandExecutionContext &context) const
 {

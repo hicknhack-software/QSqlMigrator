@@ -39,34 +39,16 @@ else:unix:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$LIB_PATH/libQSqlMigr
 # }
 
 SOURCES += \
-	 CommandExecution/MysqlDropTableService.cpp \
-	 CommandExecution/MysqlCreateTableService.cpp \
 	 Helper/MysqlQuoteService.cpp \
 	 Helper/MysqlColumnService.cpp \
 	 MigrationTracker/MysqlMigrationTableService.cpp \
-	 CommandExecution/MysqlAddColumnService.cpp \
-	 CommandExecution/MysqlAlterColumnTypeService.cpp \
-	 CommandExecution/MysqlCreateIndexService.cpp \
-	 CommandExecution/MysqlDropColumnService.cpp \
-	 CommandExecution/MysqlDropIndexService.cpp \
-	 CommandExecution/MysqlRenameColumnService.cpp \
-	 CommandExecution/MysqlRenameTableService.cpp \
 	 Helper/MysqlDbReader.cpp \
 	 MysqlMigrator.cpp
 
 HEADERS += \
-	 CommandExecution/MysqlDropTableService.h \
-	 CommandExecution/MysqlCreateTableService.h \
 	 Helper/MysqlQuoteService.h \
 	 Helper/MysqlColumnService.h \
 	 MigrationTracker/MysqlMigrationTableService.h \
-	 CommandExecution/MysqlAddColumnService.h \
-	 CommandExecution/MysqlAlterColumnTypeService.h \
-	 CommandExecution/MysqlCreateIndexService.h \
-	 CommandExecution/MysqlDropColumnService.h \
-	 CommandExecution/MysqlDropIndexService.h \
-	 CommandExecution/MysqlRenameColumnService.h \
-	 CommandExecution/MysqlRenameTableService.h \
 	 Helper/MysqlDbReader.h \
 	 MysqlMigrator.h
 

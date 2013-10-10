@@ -33,15 +33,15 @@
 namespace CommandExecution {
 
 CustomCommandService::CustomCommandService()
-{
-}
+{}
+
 
 const QString &CustomCommandService::commandType() const
 {
     return Commands::CustomCommandBase::typeName();
 }
 
-bool CustomCommandService::up(const Commands::ConstCommandPtr &command, CommandExecution::CommandExecutionContext &context) const
+bool CustomCommandService::execute(const Commands::ConstCommandPtr &command, CommandExecution::CommandExecutionContext &context) const
 {
     if(!command) {
         ::qDebug() << LOG_PREFIX << Q_FUNC_INFO << "command is 0!";
@@ -58,7 +58,7 @@ bool CustomCommandService::up(const Commands::ConstCommandPtr &command, CommandE
     return customCommand->up(context.database());
 }
 
-bool CustomCommandService::isUpValid(const Commands::ConstCommandPtr &command, const CommandExecution::CommandExecutionContext &context) const
+bool CustomCommandService::isValid(const Commands::ConstCommandPtr &command, const CommandExecution::CommandExecutionContext &context) const
 {
     Q_UNUSED(command);
     Q_UNUSED(context);

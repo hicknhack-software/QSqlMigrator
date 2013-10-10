@@ -25,6 +25,8 @@
 ****************************************************************************/
 #include "Commands/CreateTable.h"
 
+#include "Commands/DropTable.h"
+
 namespace Commands {
 
 CreateTable::CreateTable(const Structure::Table &table)
@@ -37,6 +39,11 @@ const QString &CreateTable::typeName()
 {
     static QString typeName("CreateTable");
     return typeName;
+}
+
+CommandPtr CreateTable::reverse() const
+{
+    return CommandPtr(new DropTable(table()));
 }
 
 const Structure::Table &CreateTable::table() const

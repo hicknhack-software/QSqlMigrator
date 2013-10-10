@@ -40,7 +40,7 @@ class QSQLMIGRATOR_DLL_EXPORT Table
 {
 public:
     explicit Table(const QString &name);
-    explicit Table(const QString &name, const QList<Column> &columns);
+    Table(const QString &name, const QList<Column> &columns);
 
     const QString &name() const;
     const QList<Column> &columns() const;

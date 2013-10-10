@@ -63,6 +63,11 @@ CommandServiceRepositoryPtr MigrationExecutionContext::commandServiceRepository(
     return m_commandServiceRepository;
 }
 
+const Helper::HelperAggregate &MigrationExecutionContext::helperAggregate() const
+{
+    return m_helperAggregate;
+}
+
 MigrationTableServicePtr MigrationExecutionContext::baseMigrationTableService() const
 {
     return m_migrationTableService;
@@ -76,6 +81,11 @@ void MigrationExecutionContext::setDatabase(QSqlDatabase database)
 void MigrationExecutionContext::setCommandServiceRepository(CommandServiceRepositoryPtr commandServiceRepository)
 {
     m_commandServiceRepository = commandServiceRepository;
+}
+
+void MigrationExecutionContext::setHelperAggregate(const Helper::HelperAggregate &helperAggregate)
+{
+    m_helperAggregate = helperAggregate;
 }
 
 void MigrationExecutionContext::setBaseMigrationTableService(MigrationTableServicePtr baseMigrationTableService)

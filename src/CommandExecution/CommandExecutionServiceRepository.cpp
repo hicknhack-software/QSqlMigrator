@@ -42,7 +42,7 @@ void CommandExecutionServiceRepository::add(BaseCommandServicePtr service)
     m_serviceList.insert(service->commandType(), service);
 }
 
-BaseCommandServicePtr CommandExecutionServiceRepository::getService(const QString &commandName)
+BaseCommandServicePtr CommandExecutionServiceRepository::getService(const QString &commandName) const
 {
     if(commandName.isEmpty()) {
         ::qDebug() << LOG_PREFIX << Q_FUNC_INFO << "commandName is empty!";

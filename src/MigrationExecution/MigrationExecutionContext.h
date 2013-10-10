@@ -28,6 +28,8 @@
 
 #include "MigrationExecution/MigrationExecutionConfig.h"
 
+#include "Helper/HelperAggregate.h"
+
 #include <QMap>
 #include <QSharedPointer>
 #include <QSqlDatabase>
@@ -36,6 +38,9 @@ class QSqlDatabase;
 
 namespace CommandExecution {
 class CommandExecutionServiceRepository;
+}
+namespace Helper {
+class HelperAggregate;
 }
 namespace Migrations {
 class Migration;
@@ -47,6 +52,7 @@ class BaseMigrationTrackerService;
 namespace MigrationExecution {
 
 typedef QSharedPointer<CommandExecution::CommandExecutionServiceRepository> CommandServiceRepositoryPtr;
+typedef QSharedPointer<Helper::HelperAggregate> HelperAggregatePtr;
 typedef QSharedPointer<MigrationTracker::BaseMigrationTrackerService> MigrationTableServicePtr;
 
 class QSQLMIGRATOR_DLL_EXPORT MigrationExecutionContext
@@ -59,18 +65,21 @@ public:
 
      MigrationTableServicePtr baseMigrationTableService() const;
      CommandServiceRepositoryPtr commandServiceRepository() const;
+     const Helper::HelperAggregate &helperAggregate() const;
      QSqlDatabase database() const;
      const MigrationExecutionConfig &migrationConfig() const;
      const NameMigrationMap &migrationMap() const;
 
      void setBaseMigrationTableService(MigrationTableServicePtr baseMigrationTableService);
      void setCommandServiceRepository(CommandServiceRepositoryPtr commandServiceRepository);
+     void setHelperAggregate(const Helper::HelperAggregate &helperAggregate);
      void setDatabase(QSqlDatabase database);
 
 private:
      const NameMigrationMap m_migrations;
      MigrationExecutionConfig m_migrationConfig;
      CommandServiceRepositoryPtr m_commandServiceRepository;
+     Helper::HelperAggregate m_helperAggregate;
      QSqlDatabase m_database;
      MigrationTableServicePtr m_migrationTableService;
 };

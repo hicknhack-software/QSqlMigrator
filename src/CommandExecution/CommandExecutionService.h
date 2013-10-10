@@ -26,6 +26,7 @@
 #ifndef COMMANDEXECUTION_COMMANDEXECUTIONSERVICE_H
 #define COMMANDEXECUTION_COMMANDEXECUTIONSERVICE_H
 
+#include "Helper/HelperAggregate.h"
 #include "CommandExecution/CommandExecutionContext.h"
 #include "CommandExecution/CommandExecutionServiceRepository.h"
 #include "Commands/BaseCommand.h"
@@ -35,22 +36,13 @@ namespace CommandExecution {
 class QSQLMIGRATOR_DLL_EXPORT CommandExecutionService
 {
 public:
-    enum Direction {
-        Up,
-        Down
-    };
-
     bool execute(const Commands::CommandPtr command
-                 , Direction direction
-                 , CommandServiceRepositoryPtr serviceRepository
-                 , CommandExecutionContext &serviceContext
+                 , CommandServiceRepositoryPtr serviceRepository, CommandExecutionContext &serviceContext
                  ) const;
 
     bool batch(const Commands::CommandPtrList &commandList
-               , Direction direction
                , Commands::CommandPtrList &undoCommands
-               , CommandServiceRepositoryPtr serviceRepository
-               , CommandExecutionContext &context
+               , CommandServiceRepositoryPtr serviceRepository, CommandExecutionContext &context
                ) const;
 };
 

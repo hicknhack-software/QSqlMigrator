@@ -41,13 +41,14 @@ typedef QList<CommandPtr> CommandPtrList;
 class QSQLMIGRATOR_DLL_EXPORT BaseCommand
 {
 public:
-     explicit BaseCommand(const QString &name);
-     virtual ~BaseCommand() {}
+    explicit BaseCommand(const QString &name);
+    virtual ~BaseCommand() {}
 
     const QString &name() const;
+    virtual CommandPtr reverse() const = 0;
 
 private:
-     QString m_name;
+    QString m_name;
 };
 
 } // namespace Commands

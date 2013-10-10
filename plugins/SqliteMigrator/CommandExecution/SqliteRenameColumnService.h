@@ -26,22 +26,16 @@
 #ifndef COMMANDEXECUTION_SQLITERENAMECOLUMNSERVICE_H
 #define COMMANDEXECUTION_SQLITERENAMECOLUMNSERVICE_H
 
-#include "CommandExecution/BaseCommandExecutionService.h"
+#include "BaseSqlMigrator/CommandExecution/BaseSqlRenameColumnService.h"
 
 namespace CommandExecution {
 
-class SqliteRenameColumnService : public CommandExecution::BaseCommandExecutionService
+class SqliteRenameColumnService : public BaseSqlRenameColumnService
 {
 public:
     SqliteRenameColumnService();
 
-    const QString &commandType() const;
-
-    bool up(const Commands::ConstCommandPtr &command, CommandExecution::CommandExecutionContext &context) const;
-    bool isUpValid(const Commands::ConstCommandPtr &command, const CommandExecution::CommandExecutionContext &context) const;
-
-    bool down(const Commands::ConstCommandPtr &command, CommandExecution::CommandExecutionContext &context) const;
-    bool isDownValid(const Commands::ConstCommandPtr &command, const CommandExecution::CommandExecutionContext &context) const;
+    bool execute(const Commands::ConstCommandPtr &command, CommandExecution::CommandExecutionContext &context) const;
 };
 
 } // namespace CommandExecution

@@ -108,9 +108,9 @@ void SqliteTest::testAlterColumnType()
                     .add(Column("col2", "varchar(23)"))
                     ));
 
-    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig());
+    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig(), m_context.helperAggregate());
     CommandExecution::CommandExecutionService execution;
-    execution.execute(command, CommandExecution::CommandExecutionService::Up, m_context.commandServiceRepository() , serviceContext);
+    execution.execute(command, m_context.commandServiceRepository(), serviceContext);
 
     QStringList tables = m_context.database().tables(QSql::Tables);
     QVERIFY2(tables.contains("testtable1"), "testtable should be created during migration!");
@@ -119,7 +119,7 @@ void SqliteTest::testAlterColumnType()
 
     Commands::CommandPtr command2(
                 new Commands::AlterColumnType("col1", "testtable1", "varchar(42)"));
-    execution.execute(command2, CommandExecution::CommandExecutionService::Up, m_context.commandServiceRepository() , serviceContext);
+    execution.execute(command2, m_context.commandServiceRepository(), serviceContext);
 
     //check if old column was removed and new column included successfully
     bool columnRetyped = false;
@@ -160,10 +160,10 @@ void SqliteTest::testCreateIndex()
                     .addColumn("col2")
                     ));
 
-    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig());
+    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig(), m_context.helperAggregate());
     CommandExecution::CommandExecutionService execution;
-    execution.execute(command, CommandExecution::CommandExecutionService::Up, m_context.commandServiceRepository() , serviceContext);
-    execution.execute(command2, CommandExecution::CommandExecutionService::Up, m_context.commandServiceRepository() , serviceContext);
+    execution.execute(command, m_context.commandServiceRepository(), serviceContext);
+    execution.execute(command2, m_context.commandServiceRepository(), serviceContext);
 
     QStringList tables = m_context.database().tables(QSql::Tables);
     QVERIFY2(tables.contains("testtable1"), "testtable should be created during migration!");
@@ -197,9 +197,9 @@ void SqliteTest::testDropColumn()
                     .add(Column("col2", "varchar(23)"))
                     ));
 
-    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig());
+    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig(), m_context.helperAggregate());
     CommandExecution::CommandExecutionService execution;
-    execution.execute(command, CommandExecution::CommandExecutionService::Up, m_context.commandServiceRepository() , serviceContext);
+    execution.execute(command, m_context.commandServiceRepository(), serviceContext);
 
     QStringList tables = m_context.database().tables(QSql::Tables);
     QVERIFY2(tables.contains("testtable1"), "testtable should be created during migration!");
@@ -208,7 +208,7 @@ void SqliteTest::testDropColumn()
 
     Commands::CommandPtr command2(
                 new Commands::DropColumn("col1", "testtable1"));
-    execution.execute(command2, CommandExecution::CommandExecutionService::Up, m_context.commandServiceRepository() , serviceContext);
+    execution.execute(command2, m_context.commandServiceRepository(), serviceContext);
 
     //check if index was created successfully
     bool columnRemoved = false;
@@ -242,9 +242,9 @@ void SqliteTest::testRenameColumn()
                     .add(Column("col2", "varchar(23)"))
                     ));
 
-    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig());
+    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig(), m_context.helperAggregate());
     CommandExecution::CommandExecutionService execution;
-    execution.execute(command, CommandExecution::CommandExecutionService::Up, m_context.commandServiceRepository() , serviceContext);
+    execution.execute(command, m_context.commandServiceRepository(), serviceContext);
 
     QStringList tables = m_context.database().tables(QSql::Tables);
     QVERIFY2(tables.contains("testtable1"), "testtable should be created during migration!");
@@ -253,7 +253,7 @@ void SqliteTest::testRenameColumn()
 
     Commands::CommandPtr command2(
                 new Commands::RenameColumn("col1", "new_column1", "testtable1"));
-    execution.execute(command2, CommandExecution::CommandExecutionService::Up, m_context.commandServiceRepository() , serviceContext);
+    execution.execute(command2, m_context.commandServiceRepository(), serviceContext);
 
     //check if old column was removed and new column included successfully
     bool columnRenamed = false;

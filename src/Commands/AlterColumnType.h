@@ -42,6 +42,7 @@ public:
     const QString &oldType() const;
     const QString &tableName() const;
     static const QString &typeName();
+    CommandPtr reverse() const;
 
 private:
     const QString m_tableName;

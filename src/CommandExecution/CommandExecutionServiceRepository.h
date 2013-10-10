@@ -31,6 +31,7 @@
 #include <QHash>
 #include <QSharedPointer>
 #include <QString>
+#include <QSharedPointer>
 
 namespace CommandExecution {
 
@@ -42,9 +43,10 @@ class QSQLMIGRATOR_DLL_EXPORT CommandExecutionServiceRepository
 public:
     CommandExecutionServiceRepository();
 
-    BaseCommandServicePtr getService(const QString &commandName);
+    CommandExecution::BaseCommandServicePtr getService(const QString &commandName) const;
 
     void add(BaseCommandServicePtr service);
+
 private:
     QHash<QString, BaseCommandServicePtr> m_serviceList;
 };

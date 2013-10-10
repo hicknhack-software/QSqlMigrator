@@ -50,8 +50,6 @@ class MigrationExecutionContext;
 
 namespace SqliteMigrator {
 
-QSharedPointer<CommandExecution::CommandExecutionServiceRepository> SQLITEMIGRATOR_DLL_EXPORT commandServiceRepository();
-
 /*!
  * \brief   Use this function to setup your excution context for sqlite migrations.
  *

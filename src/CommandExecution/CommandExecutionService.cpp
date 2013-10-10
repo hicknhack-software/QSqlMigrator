@@ -29,7 +29,7 @@
 
 namespace CommandExecution {
 
-bool CommandExecutionService::execute(const Commands::CommandPtr command, Direction direction
+bool CommandExecutionService::execute(const Commands::CommandPtr command
                                       , CommandServiceRepositoryPtr serviceRepository
                                       , CommandExecutionContext &context) const
 {
@@ -49,28 +49,16 @@ bool CommandExecutionService::execute(const Commands::CommandPtr command, Direct
         return false;
     }
 
-    switch (direction) {
-    case Up:
-        if (service->isUpValid(command, context)) {
-            return service->up(command, context);
-        }
-        break;
-
-    case Down:
-        if (service->isDownValid(command, context)) {
-            return service->down(command, context);
-        }
-        break;
-
-    default:
-        break;
+    if (service->isValid(command, context)) {
+        return service->execute(command, context);
     }
 
     return false;
 }
 
-bool CommandExecutionService::batch(const Commands::CommandPtrList &commandList, Direction direction
-                                    , Commands::CommandPtrList &undoCommands, CommandServiceRepositoryPtr serviceRepository
+bool CommandExecutionService::batch(const Commands::CommandPtrList &commandList
+                                    , Commands::CommandPtrList &undoCommands
+                                    , CommandServiceRepositoryPtr serviceRepository
                                     , CommandExecutionContext &context) const
 {
     foreach (Commands::CommandPtr command, commandList) {
@@ -78,7 +66,7 @@ bool CommandExecutionService::batch(const Commands::CommandPtrList &commandList,
             ::qDebug() << LOG_PREFIX << Q_FUNC_INFO << "command is 0!";
             return false;
         }
-        bool isSuccess = this->execute(command, direction, serviceRepository, context);
+        bool isSuccess = this->execute(command, serviceRepository, context);
         if (!isSuccess) {
             return false; // last command failed
         }

@@ -27,9 +27,10 @@
 
 namespace CommandExecution {
 
-CommandExecutionContext::CommandExecutionContext(const QSqlDatabase database, const MigrationExecution::MigrationExecutionConfig &migrationConfig)
+CommandExecutionContext::CommandExecutionContext(const QSqlDatabase database, const MigrationExecution::MigrationExecutionConfig &migrationConfig, const Helper::HelperAggregate &helperAggregate)
     : m_database(database)
     , m_migrationConfig(migrationConfig)
+    , m_helperAggregate(helperAggregate)
     , m_isUndoUsed(false)
 {
 }
@@ -65,6 +66,11 @@ Commands::CommandPtr CommandExecutionContext::currentUndoCommand() const
 const MigrationExecution::MigrationExecutionConfig &CommandExecutionContext::migrationConfig() const
 {
     return m_migrationConfig;
+}
+
+const Helper::HelperAggregate &CommandExecutionContext::helperAggregate() const
+{
+    return m_helperAggregate;
 }
 
 void CommandExecutionContext::setIsUndoUsed(bool isUndoUsed)
