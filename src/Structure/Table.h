@@ -55,6 +55,8 @@ public:
         return this->add(column);
     }
 
+    Column fetchColumnByName(const QString &name, bool &success);
+
 private:
     QString m_name;
     QList<Column> m_columns;

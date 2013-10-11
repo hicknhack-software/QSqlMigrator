@@ -49,34 +49,29 @@ bool BaseSqlAlterColumnTypeService::execute(const Commands::ConstCommandPtr &com
 {
     QSharedPointer<const Commands::AlterColumnType> alterColumnType(command.staticCast<const Commands::AlterColumnType>());
 
-    Structure::Table origTable = context.helperAggregate().dbReaderService->getTableDefinition(alterColumnType->tableName(), context.database());
-    QString originalType;
-    QScopedPointer<Structure::Column> modifiedColumn;
-    //TODO: check if colum even exists -> error handling
-    //TODO: make this foreach-loop into own function
-    foreach (Structure::Column column, origTable.columns()) {
-        if (column.name() == alterColumnType->columnName()) {
-            originalType = column.sqlType();
-            modifiedColumn.reset(new Structure::Column(column.name(), alterColumnType->newType(), column.attributes()));
-            if (column.hasDefaultValue()) {
-                modifiedColumn->setDefault(column.defaultValue());
-            }
-            break;
-        }
-    }
+    Structure::Column originalColumn("", "");
+    bool success;
+    originalColumn = context.helperAggregate()
+            .dbReaderService->getTableDefinition(alterColumnType->tableName(), context.database())
+            .fetchColumnByName(alterColumnType->columnName(), success);
 
-    QString columnDefinition = context.helperAggregate().columnService->generateColumnDefinitionSql(*modifiedColumn);
+    if (!success)
+        return success; // failed, column doesn't exist
+
+    Structure::Column modifiedColumn(originalColumn.name(), alterColumnType->newType(), originalColumn.attributes());
+
+    QString columnDefinition = context.helperAggregate().columnService->generateColumnDefinitionSql(modifiedColumn);
 
     QString alterQuery = QString("ALTER TABLE %1 MODIFY COLUMN %2")
             .arg(context.helperAggregate().quoteService->quoteTableName(alterColumnType->tableName())
                  , columnDefinition);
 
-    bool success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
+    success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
 
     if (success && context.isUndoUsed()) {
         Commands::CommandPtr undoCommand(new Commands::AlterColumnType(alterColumnType->columnName()
                                                                        , alterColumnType->tableName()
-                                                                       , originalType
+                                                                       , originalColumn.sqlType()
                                                                        , alterColumnType->newType()));
         context.setUndoCommand(undoCommand);
     }

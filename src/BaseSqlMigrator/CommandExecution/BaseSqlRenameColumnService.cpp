@@ -52,26 +52,25 @@ bool BaseSqlRenameColumnService::execute(const Commands::ConstCommandPtr &comman
 {
     QSharedPointer<const Commands::RenameColumn> renameColumn(command.staticCast<const Commands::RenameColumn>());
 
-    Structure::Table origTable = context.helperAggregate().dbReaderService->getTableDefinition(renameColumn->tableName(), context.database());
-    QScopedPointer<Structure::Column> modifiedColumn;
-    foreach (Structure::Column column, origTable.columns()) {
-        if (column.name() == renameColumn->name()) {
-            modifiedColumn.reset(new Structure::Column(renameColumn->newName(), column.sqlType(), column.attributes()));
-            if (column.hasDefaultValue()) {
-                modifiedColumn->setDefault(column.defaultValue());
-            }
-            break;
-        }
-    }
+    Structure::Column originalColumn("", "");
+    bool success;
+    originalColumn = context.helperAggregate()
+            .dbReaderService->getTableDefinition(renameColumn->tableName(), context.database())
+            .fetchColumnByName(renameColumn->name(), success);
 
-    QString columnDefinition = context.helperAggregate().columnService->generateColumnDefinitionSql(*modifiedColumn);
+    if (!success)
+        return success; // failed, column doesn't exist
+
+    Structure::Column modifiedColumn(renameColumn->newName(), originalColumn.sqlType(), originalColumn.attributes());
+
+    QString columnDefinition = context.helperAggregate().columnService->generateColumnDefinitionSql(modifiedColumn);
 
     QString alterQuery = QString("ALTER TABLE %1 CHANGE COLUMN %2 %3")
             .arg(context.helperAggregate().quoteService->quoteTableName(renameColumn->tableName())
                  , renameColumn->name()
                  , columnDefinition);
 
-    bool success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
+    success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
 
     if (success && context.isUndoUsed()) {
         context.setUndoCommand(renameColumn->reverse());

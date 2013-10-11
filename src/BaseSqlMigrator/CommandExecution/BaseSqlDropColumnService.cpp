@@ -49,27 +49,23 @@ bool BaseSqlDropColumnService::execute(const Commands::ConstCommandPtr &command
 {
     QSharedPointer<const Commands::DropColumn> dropColumn(command.staticCast<const Commands::DropColumn>());
 
-    Structure::Table origTable = context.helperAggregate().dbReaderService->getTableDefinition(dropColumn->tableName(), context.database());
-    QScopedPointer<Structure::Column> originalColumn;
-    //TODO: error checking if column was found
-    foreach (Structure::Column column, origTable.columns()) {
-        if (column.name() == dropColumn->columnName()) {
-            originalColumn.reset(new Structure::Column(column.name(), column.sqlType(), column.attributes()));
-            if (column.hasDefaultValue()) {
-                originalColumn->setDefault(column.defaultValue());
-            }
-            break;
-        }
-    }
+    Structure::Column originalColumn("", "");
+    bool success;
+    originalColumn = context.helperAggregate()
+            .dbReaderService->getTableDefinition(dropColumn->tableName(), context.database())
+            .fetchColumnByName(dropColumn->columnName(), success);
+
+    if (!success)
+        return success; // failed, column doesn't exist
 
     QString alterQuery = QString("ALTER TABLE %1 DROP COLUMN %2")
             .arg(context.helperAggregate().quoteService->quoteTableName(dropColumn->tableName())
                  , context.helperAggregate().quoteService->quoteColumnName(dropColumn->columnName()));
 
-    bool success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
+    success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
 
     if (success && context.isUndoUsed()) {
-        context.setUndoCommand(Commands::CommandPtr(new Commands::AddColumn(*originalColumn
+        context.setUndoCommand(Commands::CommandPtr(new Commands::AddColumn(originalColumn
                                                                             , dropColumn->tableName())));
     }
 

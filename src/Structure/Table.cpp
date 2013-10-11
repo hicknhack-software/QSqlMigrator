@@ -84,4 +84,16 @@ Table &Table::add(const Column &column)
     return (*this);
 }
 
+Column Table::fetchColumnByName(const QString &name, bool &success)
+{
+    foreach (Structure::Column column, m_columns) {
+        if (column.name() == name) {
+            success = true;
+            return column;
+        }
+    }
+    success = false;
+    return Column("", "");
+}
+
 } //namespace Structure
