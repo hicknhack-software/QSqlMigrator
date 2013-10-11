@@ -23,23 +23,30 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef HELPER_MYSQLQUOTESERVICE_H
-#define HELPER_MYSQLQUOTESERVICE_H
+#ifndef MIGRATIONTRACKER_MIGRATIONTABLESERVICE_H
+#define MIGRATIONTRACKER_MIGRATIONTABLESERVICE_H
 
-#include <QString>
+#include "MigrationTracker/BaseMigrationTrackerService.h"
+#include "BaseSqlMigrator/BaseSqlMigrator.h"
 
-namespace Helper {
+namespace MigrationTracker {
 
-class MysqlQuoteService
+class QSQLMIGRATOR_DLL_EXPORT MigrationTableService : public MigrationTracker::BaseMigrationTrackerService
 {
 public:
-    MysqlQuoteService();
+    ~MigrationTableService() {};
 
-    static QString quoteTableName(const QString &tableName);
-    static QString quoteColumnName(const QString &columnName);
-    static QString quoteString(const QString &string);
+    bool canRevertStrucuturalChangesUsingTransactions() const;
+    bool wasMigrationExecuted(const QString &migrationName
+                              , const CommandExecution::CommandExecutionContext &context) const;
+    QStringList migrationList(const CommandExecution::CommandExecutionContext &context) const;
+
+    bool addMigration(const QString &migrationName, const CommandExecution::CommandExecutionContext &context) const;
+    bool removeMigration(const QString &migrationName, const CommandExecution::CommandExecutionContext &context) const;
+
+    bool ensureVersionTable(const MigrationExecution::MigrationExecutionContext &context) const;
 };
 
-} // namespace Helper
+} // namespace MigrationTracker
 
-#endif // HELPER_MYSQLQUOTESERVICE_H
+#endif // MYSQLMIGRATIONTABLESERVICE_H

@@ -37,17 +37,9 @@ else:unix:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$LIB_PATH/libQSqlMigr
 # }
 
 SOURCES += \
-	 Helper/MysqlQuoteService.cpp \
-	 Helper/MysqlColumnService.cpp \
-	 MigrationTracker/MysqlMigrationTableService.cpp \
-	 Helper/MysqlDbReader.cpp \
 	 MysqlMigrator.cpp
 
 HEADERS += \
-	 Helper/MysqlQuoteService.h \
-	 Helper/MysqlColumnService.h \
-	 MigrationTracker/MysqlMigrationTableService.h \
-	 Helper/MysqlDbReader.h \
 	 MysqlMigrator.h
 
 unix:!symbian {

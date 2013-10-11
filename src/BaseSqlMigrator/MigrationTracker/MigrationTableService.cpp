@@ -23,9 +23,8 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "MysqlMigrator/MigrationTracker/MysqlMigrationTableService.h"
+#include "MigrationTableService.h"
 
-#include "MysqlMigrator/Helper/MysqlQuoteService.h"
 #include "MigrationExecution/MigrationExecutionContext.h"
 
 #include <QDebug>
@@ -34,28 +33,22 @@
 
 namespace MigrationTracker {
 
-MysqlMigrationTableService::MysqlMigrationTableService()
-{
-}
-
-bool MysqlMigrationTableService::canRevertStrucuturalChangesUsingTransactions() const
+bool MigrationTableService::canRevertStrucuturalChangesUsingTransactions() const
 {
     return false;
 }
 
-bool MysqlMigrationTableService::wasMigrationExecuted(const QString &migrationName
+bool MigrationTableService::wasMigrationExecuted(const QString &migrationName
                                                       , const CommandExecution::CommandExecutionContext &context) const
 {
     return this->migrationList(context).contains(migrationName);
 }
 
-QStringList MysqlMigrationTableService::migrationList(const CommandExecution::CommandExecutionContext &context) const
+QStringList MigrationTableService::migrationList(const CommandExecution::CommandExecutionContext &context) const
 {
-
-
     QString versionTableName = context.migrationConfig().migrationVersionTableName;
-    QSqlQuery sqlQuery = context.database().exec("SELECT version FROM "
-                                                 + Helper::MysqlQuoteService::quoteTableName(versionTableName));
+    QSqlQuery sqlQuery = context.database().exec(QString("SELECT version FROM %1")
+                                                 .arg(context.helperAggregate().quoteService->quoteTableName(versionTableName)));
 
     QStringList migrationList;
     if (sqlQuery.lastError().isValid()) {
@@ -68,13 +61,13 @@ QStringList MysqlMigrationTableService::migrationList(const CommandExecution::Co
     return migrationList;
 }
 
-bool MysqlMigrationTableService::addMigration(const QString &migrationName
+bool MigrationTableService::addMigration(const QString &migrationName
                                               , const CommandExecution::CommandExecutionContext &context) const
 {
     QString versionTableName = context.migrationConfig().migrationVersionTableName;
-    QString query = "INSERT INTO %1 (version) VALUE (%2)";
-    query = query.arg(Helper::MysqlQuoteService::quoteTableName(versionTableName)
-                      , Helper::MysqlQuoteService::quoteString(migrationName));
+    QString query = QString("INSERT INTO %1 (version) VALUES (%2)")
+            .arg(context.helperAggregate().quoteService->quoteTableName(versionTableName)
+                 , context.helperAggregate().quoteService->quoteString(migrationName));
     ::qDebug() << "adding entry to version table. complete query looks like:";
     ::qDebug() << query;
     QSqlQuery sqlQuery = context.database().exec(query);
@@ -85,13 +78,15 @@ bool MysqlMigrationTableService::addMigration(const QString &migrationName
     return true;
 }
 
-bool MysqlMigrationTableService::removeMigration(const QString &migrationName
+bool MigrationTableService::removeMigration(const QString &migrationName
                                                  , const CommandExecution::CommandExecutionContext &context) const
 {
     QString versionTableName = context.migrationConfig().migrationVersionTableName;
-    QString query = "DELETE FROM %1 WHERE version = %2";
-    query = query.arg(Helper::MysqlQuoteService::quoteTableName(versionTableName)
-                      , Helper::MysqlQuoteService::quoteString(migrationName));
+    QString query = QString("DELETE FROM %1 WHERE version = %2")
+            .arg(context.helperAggregate().quoteService->quoteTableName(versionTableName)
+                 , context.helperAggregate().quoteService->quoteString(migrationName));
+    ::qDebug() << "removing entry to version table. complete query looks like:";
+    ::qDebug() << query;
     QSqlQuery sqlQuery = context.database().exec(query);
     if (sqlQuery.lastError().isValid()) {
         ::qDebug() << Q_FUNC_INFO << sqlQuery.lastError().text();
@@ -100,16 +95,16 @@ bool MysqlMigrationTableService::removeMigration(const QString &migrationName
     return true;
 }
 
-bool MysqlMigrationTableService::ensureVersionTable(const MigrationExecution::MigrationExecutionContext &context) const
+bool MigrationTableService::ensureVersionTable(const MigrationExecution::MigrationExecutionContext &context) const
 {
     QStringList tables = context.database().tables(QSql::AllTables);
     QString versionTableName = context.migrationConfig().migrationVersionTableName;
-    if(!tables.contains(versionTableName))
-    {
-        QString query = "CREATE TABLE %1 (version varchar(255) NOT NULL, PRIMARY KEY (version))";
+    if(!tables.contains(versionTableName)) {
+        QString query = QString("CREATE TABLE %1 (version varchar(255) NOT NULL, PRIMARY KEY (version))")
+                .arg(context.helperAggregate().quoteService->quoteTableName(versionTableName));
         ::qDebug() << "creating migrationVersion table! query looks like:";
-        ::qDebug() << query.arg(Helper::MysqlQuoteService::quoteTableName(versionTableName));
-        QSqlQuery sqlQuery = context.database().exec(query.arg(Helper::MysqlQuoteService::quoteTableName(versionTableName)));
+        ::qDebug() << query;
+        QSqlQuery sqlQuery = context.database().exec(query.arg(context.helperAggregate().quoteService->quoteTableName(versionTableName)));
         if (sqlQuery.lastError().isValid())
         {
             ::qDebug() << Q_FUNC_INFO << sqlQuery.lastError().text();

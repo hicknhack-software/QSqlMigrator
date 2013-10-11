@@ -28,7 +28,7 @@
 
 #include "CommandExecution/CustomCommandService.h"
 
-#include "MigrationTracker/MysqlMigrationTableService.h"
+#include "BaseSqlMigrator/MigrationTracker/MigrationTableService.h"
 #include "MigrationExecution/MigrationExecutionContext.h"
 
 
@@ -43,7 +43,7 @@ bool buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDa
     BaseSqlMigrator::createHelperAggregate(helperAggregate);
 
     MigrationTableServicePtr migrationTableService =
-            MigrationTableServicePtr(new MigrationTracker::MysqlMigrationTableService);
+            MigrationTableServicePtr(new MigrationTracker::MigrationTableService);
 
     context.setCommandServiceRepository(commandRepository);
     context.setHelperAggregate(helperAggregate);

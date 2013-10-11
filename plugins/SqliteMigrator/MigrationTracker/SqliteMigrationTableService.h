@@ -26,25 +26,17 @@
 #ifndef MIGRATIONTRACKER_SQLITEMIGRATIONTABLESERVICE_H
 #define MIGRATIONTRACKER_SQLITEMIGRATIONTABLESERVICE_H
 
-#include "MigrationTracker/BaseMigrationTrackerService.h"
+#include "BaseSqlMigrator/MigrationTracker/MigrationTableService.h"
 #include "SqliteMigrator/SqliteMigrator.h"
 
 namespace MigrationTracker {
 
-class SQLITEMIGRATOR_DLL_EXPORT SqliteMigrationTableService : public MigrationTracker::BaseMigrationTrackerService
+class SQLITEMIGRATOR_DLL_EXPORT SqliteMigrationTableService : public MigrationTracker::MigrationTableService
 {
 public:
     SqliteMigrationTableService();
 
     bool canRevertStrucuturalChangesUsingTransactions() const;
-    bool wasMigrationExecuted(const QString &migrationName
-                                      , const CommandExecution::CommandExecutionContext &context) const;
-    QStringList migrationList(const CommandExecution::CommandExecutionContext &context) const;
-
-    bool addMigration(const QString &migrationName, const CommandExecution::CommandExecutionContext &context) const;
-    bool removeMigration(const QString &migrationName, const CommandExecution::CommandExecutionContext &context) const;
-
-    bool ensureVersionTable(const MigrationExecution::MigrationExecutionContext &context) const;
 };
 
 } // namespace MigrationTracker

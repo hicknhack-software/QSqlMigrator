@@ -63,6 +63,7 @@ SOURCES += \
     BaseSqlMigrator/CommandExecution/BaseSqlRenameTableService.cpp \
     BaseSqlMigrator/Helper/BaseSqlColumnService.cpp \
     BaseSqlMigrator/Helper/BaseSqlQuoteService.cpp \
+    BaseSqlMigrator/MigrationTracker/MigrationTableService.cpp \
     Helper/HelperAggregate.cpp \
     Helper/ColumnService.cpp \
     Helper/DbReaderService.cpp \
@@ -115,6 +116,7 @@ HEADERS += \
     BaseSqlMigrator/CommandExecution/BaseSqlRenameTableService.h \
     BaseSqlMigrator/Helper/BaseSqlColumnService.h \
     BaseSqlMigrator/Helper/BaseSqlQuoteService.h \
+    BaseSqlMigrator/MigrationTracker/MigrationTableService.h \
     Helper/HelperAggregate.h \
     Helper/ColumnService.h \
     Helper/DbReaderService.h \

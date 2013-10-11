@@ -25,7 +25,6 @@
 ****************************************************************************/
 #include "../BasicTest/BasicTest.h"
 #include "MysqlMigrator/MysqlMigrator.h"
-#include "MysqlMigrator/MigrationTracker/MysqlMigrationTableService.h"
 
 #include "MysqlConfig.h"
 
