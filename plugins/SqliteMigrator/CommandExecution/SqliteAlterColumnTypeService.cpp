@@ -44,11 +44,13 @@ bool SqliteAlterColumnTypeService::execute(const Commands::ConstCommandPtr &comm
 {
     QSharedPointer<const Commands::AlterColumnType> alterColumnType(command.staticCast<const Commands::AlterColumnType>());
 
-    Helper::SqliteDbReaderService dbReader;
-    Structure::Table origTable = dbReader.getTableDefinition(alterColumnType->tableName(), context.database());
+    Structure::Table origTable = context.helperAggregate().dbReaderService->getTableDefinition(alterColumnType->tableName(), context.database());
     Structure::Table newTable = Structure::Table(alterColumnType->tableName());
+    Structure::Column originalColumn("", "");
+
     foreach (Structure::Column column, origTable.columns()) {
         if (column.name() == alterColumnType->columnName()) {
+            originalColumn = column;
             Structure::Column newColumn = Structure::Column(column.name(), alterColumnType->newType(), column.attributes());
             newTable.add(newColumn);
         } else {
@@ -57,7 +59,18 @@ bool SqliteAlterColumnTypeService::execute(const Commands::ConstCommandPtr &comm
     }
 
     SqliteAlterColumnService alterColumnService;
-    return alterColumnService.execute(origTable, newTable, context);
+    bool success = alterColumnService.execute(origTable, newTable, context);
+
+    //TODO: add test for undo logic of SqliteMigrator command execution services
+    if (success && context.isUndoUsed()) {
+        Commands::CommandPtr undoCommand(new Commands::AlterColumnType(alterColumnType->columnName()
+                                                                       , alterColumnType->tableName()
+                                                                       , originalColumn.sqlType()
+                                                                       , alterColumnType->newType()));
+        context.setUndoCommand(undoCommand);
+    }
+
+    return success;
 }
 
 } // namespace CommandExecution

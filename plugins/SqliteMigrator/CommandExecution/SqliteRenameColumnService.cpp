@@ -57,7 +57,14 @@ bool SqliteRenameColumnService::execute(const Commands::ConstCommandPtr &command
     }
 
     SqliteAlterColumnService alterColumnService;
-    return alterColumnService.execute(origTable, table, context);
+
+    bool success = alterColumnService.execute(origTable, table, context);
+
+    if (success && context.isUndoUsed()) {
+        context.setUndoCommand(renameColumn->reverse());
+    }
+
+    return success;
 }
 
 } // namespace CommandExecution

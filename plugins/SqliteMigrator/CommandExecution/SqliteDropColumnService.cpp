@@ -32,6 +32,7 @@
 #include "BaseSqlMigrator/CommandExecution/BaseSqlDropTableService.h"
 
 #include "Commands/CreateTable.h"
+#include "Commands/AddColumn.h"
 #include "Commands/DropColumn.h"
 #include "Commands/DropTable.h"
 #include "Commands/RenameTable.h"
@@ -50,12 +51,15 @@ bool SqliteDropColumnService::execute(const Commands::ConstCommandPtr &command
     QSharedPointer<const Commands::DropColumn> dropColumn(command.staticCast<const Commands::DropColumn>());
 
     Structure::Table table = context.helperAggregate().dbReaderService->getTableDefinition(dropColumn->tableName(), context.database());
+    bool success;
+    Structure::Column originalColumn = table.fetchColumnByName(dropColumn->columnName(), success);
+    if (!success)
+        return success;
     table = Structure::Table::copyWithoutColumn(table, dropColumn->columnName());
 
     QString tempTableName = QString("%1%2").arg(context.migrationConfig().temporaryTablePrefix
                                                 , dropColumn->tableName());
 
-    bool success;
     Commands::CommandPtr renameTable = Commands::CommandPtr(
                 new Commands::RenameTable(dropColumn->tableName(), tempTableName));
 
@@ -80,6 +84,11 @@ bool SqliteDropColumnService::execute(const Commands::ConstCommandPtr &command
     Commands::CommandPtr dropTable = Commands::CommandPtr(new Commands::DropTable(tempTableName));
     BaseSqlDropTableService dropTableService;
     success = dropTableService.execute(dropTable, context);
+
+    if (success && context.isUndoUsed()) {
+        context.setUndoCommand(Commands::CommandPtr(new Commands::AddColumn(originalColumn
+                                                                            , dropColumn->tableName())));
+    }
 
     return success;
 }
