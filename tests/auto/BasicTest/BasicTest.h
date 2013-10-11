@@ -45,6 +45,7 @@
 #include <QMap>
 #include <QObject>
 #include <QtTest>
+#include <QString>
 
 class BasicTest : public QObject
 {
@@ -63,9 +64,14 @@ private Q_SLOTS:
     void testTransaction();
     void testUndoCreateTable();
     void testUndoDropTable();
+    void testAlterColumnType();
+    void testDropColumn();
+    void testRenameColumn();
 
 protected:
     MigrationExecution::MigrationExecutionContext m_context;
+
+    void base_testCreadeIndex(QString &queryString, int valueIndex);
 };
 
 #endif // BASICTEST_H

@@ -25,7 +25,12 @@
 ****************************************************************************/
 #include "BasicTest.h"
 
+#include "CommandExecution/CommandExecutionContext.h"
+#include "CommandExecution/CommandExecutionService.h"
+
 #include <QScopedPointer>
+#include <QSqlQuery>
+#include <QSqlError>
 
 using namespace Structure;
 using namespace Migrations;
@@ -315,4 +320,151 @@ void BasicTest::testDropTableRevert()
 
     tables = m_context.database().tables(QSql::Tables);
     QVERIFY2(tables.contains("testtable1"), "testtable should be recreated during rollback!");
+}
+
+void BasicTest::testAlterColumnType()
+{
+    Commands::CommandPtr command(
+                new Commands::CreateTable(
+                    Table("testtable1")
+                    .add(Column("ID", "INTEGER", Column::Primary))
+                    .add(Column("name", "varchar(23)", Column::NotNullable))
+                    .add(Column("col1", "varchar(23)"))
+                    .add(Column("col2", "varchar(23)"))
+                    ));
+
+    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig(), m_context.helperAggregate());
+    CommandExecution::CommandExecutionService execution;
+    execution.execute(command, m_context.commandServiceRepository(), serviceContext);
+
+    QStringList tables = m_context.database().tables(QSql::Tables);
+    QVERIFY2(tables.contains("testtable1"), "testtable should be created during migration!");
+
+    //TODO insert some data
+
+    Commands::CommandPtr command2(
+                new Commands::AlterColumnType("col1", "testtable1", "varchar(42)"));
+    execution.execute(command2, m_context.commandServiceRepository(), serviceContext);
+
+    //check if old column was removed and new column included successfully
+    Structure::Table table = m_context.helperAggregate().dbReaderService->getTableDefinition("testtable1", m_context.database());
+    Structure::Column col1("", "");
+    bool success;
+    col1 = table.fetchColumnByName("col1", success);
+    QVERIFY2(success, "column col1 should exist");
+    QVERIFY2(col1.sqlType() == "varchar(42)", "column col1 should be retyped to varchar(42) during migration");
+
+    //TODO check if test data was copied correctly
+}
+
+//TODO: add functionality to read index?
+void BasicTest::base_testCreadeIndex(QString &queryString, int valueIndex)
+{
+    Commands::CommandPtr command(
+                new Commands::CreateTable(
+                    Table("testtable1")
+                    .add(Column("ID", "int", Column::Primary))
+                    .add(Column("name", "varchar(23)", Column::NotNullable))
+                    .add(Column("col1", "varchar(23)"))
+                    .add(Column("col2", "varchar(23)"))
+                    ));
+
+    Commands::CommandPtr command2(
+                new Commands::CreateIndex(
+                    Index("index1", "testtable1")
+                    .addColumn("name", Index::Ascending)
+                    .addColumn("col1", Index::Descending)
+                    .addColumn("col2")
+                    ));
+
+    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig(), m_context.helperAggregate());
+    CommandExecution::CommandExecutionService execution;
+    execution.execute(command, m_context.commandServiceRepository(), serviceContext);
+    execution.execute(command2, m_context.commandServiceRepository(), serviceContext);
+
+    QStringList tables = m_context.database().tables(QSql::Tables);
+    QVERIFY2(tables.contains("testtable1"), "testtable should be created during migration!");
+
+    //check if index was created successfully
+    bool indexPresent = false;
+    QSqlQuery query = m_context.database().exec(queryString);
+    QSqlError error = query.lastError();
+    QVERIFY2(!error.isValid(), "query should run without any error");
+    if (error.isValid()) {
+        ::qDebug() << Q_FUNC_INFO << error.text();
+    } else {
+        while (query.next()) {
+            QString name = query.value(valueIndex).toString();
+            if (name == "index1") {
+                indexPresent = true;
+            }
+        }
+    }
+    QVERIFY2(indexPresent, "index1 should be created during CreateIndex");
+}
+
+void BasicTest::testDropColumn()
+{
+    Commands::CommandPtr command(
+                new Commands::CreateTable(
+                    Table("testtable1")
+                    .add(Column("ID", "INTEGER", Column::Primary))
+                    .add(Column("name", "varchar(23)", Column::NotNullable))
+                    .add(Column("col1", "varchar(23)"))
+                    .add(Column("col2", "varchar(23)"))
+                    ));
+
+    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig(), m_context.helperAggregate());
+    CommandExecution::CommandExecutionService execution;
+    execution.execute(command, m_context.commandServiceRepository(), serviceContext);
+
+    QStringList tables = m_context.database().tables(QSql::Tables);
+    QVERIFY2(tables.contains("testtable1"), "testtable should be created during migration!");
+
+    //TODO insert some data
+
+    Commands::CommandPtr command2(
+                new Commands::DropColumn("col1", "testtable1"));
+    execution.execute(command2, m_context.commandServiceRepository(), serviceContext);
+
+    //check if column was dropped successfully
+    bool columnRemoved;
+    m_context.database().exec("PRAGMA table_info(testtable1)");
+    m_context.helperAggregate().dbReaderService->getTableDefinition("testtable1", m_context.database()).fetchColumnByName("col1", columnRemoved);
+    QVERIFY2(!columnRemoved, "col1 should be removed during migration");
+}
+
+void BasicTest::testRenameColumn()
+{
+    Commands::CommandPtr command(
+                new Commands::CreateTable(
+                    Table("testtable1")
+                    .add(Column("ID", "INTEGER", Column::Primary))
+                    .add(Column("name", "varchar(23)", Column::NotNullable))
+                    .add(Column("col1", "varchar(23)"))
+                    .add(Column("col2", "varchar(23)"))
+                    ));
+
+    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig(), m_context.helperAggregate());
+    CommandExecution::CommandExecutionService execution;
+    execution.execute(command, m_context.commandServiceRepository(), serviceContext);
+
+    QStringList tables = m_context.database().tables(QSql::Tables);
+    QVERIFY2(tables.contains("testtable1"), "testtable should be created during migration!");
+
+    //TODO insert some data
+
+    Commands::CommandPtr command2(
+                new Commands::RenameColumn("col1", "new_column1", "testtable1"));
+    execution.execute(command2, m_context.commandServiceRepository(), serviceContext);
+
+    //check if old column was removed and new column included successfully
+    Structure::Table table = m_context.helperAggregate().dbReaderService->getTableDefinition("testtable1", m_context.database());
+    bool columnRenamed;
+    Structure::Column column = table.fetchColumnByName("col1", columnRenamed);
+    QVERIFY2(!columnRenamed, "col1 should be removed during migration");
+    column = table.fetchColumnByName("new_column1", columnRenamed);
+    QVERIFY2(columnRenamed, "col1 should be renamed to new_colum1 during migration");
+
+    //TODO check if test data was copied correctly
 }
