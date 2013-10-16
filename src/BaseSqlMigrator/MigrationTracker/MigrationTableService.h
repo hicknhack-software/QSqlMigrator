@@ -26,8 +26,9 @@
 #ifndef MIGRATIONTRACKER_MIGRATIONTABLESERVICE_H
 #define MIGRATIONTRACKER_MIGRATIONTABLESERVICE_H
 
+#include "config.h"
+
 #include "MigrationTracker/BaseMigrationTrackerService.h"
-#include "BaseSqlMigrator/BaseSqlMigrator.h"
 
 namespace MigrationTracker {
 
