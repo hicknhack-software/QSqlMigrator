@@ -23,27 +23,24 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef BASESQLMIGRATOR_H
-#define BASESQLMIGRATOR_H
+#ifndef COMMANDEXECUTION_MYSQLALTERCOLUMNTYPESERVICE_H
+#define COMMANDEXECUTION_MYSQLALTERCOLUMNTYPESERVICE_H
 
-#include "CommandExecution/CommandExecutionServiceRepository.h"
+#include "MysqlMigrator/MysqlMigrator.h"
 
-#include "Helper/HelperAggregate.h"
+#include "BaseSqlMigrator/CommandExecution/BaseSqlAlterColumnTypeService.h"
 
-#include <Qt> // is this needed?
-#include <QSharedPointer>
-#include <QSqlDatabase>
+namespace CommandExecution {
 
-namespace MigrationExecution {
-class MigrationExecutionContext;
-}
+class MYSQLMIGRATOR_DLL_EXPORT MysqlAlterColumnTypeService : public BaseSqlAlterColumnTypeService
+{
+public:
+    MysqlAlterColumnTypeService();
 
-namespace BaseSqlMigrator {
+    bool execute(const Commands::ConstCommandPtr &command, CommandExecution::CommandExecutionContext &context) const;
+};
 
-QSharedPointer<CommandExecution::CommandExecutionServiceRepository> QSQLMIGRATOR_DLL_EXPORT commandServiceRepository();
+} // namespace CommandExecution
 
-void QSQLMIGRATOR_DLL_EXPORT createHelperAggregate(Helper::HelperAggregate &helperAggregate);
+#endif // COMMANDEXECUTION_MYSQLALTERCOLUMNTYPESERVICE_H
 
-} // namespace BaseSqlMigrator
-
-#endif // BASESQLMIGRATOR_H

@@ -49,7 +49,7 @@ bool BaseSqlDropColumnService::execute(const Commands::ConstCommandPtr &command
 {
     QSharedPointer<const Commands::DropColumn> dropColumn(command.staticCast<const Commands::DropColumn>());
 
-    Structure::Column originalColumn("", "");
+    Structure::Column originalColumn;
     bool success;
     originalColumn = context.helperAggregate()
             .dbReaderService->getTableDefinition(dropColumn->tableName(), context.database())

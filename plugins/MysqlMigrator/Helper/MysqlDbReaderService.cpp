@@ -23,7 +23,7 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "BaseSqlMigrator/Helper/BaseSqlDbReaderService.h"
+#include "MysqlMigrator/Helper/MysqlDbReaderService.h"
 
 #include "CommandExecution/CommandExecutionContext.h"
 
@@ -37,11 +37,11 @@ using namespace Structure;
 
 namespace Helper {
 
-BaseSqlDbReaderService::BaseSqlDbReaderService()
+MysqlDbReaderService::MysqlDbReaderService()
 {
 }
 
-Table BaseSqlDbReaderService::getTableDefinition(const QString &tableName
+Table MysqlDbReaderService::getTableDefinition(const QString &tableName
                                           , QSqlDatabase database) const
 {
     Table table = Table(tableName);

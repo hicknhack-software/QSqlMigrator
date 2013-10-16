@@ -23,36 +23,24 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef HELPER_BASESQLDBREADERSERVICE_H
-#define HELPER_BASESQLDBREADERSERVICE_H
+#ifndef COMMANDEXECUTION_MYSQLRENAMECOLUMNSERVICE_H
+#define COMMANDEXECUTION_MYSQLRENAMECOLUMNSERVICE_H
 
-#include "config.h"
+#include "MysqlMigrator/MysqlMigrator.h"
 
-#include "Helper/DbReaderService.h"
-
-#include <QString>
-#include <QSqlDatabase>
-
-namespace Structure {
-class Table;
-}
+#include "BaseSqlMigrator/CommandExecution/BaseSqlRenameColumnService.h"
 
 namespace CommandExecution {
-class CommandExecutionContext;
-}
 
-namespace Helper {
-
-class QSQLMIGRATOR_DLL_EXPORT BaseSqlDbReaderService : public DbReaderService
+class MYSQLMIGRATOR_DLL_EXPORT MysqlRenameColumnService : public BaseSqlRenameColumnService
 {
 public:
-    BaseSqlDbReaderService();
-    virtual ~BaseSqlDbReaderService() {};
+    MysqlRenameColumnService();
 
-    Structure::Table getTableDefinition(const QString &tableName
-                                        , QSqlDatabase database) const Q_DECL_OVERRIDE;
+    bool execute(const Commands::ConstCommandPtr &command, CommandExecution::CommandExecutionContext &context) const;
 };
 
-} // namespace Helper
+} // namespace CommandExecution
 
-#endif // HELPER_BASESQLDBREADER_H
+#endif // COMMANDEXECUTION_MYSQLRENAMECOLUMNSERVICE_H
+

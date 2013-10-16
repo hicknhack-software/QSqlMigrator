@@ -37,10 +37,16 @@ else:unix:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$LIB_PATH/libQSqlMigr
 # }
 
 SOURCES += \
-	 MysqlMigrator.cpp
+     MysqlMigrator.cpp \
+     Helper/MysqlDbReaderService.cpp \
+     CommandExecution/MysqlAlterColumnTypeService.cpp \
+     CommandExecution/MysqlRenameColumnService.cpp
 
 HEADERS += \
-	 MysqlMigrator.h
+     MysqlMigrator.h \
+     Helper/MysqlDbReaderService.h \
+     CommandExecution/MysqlAlterColumnTypeService.h \
+     CommandExecution/MysqlRenameColumnService.h
 
 unix:!symbian {
 	 maemo5 {

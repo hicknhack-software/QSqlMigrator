@@ -31,6 +31,8 @@
 
 #include <QDebug>
 #include <QStringList>
+#include <QSqlQuery>
+#include <QSqlError>
 
 namespace CommandExecution {
 
@@ -49,8 +51,8 @@ bool BaseSqlAlterColumnTypeService::execute(const Commands::ConstCommandPtr &com
 {
     QSharedPointer<const Commands::AlterColumnType> alterColumnType(command.staticCast<const Commands::AlterColumnType>());
 
-    Structure::Column originalColumn("", "");
-    bool success;
+    Structure::Column originalColumn;
+    bool success = true;
     originalColumn = context.helperAggregate()
             .dbReaderService->getTableDefinition(alterColumnType->tableName(), context.database())
             .fetchColumnByName(alterColumnType->columnName(), success);
@@ -60,13 +62,152 @@ bool BaseSqlAlterColumnTypeService::execute(const Commands::ConstCommandPtr &com
 
     Structure::Column modifiedColumn(originalColumn.name(), alterColumnType->newType(), originalColumn.attributes());
 
-    QString columnDefinition = context.helperAggregate().columnService->generateColumnDefinitionSql(modifiedColumn);
+    // alter type
+    if (modifiedColumn.sqlType() != originalColumn.sqlType()) {
+        QString alterQuery = QString("ALTER TABLE %1 ALTER COLUMN %2 SET DATA TYPE %3")
+                .arg(context.helperAggregate().quoteService->quoteTableName(alterColumnType->tableName())
+                     , context.helperAggregate().quoteService->quoteColumnName(modifiedColumn.name())
+                     , modifiedColumn.sqlType());
 
-    QString alterQuery = QString("ALTER TABLE %1 MODIFY COLUMN %2")
-            .arg(context.helperAggregate().quoteService->quoteTableName(alterColumnType->tableName())
-                 , columnDefinition);
+        success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
 
-    success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
+        if (!success)
+            return success; // query failed
+    }
+
+    // alter nullability
+    if (modifiedColumn.isNullable() != originalColumn.isNullable()) {
+
+        QString setOrDrop;
+        if (modifiedColumn.isNullable())
+            setOrDrop = "SET";
+        else
+            setOrDrop = "DROP";
+
+        QString alterQuery = QString("ALTER TABLE %1 ALTER COLUMN %2 %3 NOT NULL")
+                .arg(context.helperAggregate().quoteService->quoteTableName(alterColumnType->tableName())
+                     , context.helperAggregate().quoteService->quoteColumnName(originalColumn.name())
+                     , setOrDrop);
+
+        success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
+
+        if (!success)
+            return success; // query failed
+    }
+
+    // alter default
+    if (modifiedColumn.hasDefaultValue() != originalColumn.hasDefaultValue()) {
+        QString setOrDrop;
+        if (modifiedColumn.hasDefaultValue())
+            setOrDrop = QString("SET DEFAULT %1").arg(modifiedColumn.defaultValue());
+        else
+            setOrDrop = "DROP DEFAULT";
+
+        QString alterQuery = QString("ALTER TABLE %1 ALTER COLUMN %2 %3")
+                .arg(context.helperAggregate().quoteService->quoteTableName(alterColumnType->tableName())
+                     , context.helperAggregate().quoteService->quoteColumnName(originalColumn.name())
+                     , setOrDrop);
+
+        success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
+
+        if (!success)
+            return success; // query failed
+    }
+
+    // alter primary
+    if (modifiedColumn.isPrimary() != originalColumn.isPrimary()) {
+        if (modifiedColumn.isPrimary()) {
+            QString alterQuery = QString("ALTER TABLE %1 ADD PRIMARY KEY (%2)")
+                    .arg(context.helperAggregate().quoteService->quoteTableName(alterColumnType->tableName())
+                         , context.helperAggregate().quoteService->quoteColumnName(originalColumn.name()));
+
+            success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
+
+            if (!success)
+                return success; // query failed
+        } else { // remove primary key constraint
+            QString queryString = QString(
+                        "SELECT "
+                        "    a.constraint_name "
+                        "FROM "
+                        "    information_schema.table_constraints A, "
+                        "    information_schema.constraint_column_usage B "
+                        "WHERE "
+                        "    a.constraint_name = b.constraint_name AND "
+                        "    b.table_name = %1 AND "
+                        "    b.column_name = %2 AND "
+                        "    constraint_type = %3 " )
+                    .arg(context.helperAggregate().quoteService->quoteTableName(alterColumnType->tableName())
+                         , context.helperAggregate().quoteService->quoteColumnName(originalColumn.name())
+                         , context.helperAggregate().quoteService->quoteString("PRIMARY KEY"));
+            QSqlQuery query = context.database().exec(queryString);
+            QSqlError error = query.lastError();
+            if (error.isValid()) {
+                ::qDebug() << Q_FUNC_INFO << error.text();
+            } else {
+                // query should return scalar
+                QString constraint_name = query.value(0).toString();
+
+                QString alterQuery = QString("ALTER TABLE %1 DROP CONSTRAINT %2")
+                        .arg(context.helperAggregate().quoteService->quoteTableName(alterColumnType->tableName())
+                             , constraint_name);
+
+                success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
+
+                if (!success)
+                    return success; // query failed
+            }
+        }
+    }
+
+    // alter unique
+    if (modifiedColumn.isUnique() != originalColumn.isUnique()) {
+        if (modifiedColumn.isPrimary()) {
+            QString alterQuery = QString("ALTER TABLE %1 ADD UNIQUE (%2)")
+                    .arg(context.helperAggregate().quoteService->quoteTableName(alterColumnType->tableName())
+                         , context.helperAggregate().quoteService->quoteColumnName(originalColumn.name()));
+
+            success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
+
+            if (!success)
+                return success; // query failed
+        } else { // remove unique constraing
+            QString queryString = QString(
+                        "SELECT "
+                        "    a.constraint_name "
+                        "FROM "
+                        "    information_schema.table_constraints A, "
+                        "    information_schema.constraint_column_usage B "
+                        "WHERE "
+                        "    a.constraint_name = b.constraint_name AND "
+                        "    b.table_name = %1 AND "
+                        "    b.column_name = %2 AND "
+                        "    constraint_type = %3 ")
+                    .arg(context.helperAggregate().quoteService->quoteTableName(alterColumnType->tableName())
+                         , context.helperAggregate().quoteService->quoteColumnName(originalColumn.name())
+                         , context.helperAggregate().quoteService->quoteString("UNIQUE"));
+
+            QSqlQuery query = context.database().exec(queryString);
+            QSqlError error = query.lastError();
+            if (error.isValid()) {
+                ::qDebug() << Q_FUNC_INFO << error.text();
+            } else {
+                // query should return scalar
+                QString constraint_name = query.value(0).toString();
+
+                QString alterQuery = QString("ALTER TABLE %1 DROP CONSTRAINT %2")
+                        .arg(context.helperAggregate().quoteService->quoteTableName(alterColumnType->tableName())
+                             , constraint_name);
+
+                success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
+
+                if (!success)
+                    return success; // query failed
+            }
+        }
+    }
+
+    //alter auto increment not possible here, not in standard SQL
 
     if (success && context.isUndoUsed()) {
         Commands::CommandPtr undoCommand(new Commands::AlterColumnType(alterColumnType->columnName()
