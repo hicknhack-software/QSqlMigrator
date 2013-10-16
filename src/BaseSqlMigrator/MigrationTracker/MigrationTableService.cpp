@@ -104,7 +104,7 @@ bool MigrationTableService::ensureVersionTable(const MigrationExecution::Migrati
                 .arg(context.helperAggregate().quoteService->quoteTableName(versionTableName));
         ::qDebug() << "creating migrationVersion table! query looks like:";
         ::qDebug() << query;
-        QSqlQuery sqlQuery = context.database().exec(query.arg(context.helperAggregate().quoteService->quoteTableName(versionTableName)));
+        QSqlQuery sqlQuery = context.database().exec(query);
         if (sqlQuery.lastError().isValid())
         {
             ::qDebug() << Q_FUNC_INFO << sqlQuery.lastError().text();
