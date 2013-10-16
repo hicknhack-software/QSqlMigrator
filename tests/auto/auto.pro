@@ -3,4 +3,5 @@ TEMPLATE = subdirs
 SUBDIRS += \
     sqlite \
     api \
-    mysql
+    mysql \
+    postgresql

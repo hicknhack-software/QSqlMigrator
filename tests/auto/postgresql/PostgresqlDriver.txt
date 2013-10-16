@@ -1,0 +1,6 @@
+superuser: postgres
+password: root
+
+port 5432
+
+http://gnuwin32.sourceforge.net/packages/libintl.htm

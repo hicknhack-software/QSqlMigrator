@@ -4,3 +4,4 @@ CONFIG += debug_and_release
 SUBDIRS += \
     SqliteMigrator \
     MysqlMigrator \
+    PostgresqlMigrator
