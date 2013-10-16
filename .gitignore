@@ -27,6 +27,7 @@ Makefile
 
 /tests/auto/mysql/MysqlConfig.h
 /tests/auto/sqlite/SqliteConfig.h
+/tests/auto/postgresql/PostgresqlConfig.h
 /tests/auto/api/ApiConfig.h
 /bin/*
 /doc/*
