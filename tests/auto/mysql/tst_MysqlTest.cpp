@@ -63,6 +63,10 @@ MysqlTest::MysqlTest()
 {
 }
 
+/* Important note: it's not possible to delete a database while connected to it in MySQL,
+ * so to delete a database one needs to be connected to another meanwhile.
+ * Database MYSQL_STRUCTURE_DATABASE is used for this purpose. */
+
 void MysqlTest::initTestCase()
 {
     const QString applicationPath = QCoreApplication::applicationDirPath();
@@ -75,6 +79,13 @@ void MysqlTest::initTestCase()
     m_structure_database.setUserName(MYSQL_USERNAME);
     m_structure_database.setPassword(MYSQL_PASSWORD);
     m_structure_database.setDatabaseName(MYSQL_STRUCTURE_DATABASE);
+
+    m_structure_database.open();
+    QSqlQuery query;
+    if (!query.exec(QString("DROP DATABASE IF EXISTS %1").arg(MYSQLTEST_DATABASE_NAME))) {
+         ::qDebug() << query.lastError();
+    }
+    m_structure_database.close();
 
     ::qDebug() << "running test for MySQL";
 }
