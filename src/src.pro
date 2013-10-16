@@ -51,7 +51,6 @@ SOURCES += \
     Scheme/Database.cpp \
     Scheme/DbColumn.cpp \
     Scheme/DbTable.cpp \
-    BaseSqlMigrator/BaseSqlMigrator.cpp \
     BaseSqlMigrator/CommandExecution/BaseSqlAddColumnService.cpp \
     BaseSqlMigrator/CommandExecution/BaseSqlAlterColumnTypeService.cpp \
     BaseSqlMigrator/CommandExecution/BaseSqlCreateIndexService.cpp \
@@ -67,8 +66,7 @@ SOURCES += \
     Helper/HelperAggregate.cpp \
     Helper/ColumnService.cpp \
     Helper/DbReaderService.cpp \
-    Helper/QuoteService.cpp \
-    BaseSqlMigrator/Helper/BaseSqlDbReaderService.cpp
+    Helper/QuoteService.cpp
 
 HEADERS += \
 	 QSqlMigrator/QSqlMigratorService.h \
@@ -104,7 +102,6 @@ HEADERS += \
     Scheme/Database.h \
     Scheme/DbColumn.h \
     Scheme/DbTable.h \
-    BaseSqlMigrator/BaseSqlMigrator.h \
     BaseSqlMigrator/CommandExecution/BaseSqlAddColumnService.h \
     BaseSqlMigrator/CommandExecution/BaseSqlAlterColumnTypeService.h \
     BaseSqlMigrator/CommandExecution/BaseSqlCreateIndexService.h \
@@ -120,5 +117,4 @@ HEADERS += \
     Helper/HelperAggregate.h \
     Helper/ColumnService.h \
     Helper/DbReaderService.h \
-    Helper/QuoteService.h \
-    BaseSqlMigrator/Helper/BaseSqlDbReaderService.h
+    Helper/QuoteService.h
