@@ -128,6 +128,8 @@ void BasicTest::testTransaction()
     bool success = migrator.execute("Migration No1", migrationContext);
     QVERIFY2(success, "migration should work!");
 
+    // migration 'Migration No2' should fail, because table already exists
+    QTest::ignoreMessage(QtWarningMsg, "table allready exists! ");
     success = migrator.execute("Migration No2", migrationContext);
     QVERIFY2(!success, "migration should fail!");
     QStringList tables = m_context.database().tables(QSql::Tables);
@@ -164,6 +166,7 @@ void BasicTest::testUndoCreateTable()
                .add(Column("name", "varchar(23)", Column::NotNullable))
                ));
 
+    //QTest::ignoreMessage();
     MigrationExecutionService migrator;
     QMap<QString, const Migration*> migrationMap;
     migrationMap["Migration No1"] = &m;
@@ -178,6 +181,8 @@ void BasicTest::testUndoCreateTable()
     bool success = migrator.execute("Migration No1", migrationContext);
     QVERIFY2(success, "migration should work!");
 
+    // migration 'Migration No2' should fail, because table 'testtable1' already exists
+    QTest::ignoreMessage(QtWarningMsg, "table allready exists! ");
     success = migrator.execute("Migration No2", migrationContext);
     QVERIFY2(!success, "migration should fail!");
     QStringList tables = m_context.database().tables(QSql::Tables);
@@ -234,6 +239,8 @@ void BasicTest::testUndoDropTable()
     bool success = migrator.execute("Migration No1", migrationContext);
     QVERIFY2(success, "migration should work!");
 
+    // migration 'Migration No2' should fail, because table 'testtable2' will be created twice
+    QTest::ignoreMessage(QtWarningMsg, "table allready exists! ");
     success = migrator.execute("Migration No2", migrationContext);
     QVERIFY2(!success, "migration should fail!");
     QStringList tables = m_context.database().tables(QSql::Tables);
@@ -315,6 +322,8 @@ void BasicTest::testDropTableRevert()
     QStringList tables = m_context.database().tables(QSql::Tables);
     QVERIFY2(tables.contains("testtable1"), "testtable should be created during migration!");
 
+    // migration 'Migration No2' should fail, because table 'testtable1' no longer exists
+    QTest::ignoreMessage(QtWarningMsg, "table doesn't exist! ");
     success = migrator.execute("Migration No2", migrationContext);
     QVERIFY2(!success, "migration should fail!");
 
@@ -348,7 +357,7 @@ void BasicTest::testAlterColumnType()
 
     //check if old column was removed and new column included successfully
     Structure::Table table = m_context.helperAggregate().dbReaderService->getTableDefinition("testtable1", m_context.database());
-    Structure::Column col1("", "");
+    Structure::Column col1;
     bool success;
     col1 = table.fetchColumnByName("col1", success);
     QVERIFY2(success, "column col1 should exist");
@@ -429,7 +438,6 @@ void BasicTest::testDropColumn()
 
     //check if column was dropped successfully
     bool columnRemoved;
-    m_context.database().exec("PRAGMA table_info(testtable1)");
     m_context.helperAggregate().dbReaderService->getTableDefinition("testtable1", m_context.database()).fetchColumnByName("col1", columnRemoved);
     QVERIFY2(!columnRemoved, "col1 should be removed during migration");
 }
