@@ -23,7 +23,6 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "BaseSqlMigrator/BaseSqlMigrator.h"
 #include "SqliteMigrator/SqliteMigrator.h"
 
 #include "BaseSqlMigrator/CommandExecution/BaseSqlAddColumnService.h"
