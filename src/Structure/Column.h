@@ -52,11 +52,13 @@ public:
 
 public:
     explicit Column(const QString &name, const QString &sqlType, Attributes attributes = Nullable);
+    explicit Column(); // empty columns are needed at several places and using the constructor above generates warnings (ugly)
 
     bool isNullable() const;
     bool isPrimary() const;
     bool isUnique() const;
     bool hasDefaultValue() const;
+    bool isAutoIncremented() const;
     const Attributes &attributes() const;
     const QString &defaultValue() const;
     const QString &name() const;

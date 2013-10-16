@@ -44,6 +44,13 @@ Column::Column(const QString &name, const QString &sqlType, Attributes attribute
     }
 }
 
+Column::Column()
+    : m_defaultValue(0)
+    , m_name("")
+    , m_sqlType("")
+    , m_attributes(Nullable)
+{}
+
 const QString &Column::name() const
 {
     return m_name;
@@ -82,6 +89,11 @@ const QString &Column::defaultValue() const
 bool Column::hasDefaultValue() const
 {
     return (!m_defaultValue.isNull());
+}
+
+bool Column::isAutoIncremented() const
+{
+    return m_attributes.testFlag(AutoIncrement);
 }
 
 Column &Column::setDefault(const QString &defaultValue)

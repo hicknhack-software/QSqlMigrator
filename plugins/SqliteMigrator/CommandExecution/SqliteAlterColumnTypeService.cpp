@@ -46,7 +46,7 @@ bool SqliteAlterColumnTypeService::execute(const Commands::ConstCommandPtr &comm
 
     Structure::Table origTable = context.helperAggregate().dbReaderService->getTableDefinition(alterColumnType->tableName(), context.database());
     Structure::Table newTable = Structure::Table(alterColumnType->tableName());
-    Structure::Column originalColumn("", "");
+    Structure::Column originalColumn;
 
     foreach (Structure::Column column, origTable.columns()) {
         if (column.name() == alterColumnType->columnName()) {

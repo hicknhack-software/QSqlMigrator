@@ -33,7 +33,7 @@ namespace Commands {
 
 DropColumn::DropColumn(const QString &columnName, const QString &tableName)
     : BaseCommand(DropColumn::typeName())
-    , m_column(Structure::Column("", ""))
+    , m_column(Structure::Column())
     , m_columnName(columnName)
     , m_hasColumn(false)
     , m_tableName(tableName)
