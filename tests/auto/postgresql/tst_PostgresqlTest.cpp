@@ -29,8 +29,6 @@
 #include "PostgresqlConfig.h"
 
 #include <QString>
-#include <QSqlError>
-#include <QSqlQuery>
 #include <QtTest>
 
 using namespace Structure;
@@ -48,98 +46,13 @@ public:
     PostgresqlTest();
 
 private Q_SLOTS:
-    void initTestCase();
-    void cleanupTestCase();
-    void init();
-    void cleanup();
-
     void testCreateIndex();
-
-private:
-    QSqlDatabase m_structure_database;
 };
 
-PostgresqlTest::PostgresqlTest()
+PostgresqlTest::PostgresqlTest() : BasicTest(POSTGRESQL_DRIVERNAME, POSTGRESQLTEST_DATABASE_NAME
+                            , &PostgresqlMigrator::buildContext, POSTGRESQL_STRUCTURE_DATABASE
+                            , POSTGRESQL_HOSTNAME, POSTGRESQL_HOSTPORT, POSTGRESQL_USERNAME, POSTGRESQL_PASSWORD)
 {
-}
-
-/* Important note: it's not possible to delete a database while connected to it in PostgreSQL,
- * so to delete a database one needs to be connected to another meanwhile.
- * Database POSTGRESQL_STRUCTURE_DATABASE is used for this purpose. */
-
-void PostgresqlTest::initTestCase()
-{
-    const QString applicationPath = QCoreApplication::applicationDirPath();
-    const QString absoluteApplicationPath = QDir(applicationPath).absolutePath();
-    QCoreApplication::addLibraryPath( absoluteApplicationPath ); // wichtig damit die Treiber gefunden werden
-
-    m_structure_database = QSqlDatabase::addDatabase(POSTGRESQL_DRIVERNAME);
-    m_structure_database.setHostName(POSTGRESQL_HOSTNAME);
-    m_structure_database.setPort(POSTGRESQL_HOSTPORT);
-    m_structure_database.setUserName(POSTGRESQL_USERNAME);
-    m_structure_database.setPassword(POSTGRESQL_PASSWORD);
-    m_structure_database.setDatabaseName(POSTGRESQL_STRUCTURE_DATABASE);
-
-    m_structure_database.database().open();
-    QSqlQuery query;
-    if (!query.exec(QString("DROP DATABASE IF EXISTS %1").arg(POSTGRESQLTEST_DATABASE_NAME))) {
-        ::qDebug() << query.lastError();
-    }
-    m_structure_database.database().close();
-
-    ::qDebug() << "running test for PostgreSQL";
-}
-
-void PostgresqlTest::cleanupTestCase()
-{
-    if (m_context.database().isOpen()) {
-        m_context.database().close();
-    }
-
-    m_structure_database.database().open();
-    QSqlQuery query;
-    if (!query.exec(QString("DROP DATABASE IF EXISTS %1").arg(POSTGRESQLTEST_DATABASE_NAME))) {
-         ::qDebug() << query.lastError();
-    }
-    m_structure_database.database().close();
-}
-
-void PostgresqlTest::init()
-{
-    m_structure_database.database().open();
-    QSqlQuery query;
-    if (!query.exec(QString("CREATE DATABASE %1").arg(POSTGRESQLTEST_DATABASE_NAME))) {
-        ::qDebug() << query.lastError();
-    }
-    m_structure_database.database().close();
-
-    QSqlDatabase database;
-    if(!QSqlDatabase::contains("context_connection")) {
-        database = QSqlDatabase::addDatabase(POSTGRESQL_DRIVERNAME, "context_connection");
-        database.setHostName(POSTGRESQL_HOSTNAME);
-        database.setPort(POSTGRESQL_HOSTPORT);
-        database.setUserName(POSTGRESQL_USERNAME);
-        database.setPassword(POSTGRESQL_PASSWORD);
-        database.setDatabaseName(POSTGRESQLTEST_DATABASE_NAME);
-    }
-    else
-        database =  m_context.database();
-
-    bool buildContextSuccess = PostgresqlMigrator::buildContext(m_context, database);
-    QVERIFY2(buildContextSuccess, "context should correctly builded");
-}
-
-void PostgresqlTest::cleanup()
-{
-    if (m_context.database().isOpen()) {
-        m_context.database().close();
-    }
-    m_structure_database.database().open();
-    QSqlQuery query;
-    if (!query.exec(QString("DROP DATABASE IF EXISTS %1").arg(POSTGRESQLTEST_DATABASE_NAME))) {
-         ::qDebug() << query.lastError();
-    }
-    m_structure_database.database().close();
 }
 
 void PostgresqlTest::testCreateIndex()

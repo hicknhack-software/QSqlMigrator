@@ -36,9 +36,99 @@ using namespace Structure;
 using namespace Migrations;
 using namespace MigrationExecution;
 
-BasicTest::BasicTest()
-    : m_context(QMap<QString, const Migration*>())
-{ 
+BasicTest::BasicTest(const QString &driverName, const QString &testDatabaseName
+                     , bool (*buildContext)(MigrationExecution::MigrationExecutionContext &, QSqlDatabase)
+              , const QString &structureDatabase, const QString &hostName
+            , const int hostPort, const QString &userName, const QString &password)
+    : m_driverName(driverName)
+    , m_testDatabaseName(testDatabaseName)
+    , m_buildContext(buildContext)
+    , m_structureDatabase(structureDatabase)
+    , m_hostName(hostName)
+    , m_hostPort(hostPort)
+    , m_userName(userName)
+    , m_password(password)
+    , m_context(QMap<QString, const Migration*>())
+{
+}
+
+/* Important note: it's not possible to delete a database while connected to it in some DBMS
+ * so to delete a database one needs to be connected to another meanwhile.
+ * Database POSTGRESQL_STRUCTURE_DATABASE is used for this purpose. */
+
+void BasicTest::initTestCase()
+{
+    const QString applicationPath = QCoreApplication::applicationDirPath();
+    const QString absoluteApplicationPath = QDir(applicationPath).absolutePath();
+    QCoreApplication::addLibraryPath( absoluteApplicationPath ); // wichtig damit die Treiber gefunden werden
+
+    m_structure_database = QSqlDatabase::addDatabase(m_driverName);
+    m_structure_database.setHostName(m_hostName);
+    m_structure_database.setPort(m_hostPort);
+    m_structure_database.setUserName(m_userName);
+    m_structure_database.setPassword(m_password);
+    m_structure_database.setDatabaseName(m_structureDatabase);
+
+    m_structure_database.database().open();
+    QSqlQuery query;
+    if (!query.exec(QString("DROP DATABASE IF EXISTS %1").arg(m_testDatabaseName))) {
+        ::qDebug() << query.lastError();
+    }
+    m_structure_database.database().close();
+}
+
+void BasicTest::cleanupTestCase()
+{
+    if (m_context.database().isOpen()) {
+        m_context.database().close();
+    }
+
+    m_structure_database.database().open();
+    QSqlQuery query;
+    if (!query.exec(QString("DROP DATABASE IF EXISTS %1").arg(m_testDatabaseName))) {
+         ::qDebug() << query.lastError();
+    }
+    m_structure_database.database().close();
+}
+
+void BasicTest::init()
+{
+    ::qDebug() << "running test for" << m_structureDatabase;
+
+    m_structure_database.database().open();
+    QSqlQuery query;
+    if (!query.exec(QString("CREATE DATABASE %1").arg(m_testDatabaseName))) {
+        ::qDebug() << query.lastError();
+    }
+    m_structure_database.database().close();
+
+    QSqlDatabase database;
+    if(!QSqlDatabase::contains("context_connection")) {
+        database = QSqlDatabase::addDatabase(m_driverName, "context_connection");
+        database.setHostName(m_hostName);
+        database.setPort(m_hostPort);
+        database.setUserName(m_userName);
+        database.setPassword(m_password);
+        database.setDatabaseName(m_testDatabaseName);
+    }
+    else
+        database =  m_context.database();
+
+    bool buildContextSuccess = m_buildContext(m_context, database);
+    QVERIFY2(buildContextSuccess, "context should correctly builded");
+}
+
+void BasicTest::cleanup()
+{
+    if (m_context.database().isOpen()) {
+        m_context.database().close();
+    }
+    m_structure_database.database().open();
+    QSqlQuery query;
+    if (!query.exec(QString("DROP DATABASE IF EXISTS %1").arg(m_testDatabaseName))) {
+         ::qDebug() << query.lastError();
+    }
+    m_structure_database.database().close();
 }
 
 void BasicTest::testCreateTable()

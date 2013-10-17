@@ -29,8 +29,6 @@
 #include "SqliteConfig.h"
 
 #include <QString>
-#include <QSqlError>
-#include <QSqlQuery>
 #include <QtTest>
 
 using namespace Structure;
@@ -53,7 +51,7 @@ private Q_SLOTS:
     void testCreateIndex();
 };
 
-SqliteTest::SqliteTest()
+SqliteTest::SqliteTest() : BasicTest(SQLITE_DRIVERNAME, SQLITE_DATABASE_FILE, &SqliteMigrator::buildContext)
 {
 }
 
@@ -67,8 +65,8 @@ void SqliteTest::cleanupTestCase()
     if (m_context.database().isOpen()) {
         m_context.database().close();
     }
-    if (QFile::exists(SQLITE_DATABASE_FILE)) {
-        QFile::remove(SQLITE_DATABASE_FILE);
+    if (QFile::exists(m_testDatabaseName)) {
+        QFile::remove(m_testDatabaseName);
     }
 }
 
@@ -76,8 +74,8 @@ void SqliteTest::init()
 {
     QSqlDatabase database;
     if(!QSqlDatabase::contains(/*default-connection*/)) {
-        database = QSqlDatabase::addDatabase(SQLITE_DRIVERNAME);
-        database.setDatabaseName(SQLITE_DATABASE_FILE);
+        database = QSqlDatabase::addDatabase(m_driverName);
+        database.setDatabaseName(m_testDatabaseName);
     }
     else
         database = m_context.database();
@@ -91,7 +89,7 @@ void SqliteTest::cleanup()
     if (m_context.database().isOpen()) {
         m_context.database().close();
     }
-    QFile::remove(SQLITE_DATABASE_FILE);
+    QFile::remove(m_testDatabaseName);
 }
 
 void SqliteTest::testCreateIndex()

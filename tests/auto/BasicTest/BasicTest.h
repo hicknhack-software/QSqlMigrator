@@ -47,16 +47,21 @@
 #include <QtTest>
 #include <QString>
 
+#include <QSqlDatabase>
+
 class BasicTest : public QObject
 {
     Q_OBJECT
-public:
-    BasicTest();
-
 private Q_SLOTS:
     virtual void testCreateIndex() = 0;
+
     //TODO add tests for "default value", "autoincrement" and other constraints
     //TODO check if versionTable is maintained correctly
+    virtual void initTestCase();
+    virtual void cleanupTestCase();
+    virtual void init();
+    virtual void cleanup();
+
     void testCreateTable();
     void testDropTable();
     void testDropTableRevert();
@@ -70,6 +75,25 @@ private Q_SLOTS:
 
 protected:
     MigrationExecution::MigrationExecutionContext m_context;
+
+    BasicTest(const QString &driverName, const QString &testDatabaseName
+              , bool (*buildContext)(MigrationExecution::MigrationExecutionContext &, QSqlDatabase)
+              , const QString &structureDatabase = "", const QString &hostName = ""
+            , const int hostPort = 0, const QString &userName = "", const QString &password = "");
+
+    QSqlDatabase m_structure_database;
+
+    const QString m_structureDatabase;
+    const QString m_testDatabaseName;
+
+    const QString m_driverName;
+
+    const QString m_hostName;
+    const int m_hostPort;
+    const QString m_userName;
+    const QString m_password;
+
+    bool (*m_buildContext)(MigrationExecution::MigrationExecutionContext &, QSqlDatabase);
 
     void base_testCreadeIndex(QString &queryString, int valueIndex);
 };
