@@ -93,7 +93,7 @@ Column Table::fetchColumnByName(const QString &name, bool &success)
         }
     }
     success = false;
-    return Column("", "");
+    return Column();
 }
 
 } //namespace Structure
