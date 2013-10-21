@@ -48,7 +48,7 @@ Column::Column()
     : m_defaultValue(0)
     , m_name("")
     , m_sqlType("")
-    , m_attributes(Nullable)
+    , m_attributes(None)
 {}
 
 const QString &Column::name() const
@@ -68,7 +68,7 @@ const Column::Attributes &Column::attributes() const
 
 bool Column::isNullable() const
 {
-    return m_attributes.testFlag(Nullable);
+    return !m_attributes.testFlag(NotNullable);
 }
 
 bool Column::isPrimary() const
