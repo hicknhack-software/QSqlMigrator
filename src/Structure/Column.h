@@ -36,23 +36,27 @@ namespace Structure {
 
 /*!
  * \brief The Column class represents a basic column-structure.
+ * Columns are default NULL (as in SQLite, MySQL and PostgreSQL).
+ * According to the SQL standard, PRIMARY KEY should always imply NOT NULL.
+ * UNIQUE columns can contain several NULL values (as in SQLite, MySQL and PostgreSQL)
+ * AutoIncrement is special: every DBMS handles some sort auf auto increment in it's own way.
  */
 class QSQLMIGRATOR_DLL_EXPORT Column
 {
 public:
     enum Attribute {
         None = 0,
-        NotNullable = 0,
-        Nullable = (1 << 0),
+        //Nullable = 0,
+        NotNullable = (1 << 0),
         Unique = (1 << 1),
-        Primary = (1 << 2),
+        Primary = (1 << 2) | (1 << 0),
         AutoIncrement = (1 << 3)
     };
     Q_DECLARE_FLAGS(Attributes, Attribute)
 
 public:
-    explicit Column(const QString &name, const QString &sqlType, Attributes attributes = Nullable);
-    explicit Column(); // empty columns are needed at several places and using the constructor above generates warnings (ugly)
+    explicit Column(const QString &name, const QString &sqlType, Attributes attributes = None);
+    Column(); // empty columns are needed at several places and using the constructor above generates warnings (ugly)
 
     bool isNullable() const;
     bool isPrimary() const;
