@@ -54,6 +54,8 @@ bool MysqlAlterColumnTypeService::execute(const Commands::ConstCommandPtr &comma
         return success; // failed, column doesn't exist
 
     Structure::Column modifiedColumn(originalColumn.name(), alterColumnType->newType(), originalColumn.attributes());
+    if (originalColumn.hasDefaultValue())
+        modifiedColumn.setDefault(originalColumn.defaultValue());
 
     QString columnDefinition = context.helperAggregate().columnService->generateColumnDefinitionSql(modifiedColumn);
 
