@@ -56,7 +56,7 @@ bool MysqlRenameColumnService::execute(const Commands::ConstCommandPtr &command
     if (!success)
         return success; // failed, column doesn't exist
 
-    Structure::Column modifiedColumn(renameColumn->newName(), originalColumn.sqlType(), originalColumn.attributes());
+    Structure::Column modifiedColumn(renameColumn->newName(), originalColumn.sqlTypeString(), originalColumn.attributes());
 
     QString columnDefinition = context.helperAggregate().columnService->generateColumnDefinitionSql(modifiedColumn);
 

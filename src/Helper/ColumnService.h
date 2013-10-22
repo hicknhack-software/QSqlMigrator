@@ -18,7 +18,7 @@ public:
     virtual ~ColumnService();
 
     virtual QString generateColumnDefinitionSql(const Structure::Column &column) const = 0;
-    virtual QString generateColumnDefinitionSql(const QList<Structure::Column> &columnList) const = 0;
+    virtual QString generateColumnsDefinitionSql(const QList<Structure::Column> &columnList) const = 0;
 
     virtual QString generateIndexColumnDefinitionSql(const QString &columnName
                                                      , const Structure::Index::SortOrder &sortOrder) const = 0;

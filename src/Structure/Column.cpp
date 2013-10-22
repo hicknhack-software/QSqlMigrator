@@ -29,26 +29,40 @@
 
 namespace Structure {
 
-Column::Column(const QString &name, const QString &sqlType, Attributes attributes)
+Column::Column(const QString &name, const QString &sqlTypeString, Attributes attributes)
     : m_defaultValue(0)
     , m_name(name)
-    , m_sqlType(sqlType)
+    , m_sqlTypeString(sqlTypeString)
     , m_attributes(attributes)
+    , m_hasSqlTypeString(true)
 {
     if(name.isEmpty()) {
         ::qWarning() << LOG_PREFIX << "Column with empty name!";
     }
 
-    if(sqlType.isEmpty()) {
+    if(sqlTypeString.isEmpty()) {
         ::qWarning() << LOG_PREFIX << "Column" << m_name << "with empty type!";
+    }
+}
+
+Column::Column(const QString &name, const ::sqlType &sqltype, Attributes attributes)
+    : m_defaultValue(0)
+    , m_name(name)
+    , m_sqlType(sqltype)
+    , m_attributes(attributes)
+    , m_hasSqlTypeString(false)
+{
+    if(name.isEmpty()) {
+        ::qWarning() << LOG_PREFIX << "Column with empty name!";
     }
 }
 
 Column::Column()
     : m_defaultValue(0)
     , m_name("")
-    , m_sqlType("")
+    , m_sqlTypeString("")
     , m_attributes(None)
+    , m_hasSqlTypeString(false)
 {}
 
 const QString &Column::name() const
@@ -56,7 +70,12 @@ const QString &Column::name() const
     return m_name;
 }
 
-const QString &Column::sqlType() const
+const QString &Column::sqlTypeString() const
+{
+    return m_sqlTypeString;
+}
+
+const ::sqlType &Column::sqlType() const
 {
     return m_sqlType;
 }
@@ -89,6 +108,11 @@ const QString &Column::defaultValue() const
 bool Column::hasDefaultValue() const
 {
     return (!m_defaultValue.isNull());
+}
+
+bool Column::hasSqlTypeString() const
+{
+   return m_hasSqlTypeString;
 }
 
 bool Column::isAutoIncremented() const

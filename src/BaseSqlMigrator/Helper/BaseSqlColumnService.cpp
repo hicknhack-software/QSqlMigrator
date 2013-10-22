@@ -35,34 +35,11 @@ BaseSqlColumnService::BaseSqlColumnService()
 {
 }
 
-QString BaseSqlColumnService::generateColumnDefinitionSql(const Column &column) const
-{
-    QStringList sqlColumnOptions;
-    if (!column.isNullable()) {
-        sqlColumnOptions << "NOT NULL";
-    }
-    if (column.isPrimary()) {
-        sqlColumnOptions << "PRIMARY KEY";
-        //primary key could be set to autoincrement
-        if (column.attributes().testFlag(Column::AutoIncrement)) {
-            sqlColumnOptions << "AUTOINCREMENT";
-        }
-    }
-    if (column.isUnique()) {
-        sqlColumnOptions << "UNIQUE";
-    }
-    if (column.hasDefaultValue()) {
-        sqlColumnOptions << QString("DEFAULT (%1)").arg(column.defaultValue());
-    }
-
-    return QString("%1 %2 %3").arg(column.name(), column.sqlType(), sqlColumnOptions.join(" "));
-}
-
-QString BaseSqlColumnService::generateColumnDefinitionSql(const QList<Column> &columnList) const
+QString BaseSqlColumnService::generateColumnsDefinitionSql(const QList<Column> &columnList) const
 {
     QStringList sqlColumnDefinitions;
     foreach (Column column, columnList) {
-        sqlColumnDefinitions << this->generateColumnDefinitionSql(column);
+        sqlColumnDefinitions << generateColumnDefinitionSql(column);
     }
     return sqlColumnDefinitions.join(", ");
 }

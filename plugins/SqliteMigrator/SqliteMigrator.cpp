@@ -39,8 +39,9 @@
 #include "Helper/HelperAggregate.h"
 
 #include "BaseSqlMigrator/Helper/BaseSqlQuoteService.h"
-#include "BaseSqlMigrator/Helper/BaseSqlColumnService.h"
+#include "SqliteMigrator/Helper/SqliteColumnService.h"
 #include "SqliteMigrator/Helper/SqliteDbReaderService.h"
+#include "BaseSqlMigrator/Helper/BaseSqlTypeMapperService.h"
 
 #include "CommandExecution/CustomCommandService.h"
 #include "MigrationExecution/MigrationExecutionContext.h"
@@ -77,9 +78,10 @@ void createHelperAggregate(Helper::HelperAggregate &helperAggregate)
 
     using namespace Helper;
 
-    helperAggregate.columnService.reset(new BaseSqlColumnService);
+    helperAggregate.columnService.reset(new SqliteColumnService);
     helperAggregate.dbReaderService.reset(new SqliteDbReaderService);
     helperAggregate.quoteService.reset(new BaseSqlQuoteService);
+    helperAggregate.typeMapperService.reset(new BaseSqlTypeMapperService);
 }
 
 bool buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDatabase database)

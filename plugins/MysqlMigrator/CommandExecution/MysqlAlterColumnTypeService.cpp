@@ -53,7 +53,13 @@ bool MysqlAlterColumnTypeService::execute(const Commands::ConstCommandPtr &comma
     if (!success)
         return success; // failed, column doesn't exist
 
-    Structure::Column modifiedColumn(originalColumn.name(), alterColumnType->newType(), originalColumn.attributes());
+    QString newType;
+    if (alterColumnType->hasSqlTypeString())
+        newType = alterColumnType->newTypeString();
+    else
+        newType = context.helperAggregate().typeMapperService->map(alterColumnType->newType());
+
+    Structure::Column modifiedColumn(originalColumn.name(), newType, originalColumn.attributes());
     if (originalColumn.hasDefaultValue())
         modifiedColumn.setDefault(originalColumn.defaultValue());
 
@@ -68,8 +74,8 @@ bool MysqlAlterColumnTypeService::execute(const Commands::ConstCommandPtr &comma
     if (success && context.isUndoUsed()) {
         Commands::CommandPtr undoCommand(new Commands::AlterColumnType(alterColumnType->columnName()
                                                                        , alterColumnType->tableName()
-                                                                       , originalColumn.sqlType()
-                                                                       , alterColumnType->newType()));
+                                                                       , originalColumn.sqlTypeString()
+                                                                       , newType));
         context.setUndoCommand(undoCommand);
     }
 

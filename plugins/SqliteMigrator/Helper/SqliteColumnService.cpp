@@ -23,9 +23,9 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "PostgresqlMigrator/Helper/PostgresqlColumnService.h"
+#include "SqliteColumnService.h"
 
-#include "PostgresqlMigrator/Helper/PostgresqlTypeMapperService.h"
+#include "BaseSqlMigrator/Helper/BaseSqlTypeMapperService.h"
 
 #include <QStringList>
 
@@ -35,34 +35,25 @@ using namespace Structure;
 
 namespace Helper {
 
-PostgresqlColumnService::PostgresqlColumnService()
+SqliteColumnService::SqliteColumnService()
 {
 }
 
-QString PostgresqlColumnService::generateColumnDefinitionSql(const Column &column) const
+QString SqliteColumnService::generateColumnDefinitionSql(const Column &column) const
 {
     QStringList sqlColumnOptions;
-    if (column.isPrimary()) {
-        sqlColumnOptions << "PRIMARY KEY";
-    }
-    QString sqlTypeString;
-    bool serial = false;
-    if (column.isAutoIncremented()) {
-        // PostgreSQL has no auto increment, instead there are serials (as types)
-        sqlTypeString = "SERIAL"; // TODO: what do with SMALLSERIAL and BIGSERIAL?
-        //TODO: maybe check given type to be of integer?
-        serial = true;
-    } else {
-        if (column.hasSqlTypeString())
-            sqlTypeString = column.sqlTypeString();
-        else {
-            PostgresqlTypeMapperService typeMapperService;
-            sqlTypeString = typeMapperService.map(column.sqlType());
-        }
-    }
-    // serials are already NOT NULL
-    if (!serial && !column.isNullable()) {
+    // PRIMARY KEY implies NOT NULL
+    if (!column.isNullable() && !column.isPrimary()) {
         sqlColumnOptions << "NOT NULL";
+    }
+    if (column.isPrimary()) {
+        // primary key may be automatically incremented
+        if (column.isAutoIncremented()) {
+            // in SQLite, the column of type INTEGER which is a PRIMARY KEY is an alias to ROWID,
+            // which is a special column with AUTOINCREMENT
+            sqlColumnOptions << "PRIMARY KEY";
+            //sqlColumnOptions << "AUTOINCREMENT"; //TODO: is this needed?
+        }
     }
     if (column.isUnique()) {
         sqlColumnOptions << "UNIQUE";
@@ -71,6 +62,13 @@ QString PostgresqlColumnService::generateColumnDefinitionSql(const Column &colum
         sqlColumnOptions << QString("DEFAULT (%1)").arg(column.defaultValue());
     }
 
+    QString sqlTypeString;
+    if (column.hasSqlTypeString())
+        sqlTypeString = column.sqlTypeString();
+    else {
+        BaseSqlTypeMapperService typeMapperService;
+        sqlTypeString = typeMapperService.map(column.sqlType());
+    }
     return QString("%1 %2 %3").arg(column.name(), sqlTypeString, sqlColumnOptions.join(" "));
 }
 

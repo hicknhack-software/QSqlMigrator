@@ -23,32 +23,22 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef HELPER_BASESQLCOLUMNSERVICE_H
-#define HELPER_BASESQLCOLUMNSERVICE_H
+#include "PostgresqlTypeMapperService.h"
 
 #include "Structure/Column.h"
-#include "Structure/Index.h"
 
-#include "Helper/ColumnService.h"
-
-#include <QString>
-#include <QHash>
+#include <QDebug>
 
 namespace Helper {
 
-class QSQLMIGRATOR_DLL_EXPORT BaseSqlColumnService : public ColumnService
+PostgresqlTypeMapperService::PostgresqlTypeMapperService()
 {
-public:
-    BaseSqlColumnService();
-    virtual ~BaseSqlColumnService() {};
-
-    QString generateColumnsDefinitionSql(const QList<Structure::Column> &columnList) const Q_DECL_OVERRIDE;
-
-    QString generateIndexColumnDefinitionSql(const QString &columnName
-                                                     , const Structure::Index::SortOrder &sortOrder) const Q_DECL_OVERRIDE;
-    QString generateIndexColumnDefinitionSql(const Structure::Index::IndexHash &columns) const Q_DECL_OVERRIDE;
-};
+    typeMap.insert(QVariant::Double,    "double precision");
+    typeMap.insert(QVariant::Time,      "time without time zone");
+    typeMap.insert(QVariant::DateTime,  "timestamp without time zone");
+    typeMap.insert(QVariant::Char,      "character(%1)");
+    typeMap.insert(QVariant::String,    "character varying(%1)");
+    typeMap.insert(QVariant::ByteArray, "bytea");
+}
 
 } // namespace Helper
-
-#endif // HELPER_BASESQLCOLUMNSERVICE_H

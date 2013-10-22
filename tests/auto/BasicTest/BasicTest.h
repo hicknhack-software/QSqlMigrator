@@ -72,6 +72,7 @@ private Q_SLOTS:
     void testAlterColumnType();
     void testDropColumn();
     void testRenameColumn();
+    void testColumnType();
 
 protected:
     MigrationExecution::MigrationExecutionContext m_context;
@@ -95,7 +96,7 @@ protected:
 
     bool (*m_buildContext)(MigrationExecution::MigrationExecutionContext &, QSqlDatabase);
 
-    void base_testCreadeIndex(QString &queryString, int valueIndex);
+    void base_testCreadeIndex(const QString &queryString, int valueIndex);
 };
 
 #endif // BASICTEST_H

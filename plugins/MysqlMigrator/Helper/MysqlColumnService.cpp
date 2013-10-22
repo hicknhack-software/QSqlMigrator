@@ -23,9 +23,12 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "PostgresqlMigrator/Helper/PostgresqlColumnService.h"
 
-#include "PostgresqlMigrator/Helper/PostgresqlTypeMapperService.h"
+#include "MysqlColumnService.h"
+
+#include "MysqlMigrator/Helper/MysqlTypeMapperService.h"
+
+#include "BaseSqlMigrator/Helper/BaseSqlColumnService.h"
 
 #include <QStringList>
 
@@ -35,34 +38,27 @@ using namespace Structure;
 
 namespace Helper {
 
-PostgresqlColumnService::PostgresqlColumnService()
+MysqlColumnService::MysqlColumnService()
 {
 }
 
-QString PostgresqlColumnService::generateColumnDefinitionSql(const Column &column) const
+QString MysqlColumnService::generateColumnDefinitionSql(const Column &column) const
 {
     QStringList sqlColumnOptions;
-    if (column.isPrimary()) {
-        sqlColumnOptions << "PRIMARY KEY";
-    }
-    QString sqlTypeString;
-    bool serial = false;
-    if (column.isAutoIncremented()) {
-        // PostgreSQL has no auto increment, instead there are serials (as types)
-        sqlTypeString = "SERIAL"; // TODO: what do with SMALLSERIAL and BIGSERIAL?
-        //TODO: maybe check given type to be of integer?
-        serial = true;
-    } else {
-        if (column.hasSqlTypeString())
-            sqlTypeString = column.sqlTypeString();
-        else {
-            PostgresqlTypeMapperService typeMapperService;
-            sqlTypeString = typeMapperService.map(column.sqlType());
-        }
-    }
-    // serials are already NOT NULL
-    if (!serial && !column.isNullable()) {
+    // PRIMARY KEY implies NOT NULL
+    if (!column.isPrimary() && !column.isNullable()) {
         sqlColumnOptions << "NOT NULL";
+    } // default is NULL for columns
+    if (column.isPrimary()) {
+        // TODO: handle PRIMARY KEY in function which call this one, so compound keys are handled easily
+        //sqlColumnOptions << "PRIMARY KEY";
+        if (column.isAutoIncremented()) { // primary key may be automatically incremented
+            sqlColumnOptions << "AUTO_INCREMENT";
+        }
+    } else if (column.isAutoIncremented()) {
+        // in MySQL there can be only one auto column and it must be defined as a key
+        ::qWarning() << "warning: column" << column.name()
+                 << ": in MySQL there can be only one auto column and it must be defined as a key";
     }
     if (column.isUnique()) {
         sqlColumnOptions << "UNIQUE";
@@ -71,6 +67,13 @@ QString PostgresqlColumnService::generateColumnDefinitionSql(const Column &colum
         sqlColumnOptions << QString("DEFAULT (%1)").arg(column.defaultValue());
     }
 
+    QString sqlTypeString;
+    if (column.hasSqlTypeString())
+        sqlTypeString = column.sqlTypeString();
+    else {
+        MysqlTypeMapperService typeMapperService;
+        sqlTypeString = typeMapperService.map(column.sqlType());
+    }
     return QString("%1 %2 %3").arg(column.name(), sqlTypeString, sqlColumnOptions.join(" "));
 }
 

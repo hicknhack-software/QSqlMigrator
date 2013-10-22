@@ -28,17 +28,23 @@
 
 #include "Commands/BaseCommand.h"
 
+#include "Structure/Column.h"
+
 namespace Commands {
 
 class QSQLMIGRATOR_DLL_EXPORT AlterColumnType : public BaseCommand
 {
 public:
     explicit AlterColumnType(const QString &columnName, const QString &tableName
-                             , const QString &newType, const QString &oldType = "");
+                             , const QString &newTypeString, const QString &oldType = "");
+    explicit AlterColumnType(const QString &columnName, const QString &tableName
+                             , const sqlType &newType, const QString &oldType = "");
 
     bool hasOldType() const;
+    bool hasSqlTypeString() const;
     const QString &columnName() const;
-    const QString &newType() const;
+    const sqlType &newType() const;
+    const QString &newTypeString() const;
     const QString &oldType() const;
     const QString &tableName() const;
     static const QString &typeName();
@@ -47,7 +53,9 @@ public:
 private:
     const QString m_tableName;
     const QString m_columnName;
-    const QString m_newType;
+    const sqlType m_newType;
+    const QString m_newTypeString;
+    const bool m_hasSqlTypeString;
     const QString m_oldType;
 };
 

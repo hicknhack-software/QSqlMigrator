@@ -48,10 +48,16 @@ bool SqliteAlterColumnTypeService::execute(const Commands::ConstCommandPtr &comm
     Structure::Table newTable = Structure::Table(alterColumnType->tableName());
     Structure::Column originalColumn;
 
+    QString newType;
+    if (alterColumnType->hasSqlTypeString())
+        newType = alterColumnType->newTypeString();
+    else
+        newType = context.helperAggregate().typeMapperService->map(alterColumnType->newType());
+
     foreach (Structure::Column column, origTable.columns()) {
         if (column.name() == alterColumnType->columnName()) {
             originalColumn = column;
-            Structure::Column newColumn = Structure::Column(column.name(), alterColumnType->newType(), column.attributes());
+            Structure::Column newColumn = Structure::Column(column.name(), newType, column.attributes());
             newTable.add(newColumn);
         } else {
             newTable.add(column);
@@ -65,8 +71,8 @@ bool SqliteAlterColumnTypeService::execute(const Commands::ConstCommandPtr &comm
     if (success && context.isUndoUsed()) {
         Commands::CommandPtr undoCommand(new Commands::AlterColumnType(alterColumnType->columnName()
                                                                        , alterColumnType->tableName()
-                                                                       , originalColumn.sqlType()
-                                                                       , alterColumnType->newType()));
+                                                                       , originalColumn.sqlTypeString()
+                                                                       , newType));
         context.setUndoCommand(undoCommand);
     }
 

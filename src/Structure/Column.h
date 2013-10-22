@@ -31,6 +31,17 @@
 #include <QSharedPointer>
 #include <QString>
 #include <QFlags>
+#include <QVariant>
+
+// available in global namespace
+class sqlType {
+public:
+    sqlType() {}
+    sqlType(QVariant::Type t, int precision=0, int scale=0) : type(t), n(precision), m(scale) {}
+    QVariant::Type type;
+    int n;
+    int m;
+};
 
 namespace Structure {
 
@@ -55,25 +66,30 @@ public:
     Q_DECLARE_FLAGS(Attributes, Attribute)
 
 public:
-    explicit Column(const QString &name, const QString &sqlType, Attributes attributes = None);
+    explicit Column(const QString &name, const QString &sqlTypeString, Attributes attributes = None);
+    explicit Column(const QString &name, const sqlType &sqltype, Attributes attributes = None);
     Column(); // empty columns are needed at several places and using the constructor above generates warnings (ugly)
 
     bool isNullable() const;
     bool isPrimary() const;
     bool isUnique() const;
     bool hasDefaultValue() const;
+    bool hasSqlTypeString() const;
     bool isAutoIncremented() const;
     const Attributes &attributes() const;
     const QString &defaultValue() const;
     const QString &name() const;
-    const QString &sqlType() const;
+    const QString &sqlTypeString() const;
+    const ::sqlType &sqlType() const;
 
     Column &setDefault(const QString &defaultValue);
 
 private:
     QSharedPointer<QString> m_defaultValue;
     QString m_name;
-    QString m_sqlType;
+    bool m_hasSqlTypeString;
+    ::sqlType m_sqlType;
+    QString m_sqlTypeString;
     /* const */ Attributes m_attributes;
 };
 

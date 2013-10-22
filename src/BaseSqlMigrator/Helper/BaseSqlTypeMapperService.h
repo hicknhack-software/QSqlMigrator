@@ -23,32 +23,27 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef HELPER_BASESQLCOLUMNSERVICE_H
-#define HELPER_BASESQLCOLUMNSERVICE_H
+#ifndef HELPER_BASESQLTYPEMAPPERSERVICE_H
+#define HELPER_BASESQLTYPEMAPPERSERVICE_H
+
+#include "config.h"
+
+#include "Helper/TypeMapperService.h"
 
 #include "Structure/Column.h"
-#include "Structure/Index.h"
-
-#include "Helper/ColumnService.h"
 
 #include <QString>
-#include <QHash>
 
 namespace Helper {
 
-class QSQLMIGRATOR_DLL_EXPORT BaseSqlColumnService : public ColumnService
+class QSQLMIGRATOR_DLL_EXPORT BaseSqlTypeMapperService : public TypeMapperService
 {
 public:
-    BaseSqlColumnService();
-    virtual ~BaseSqlColumnService() {};
+    BaseSqlTypeMapperService();
 
-    QString generateColumnsDefinitionSql(const QList<Structure::Column> &columnList) const Q_DECL_OVERRIDE;
-
-    QString generateIndexColumnDefinitionSql(const QString &columnName
-                                                     , const Structure::Index::SortOrder &sortOrder) const Q_DECL_OVERRIDE;
-    QString generateIndexColumnDefinitionSql(const Structure::Index::IndexHash &columns) const Q_DECL_OVERRIDE;
+    QString map(const sqlType &type) const Q_DECL_OVERRIDE;
 };
 
 } // namespace Helper
 
-#endif // HELPER_BASESQLCOLUMNSERVICE_H
+#endif // HELPER_BASESQLTYPEMAPPERSERVICE_H

@@ -60,18 +60,24 @@ bool BaseSqlAlterColumnTypeService::execute(const Commands::ConstCommandPtr &com
     if (!success)
         return success; // failed, column doesn't exist
 
+    QString newType;
+    if (alterColumnType->hasSqlTypeString())
+        newType = alterColumnType->newTypeString();
+    else
+        newType = context.helperAggregate().typeMapperService->map(alterColumnType->newType());
+
     QString alterQuery = QString("ALTER TABLE %1 ALTER COLUMN %2 SET DATA TYPE %3")
             .arg(context.helperAggregate().quoteService->quoteTableName(alterColumnType->tableName())
                  , context.helperAggregate().quoteService->quoteColumnName(alterColumnType->columnName())
-                 , alterColumnType->newType());
+                 , newType);
 
     success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
 
     if (success && context.isUndoUsed()) {
         Commands::CommandPtr undoCommand(new Commands::AlterColumnType(alterColumnType->columnName()
                                                                        , alterColumnType->tableName()
-                                                                       , originalColumn.sqlType()
-                                                                       , alterColumnType->newType()));
+                                                                       , originalColumn.sqlTypeString()
+                                                                       , newType));
         context.setUndoCommand(undoCommand);
     }
 

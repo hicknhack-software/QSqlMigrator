@@ -41,14 +41,14 @@ SOURCES += \
          Helper\PostgresqlQuoteService.cpp \
          Helper\PostgresqlDbReaderService.cpp \
          Helper\PostgresqlColumnService.cpp \
-         CommandExecution\PostgresqlAlterColumnTypeService.cpp
+         Helper\PostgresqlTypeMapperService.cpp
 
 HEADERS += \
          PostgresqlMigrator.h \
          Helper\PostgresqlQuoteService.h \
          Helper\PostgresqlDbReaderService.h \
          Helper\PostgresqlColumnService.h \
-         CommandExecution\PostgresqlAlterColumnTypeService.h
+         Helper\PostgresqlTypeMapperService.h
 
 unix:!symbian {
 	 maemo5 {

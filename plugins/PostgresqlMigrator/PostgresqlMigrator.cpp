@@ -33,14 +33,14 @@
 #include "BaseSqlMigrator/CommandExecution/BaseSqlDropTableService.h"
 #include "BaseSqlMigrator/CommandExecution/BaseSqlRenameTableService.h"
 #include "BaseSqlMigrator/CommandExecution/baseSqlRenameColumnService.h"
-
-#include "PostgresqlMigrator/CommandExecution/PostgresqlAlterColumnTypeService.h"
+#include "BaseSqlMigrator/CommandExecution/BaseSqlAlterColumnTypeService.h"
 
 #include "Helper/HelperAggregate.h"
 
 #include "PostgresqlMigrator/Helper/PostgresqlQuoteService.h"
 #include "PostgresqlMigrator/Helper/PostgresqlDbReaderService.h"
 #include "PostgresqlMigrator/Helper/PostgresqlColumnService.h"
+#include "PostgresqlMigrator/Helper/PostgresqlTypeMapperService.h"
 
 #include "CommandExecution/CustomCommandService.h"
 #include "BaseSqlMigrator/MigrationTracker/MigrationTableService.h"
@@ -58,7 +58,7 @@ QSharedPointer<CommandExecution::CommandExecutionServiceRepository> createComman
 
     QSharedPointer<CommandExecutionServiceRepository> commandRepository(new CommandExecutionServiceRepository);
     commandRepository->add(BaseCommandServicePtr(new BaseSqlAddColumnService));
-    commandRepository->add(BaseCommandServicePtr(new PostgresqlAlterColumnTypeService));
+    commandRepository->add(BaseCommandServicePtr(new BaseSqlAlterColumnTypeService));
     commandRepository->add(BaseCommandServicePtr(new BaseSqlCreateIndexService));
     commandRepository->add(BaseCommandServicePtr(new BaseSqlCreateTableService));
     commandRepository->add(BaseCommandServicePtr(new BaseSqlDropColumnService));
@@ -80,6 +80,7 @@ void createHelperAggregate(Helper::HelperAggregate &helperAggregate)
     helperAggregate.columnService.reset(new PostgresqlColumnService);
     helperAggregate.dbReaderService.reset(new PostgresqlDbReaderService);
     helperAggregate.quoteService.reset(new PostgresqlQuoteService);
+    helperAggregate.typeMapperService.reset(new PostgresqlTypeMapperService);
 }
 
 bool buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDatabase database)

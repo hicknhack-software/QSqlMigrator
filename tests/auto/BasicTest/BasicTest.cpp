@@ -426,10 +426,10 @@ void BasicTest::testAlterColumnType()
     Commands::CommandPtr command(
                 new Commands::CreateTable(
                     Table("testtable1")
-                    .add(Column("ID", "INTEGER", Column::Primary))
-                    .add(Column("name", "varchar(23)", Column::NotNullable))
-                    .add(Column("col1", "varchar(23)"))
-                    .add(Column("col2", "varchar(23)"))
+                    .add(Column("ID", QVariant::Int, Column::Primary))
+                    .add(Column("name", sqlType(QVariant::String, 23), Column::NotNullable))
+                    .add(Column("col1", sqlType(QVariant::String, 23)))
+                    .add(Column("col2", sqlType(QVariant::String, 23)))
                     ));
 
     CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig(), m_context.helperAggregate());
@@ -441,8 +441,8 @@ void BasicTest::testAlterColumnType()
 
     //TODO insert some data
 
-    Commands::CommandPtr command2(
-                new Commands::AlterColumnType("col1", "testtable1", "varchar(42)"));
+    //TODO: handle case sensitivity of types and column names
+    Commands::CommandPtr command2(new Commands::AlterColumnType("col1", "testtable1", "varchar(42)"));
     execution.execute(command2, m_context.commandServiceRepository(), serviceContext);
 
     //check if old column was removed and new column included successfully
@@ -451,13 +451,58 @@ void BasicTest::testAlterColumnType()
     bool success;
     col1 = table.fetchColumnByName("col1", success);
     QVERIFY2(success, "column col1 should exist");
-    QVERIFY2(col1.sqlType() == "varchar(42)", "column col1 should be retyped to varchar(42) during migration");
+    QVERIFY2(col1.sqlTypeString() == m_context.helperAggregate().typeMapperService->map(sqlType(QVariant::String, 42)), "column col1 should be retyped to varchar(42) during migration");
+
+    Commands::CommandPtr command3(new Commands::AlterColumnType("col1", "testtable1", sqlType(QVariant::String, 43)));
+    execution.execute(command3, m_context.commandServiceRepository(), serviceContext);
+
+    //check if old column was removed and new column included successfully
+    table = m_context.helperAggregate().dbReaderService->getTableDefinition("testtable1", m_context.database());
+    col1 = table.fetchColumnByName("col1", success);
+    QVERIFY2(success, "column col1 should exist");
+    QVERIFY2(col1.sqlTypeString() == m_context.helperAggregate().typeMapperService->map(sqlType(QVariant::String, 43)), "column col1 should be retyped to varchar(43) during migration");
 
     //TODO check if test data was copied correctly
 }
 
+void BasicTest::testColumnType()
+{
+    Table testtable =
+            Table("testtable")
+            .add(Column("bool_",                QVariant::Bool))
+            .add(Column("integer_",             QVariant::Int))
+            .add(Column("biginteger_",          QVariant::LongLong))
+            .add(Column("double_",              QVariant::Double))
+            .add(Column("decimal_",    sqlType(QVariant::Double, 10, 5)))
+            .add(Column("date_",                QVariant::Date))
+            .add(Column("time_",                QVariant::Time))
+            .add(Column("datetime_",            QVariant::DateTime))
+            .add(Column("char_1",               QVariant::Char))
+            .add(Column("char_",       sqlType(QVariant::Char, 5)))
+            .add(Column("varchar_",    sqlType(QVariant::String, 5)))
+            .add(Column("blob_",                QVariant::ByteArray));
+    Commands::CommandPtr command(new Commands::CreateTable(testtable));
+
+    CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig(), m_context.helperAggregate());
+    CommandExecution::CommandExecutionService execution;
+    execution.execute(command, m_context.commandServiceRepository(), serviceContext);
+
+    QStringList tables = m_context.database().tables(QSql::Tables);
+    QVERIFY2(tables.contains(testtable.name()), "table should be created during migration!");
+
+    Structure::Table table = m_context.helperAggregate().dbReaderService->getTableDefinition(testtable.name(), m_context.database());
+
+    foreach(Structure::Column column, testtable.columns()) {
+        bool success;
+        Structure::Column col = table.fetchColumnByName(column.name(), success);
+        QVERIFY2(success, "column should exist");
+        QVERIFY2(m_context.helperAggregate().typeMapperService->map(column.sqlType()) == col.sqlTypeString(), "wrong type");
+    }
+
+}
+
 //TODO: add functionality to read index?
-void BasicTest::base_testCreadeIndex(QString &queryString, int valueIndex)
+void BasicTest::base_testCreadeIndex(const QString &queryString, int valueIndex)
 {
     Commands::CommandPtr command(
                 new Commands::CreateTable(

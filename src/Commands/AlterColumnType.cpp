@@ -30,12 +30,13 @@
 namespace Commands {
 
 AlterColumnType::AlterColumnType(const QString &columnName, const QString &tableName
-                                 , const QString &newType, const QString &oldType)
+                                 , const QString &newTypeString, const QString &oldType)
     : BaseCommand(AlterColumnType::typeName())
     , m_tableName(tableName)
     , m_columnName(columnName)
-    , m_newType(newType)
+    , m_newTypeString(newTypeString)
     , m_oldType(oldType)
+    , m_hasSqlTypeString(true)
 {
     if(columnName.isEmpty()) {
         ::qWarning() << LOG_PREFIX << AlterColumnType::typeName() << "command with empty columnName!";
@@ -45,8 +46,26 @@ AlterColumnType::AlterColumnType(const QString &columnName, const QString &table
         ::qWarning() << LOG_PREFIX << AlterColumnType::typeName() << "command" << columnName << "with empty tableName!";
     }
 
-    if(newType.isEmpty()) {
+    if(newTypeString.isEmpty()) {
         ::qWarning() << LOG_PREFIX << AlterColumnType::typeName() << "command" << columnName << "with empty newType";
+    }
+}
+
+AlterColumnType::AlterColumnType(const QString &columnName, const QString &tableName
+                                 , const sqlType &newType, const QString &oldType)
+    : BaseCommand(AlterColumnType::typeName())
+    , m_tableName(tableName)
+    , m_columnName(columnName)
+    , m_newType(newType)
+    , m_oldType(oldType)
+    , m_hasSqlTypeString(false)
+{
+    if(columnName.isEmpty()) {
+        ::qWarning() << LOG_PREFIX << AlterColumnType::typeName() << "command with empty columnName!";
+    }
+
+    if(tableName.isEmpty()) {
+        ::qWarning() << LOG_PREFIX << AlterColumnType::typeName() << "command" << columnName << "with empty tableName!";
     }
 }
 
@@ -60,7 +79,8 @@ CommandPtr AlterColumnType::reverse() const
 {
     if (!hasOldType())
         return CommandPtr();
-    return CommandPtr(new AlterColumnType(columnName(), tableName(), oldType(), newType()));
+
+    return CommandPtr(new AlterColumnType(columnName(), tableName(), oldType(), newTypeString()));
 }
 
 const QString &AlterColumnType::tableName() const
@@ -78,7 +98,17 @@ bool AlterColumnType::hasOldType() const
     return (!m_oldType.isEmpty());
 }
 
-const QString &AlterColumnType::newType() const
+bool AlterColumnType::hasSqlTypeString() const
+{
+    return m_hasSqlTypeString;
+}
+
+const QString &AlterColumnType::newTypeString() const
+{
+    return m_newTypeString;
+}
+
+const sqlType &AlterColumnType::newType() const
 {
     return m_newType;
 }

@@ -49,7 +49,7 @@ bool SqliteRenameColumnService::execute(const Commands::ConstCommandPtr &command
     Table table = Table(renameColumn->tableName());
     foreach (Column column, origTable.columns()) {
         if (column.name() == renameColumn->name()) {
-            Column newColumn = Column(renameColumn->newName(), column.sqlType(), column.attributes());
+            Column newColumn = Column(renameColumn->newName(), column.sqlTypeString(), column.attributes());
             table.add(newColumn);
         } else {
             table.add(column);

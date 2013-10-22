@@ -4,6 +4,7 @@
 #include "Helper/ColumnService.h"
 #include "Helper/DbReaderService.h"
 #include "Helper/QuoteService.h"
+#include "Helper/TypeMapperService.h"
 
 #include "config.h"
 
@@ -21,6 +22,7 @@ public:
     QSharedPointer<ColumnService> columnService;
     QSharedPointer<DbReaderService> dbReaderService;
     QSharedPointer<QuoteService> quoteService;
+    QSharedPointer<TypeMapperService> typeMapperService;
 
     HelperAggregate();
 };

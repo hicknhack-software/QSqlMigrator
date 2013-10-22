@@ -23,32 +23,27 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef HELPER_BASESQLCOLUMNSERVICE_H
-#define HELPER_BASESQLCOLUMNSERVICE_H
+#ifndef HELPER_MYSQLTYPEMAPPERSERVICE_H
+#define HELPER_MYSQLTYPEMAPPERSERVICE_H
+
+#include "MysqlMigrator/MysqlMigrator.h"
+
+#include "BaseSqlMigrator/Helper/BaseSqlTypeMapperService.h"
 
 #include "Structure/Column.h"
-#include "Structure/Index.h"
-
-#include "Helper/ColumnService.h"
 
 #include <QString>
-#include <QHash>
 
 namespace Helper {
 
-class QSQLMIGRATOR_DLL_EXPORT BaseSqlColumnService : public ColumnService
+class MYSQLMIGRATOR_DLL_EXPORT MysqlTypeMapperService : public BaseSqlTypeMapperService
 {
 public:
-    BaseSqlColumnService();
-    virtual ~BaseSqlColumnService() {};
+    MysqlTypeMapperService();
 
-    QString generateColumnsDefinitionSql(const QList<Structure::Column> &columnList) const Q_DECL_OVERRIDE;
-
-    QString generateIndexColumnDefinitionSql(const QString &columnName
-                                                     , const Structure::Index::SortOrder &sortOrder) const Q_DECL_OVERRIDE;
-    QString generateIndexColumnDefinitionSql(const Structure::Index::IndexHash &columns) const Q_DECL_OVERRIDE;
+    QString map(const sqlType &type) const Q_DECL_OVERRIDE;
 };
 
 } // namespace Helper
 
-#endif // HELPER_BASESQLCOLUMNSERVICE_H
+#endif // HELPER_MYSQLTYPEMAPPERSERVICE_H
