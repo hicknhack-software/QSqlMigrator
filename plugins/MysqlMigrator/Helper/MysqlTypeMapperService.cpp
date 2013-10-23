@@ -25,8 +25,6 @@
 ****************************************************************************/
 #include "MysqlMigrator/Helper/MysqlTypeMapperService.h"
 
-#include "Structure/Column.h"
-
 #include <QDebug>
 
 namespace Helper {
@@ -39,44 +37,44 @@ MysqlTypeMapperService::MysqlTypeMapperService()
     typeMap.insert(QVariant::ByteArray, "%1blob");
 }
 
-QString MysqlTypeMapperService::map(const sqlType &type) const
+QString MysqlTypeMapperService::map(const SqlType &type) const
 {
     QString sqlTypeString;
 
-    switch (type.type) {
+    switch (type.type()) {
     case QVariant::ByteArray:
-        if (type.n) {
-            if (type.n <= 255)
+        if (const int precision = type.precision()) {
+            if (precision <= 255)
                 sqlTypeString = typeMap[QVariant::ByteArray].arg("tiny");
-            else if (type.n <= 65535)
+            else if (precision <= 65535)
                 sqlTypeString = typeMap[QVariant::ByteArray].arg("");
-            else if (type.n <= 16777215)
+            else if (precision <= 16777215)
                 sqlTypeString = typeMap[QVariant::ByteArray].arg("medium");
-            else if (type.n <= 4294967295)
+            else if (precision <= 4294967295)
                 sqlTypeString = typeMap[QVariant::ByteArray].arg("long");
         }
         else
             sqlTypeString = typeMap[QVariant::ByteArray].arg("");
         break;
     case QVariant::Char:
-        if (!type.n)
-            sqlTypeString = typeMap[QVariant::Char].arg(type.n);
+        if (!type.precision())
+            sqlTypeString = typeMap[QVariant::Char].arg(type.precision());
         else
             sqlTypeString = typeMap[QVariant::Char].arg(1);
         break;
     case QVariant::String:
-        sqlTypeString = typeMap[QVariant::String].arg(type.n);
+        sqlTypeString = typeMap[QVariant::String].arg(type.precision());
         break;
     case QVariant::Double:
-        if (type.n !=0 && type.m != 0)
-            sqlTypeString = QString("decimal(%1,%2)").arg(QString::number(type.n), QString::number(type.m));
+        if (type.precision() !=0 && type.scale() != 0)
+            sqlTypeString = QString("decimal(%1,%2)").arg(QString::number(type.precision()), QString::number(type.scale()));
         else
             sqlTypeString = typeMap[QVariant::Double];
         break;
     default:
-        if (!typeMap.contains(type.type))
+        if (!typeMap.contains(type.type()))
             ::qWarning() << "unknown type";
-        sqlTypeString = typeMap[type.type];
+        sqlTypeString = typeMap[type.type()];
         break;
     }
 

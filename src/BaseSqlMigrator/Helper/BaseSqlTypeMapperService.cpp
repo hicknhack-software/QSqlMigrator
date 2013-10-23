@@ -25,8 +25,6 @@
 ****************************************************************************/
 #include "BaseSqlTypeMapperService.h"
 
-#include "Structure/Column.h"
-
 #include <QDebug>
 
 namespace Helper {
@@ -45,30 +43,30 @@ BaseSqlTypeMapperService::BaseSqlTypeMapperService()
     typeMap.insert(QVariant::ByteArray, "blob");
 }
 
-QString BaseSqlTypeMapperService::map(const sqlType &type) const
+QString BaseSqlTypeMapperService::map(const SqlType &type) const
 {
     QString sqlTypeString;
 
-    switch (type.type) {
+    switch (type.type()) {
     case QVariant::Char:
-        if (type.n)
-            sqlTypeString = typeMap[QVariant::Char].arg(type.n);
+        if (type.precision())
+            sqlTypeString = typeMap[QVariant::Char].arg(type.precision());
         else
             sqlTypeString = typeMap[QVariant::Char].arg(1);
         break;
     case QVariant::String:
-        sqlTypeString = typeMap[QVariant::String].arg(type.n);
+        sqlTypeString = typeMap[QVariant::String].arg(type.precision());
         break;
     case QVariant::Double:
-        if (type.n !=0 && type.m != 0)
-            sqlTypeString = QString("numeric(%1,%2)").arg(QString::number(type.n), QString::number(type.m));
+        if (type.precision() !=0 && type.scale() != 0)
+            sqlTypeString = QString("numeric(%1,%2)").arg(QString::number(type.precision()), QString::number(type.scale()));
         else
             sqlTypeString = typeMap[QVariant::Double];
         break;
     default:
-        if (!typeMap.contains(type.type))
+        if (!typeMap.contains(type.type()))
             ::qWarning() << "unknown type";
-        sqlTypeString = typeMap[type.type];
+        sqlTypeString = typeMap[type.type()];
         break;
     }
 

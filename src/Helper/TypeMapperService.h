@@ -3,7 +3,7 @@
 
 #include "config.h"
 
-#include <Structure/Column.h>
+#include <Structure/SqlType.h>
 
 #include <QString>
 #include <QHash>
@@ -19,7 +19,7 @@ public:
     TypeMapperService();
     virtual ~TypeMapperService();
 
-    virtual QString map(const sqlType& type) const = 0;
+    virtual QString map(const SqlType& type) const = 0;
 };
 
 } // namespace Helper

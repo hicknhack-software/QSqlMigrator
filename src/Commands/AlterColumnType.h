@@ -28,7 +28,7 @@
 
 #include "Commands/BaseCommand.h"
 
-#include "Structure/Column.h"
+#include "Structure/SqlType.h"
 
 namespace Commands {
 
@@ -38,12 +38,12 @@ public:
     explicit AlterColumnType(const QString &columnName, const QString &tableName
                              , const QString &newTypeString, const QString &oldType = "");
     explicit AlterColumnType(const QString &columnName, const QString &tableName
-                             , const sqlType &newType, const QString &oldType = "");
+                             , const SqlType &newType, const QString &oldType = "");
 
     bool hasOldType() const;
     bool hasSqlTypeString() const;
     const QString &columnName() const;
-    const sqlType &newType() const;
+    const SqlType &newType() const;
     const QString &newTypeString() const;
     const QString &oldType() const;
     const QString &tableName() const;
@@ -53,7 +53,7 @@ public:
 private:
     const QString m_tableName;
     const QString m_columnName;
-    const sqlType m_newType;
+    const SqlType m_newType;
     const QString m_newTypeString;
     const bool m_hasSqlTypeString;
     const QString m_oldType;

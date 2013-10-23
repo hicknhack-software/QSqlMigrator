@@ -52,7 +52,7 @@ AlterColumnType::AlterColumnType(const QString &columnName, const QString &table
 }
 
 AlterColumnType::AlterColumnType(const QString &columnName, const QString &tableName
-                                 , const sqlType &newType, const QString &oldType)
+                                 , const SqlType &newType, const QString &oldType)
     : BaseCommand(AlterColumnType::typeName())
     , m_tableName(tableName)
     , m_columnName(columnName)
@@ -108,7 +108,7 @@ const QString &AlterColumnType::newTypeString() const
     return m_newTypeString;
 }
 
-const sqlType &AlterColumnType::newType() const
+const SqlType &AlterColumnType::newType() const
 {
     return m_newType;
 }

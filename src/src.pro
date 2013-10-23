@@ -68,7 +68,8 @@ SOURCES += \
     Helper/ColumnService.cpp \
     Helper/DbReaderService.cpp \
     Helper/QuoteService.cpp \
-    Helper/TypeMapperService.cpp
+    Helper/TypeMapperService.cpp \
+    Structure/SqlType.cpp
 
 HEADERS += \
 	 QSqlMigrator/QSqlMigratorService.h \
@@ -121,4 +122,5 @@ HEADERS += \
     Helper/ColumnService.h \
     Helper/DbReaderService.h \
     Helper/QuoteService.h \
-    Helper/TypeMapperService.h
+    Helper/TypeMapperService.h \
+    Structure/SqlType.h

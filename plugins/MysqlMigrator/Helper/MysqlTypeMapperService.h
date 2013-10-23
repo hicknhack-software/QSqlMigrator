@@ -30,7 +30,7 @@
 
 #include "BaseSqlMigrator/Helper/BaseSqlTypeMapperService.h"
 
-#include "Structure/Column.h"
+#include "Structure/SqlType.h"
 
 #include <QString>
 
@@ -41,7 +41,7 @@ class MYSQLMIGRATOR_DLL_EXPORT MysqlTypeMapperService : public BaseSqlTypeMapper
 public:
     MysqlTypeMapperService();
 
-    QString map(const sqlType &type) const Q_DECL_OVERRIDE;
+    QString map(const SqlType &type) const Q_DECL_OVERRIDE;
 };
 
 } // namespace Helper

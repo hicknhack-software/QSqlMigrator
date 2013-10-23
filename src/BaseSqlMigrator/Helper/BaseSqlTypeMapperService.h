@@ -30,7 +30,7 @@
 
 #include "Helper/TypeMapperService.h"
 
-#include "Structure/Column.h"
+#include "Structure/SqlType.h"
 
 #include <QString>
 
@@ -41,7 +41,7 @@ class QSQLMIGRATOR_DLL_EXPORT BaseSqlTypeMapperService : public TypeMapperServic
 public:
     BaseSqlTypeMapperService();
 
-    QString map(const sqlType &type) const Q_DECL_OVERRIDE;
+    QString map(const SqlType &type) const Q_DECL_OVERRIDE;
 };
 
 } // namespace Helper

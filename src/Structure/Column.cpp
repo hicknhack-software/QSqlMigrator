@@ -45,7 +45,7 @@ Column::Column(const QString &name, const QString &sqlTypeString, Attributes att
     }
 }
 
-Column::Column(const QString &name, const ::sqlType &sqltype, Attributes attributes)
+Column::Column(const QString &name, const SqlType &sqltype, Attributes attributes)
     : m_defaultValue(0)
     , m_name(name)
     , m_sqlType(sqltype)
@@ -75,7 +75,7 @@ const QString &Column::sqlTypeString() const
     return m_sqlTypeString;
 }
 
-const ::sqlType &Column::sqlType() const
+const SqlType &Column::sqlType() const
 {
     return m_sqlType;
 }

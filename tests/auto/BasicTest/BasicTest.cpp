@@ -427,9 +427,9 @@ void BasicTest::testAlterColumnType()
                 new Commands::CreateTable(
                     Table("testtable1")
                     .add(Column("ID", QVariant::Int, Column::Primary))
-                    .add(Column("name", sqlType(QVariant::String, 23), Column::NotNullable))
-                    .add(Column("col1", sqlType(QVariant::String, 23)))
-                    .add(Column("col2", sqlType(QVariant::String, 23)))
+                    .add(Column("name", SqlType(QVariant::String, 23), Column::NotNullable))
+                    .add(Column("col1", SqlType(QVariant::String, 23)))
+                    .add(Column("col2", SqlType(QVariant::String, 23)))
                     ));
 
     CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig(), m_context.helperAggregate());
@@ -451,16 +451,16 @@ void BasicTest::testAlterColumnType()
     bool success;
     col1 = table.fetchColumnByName("col1", success);
     QVERIFY2(success, "column col1 should exist");
-    QVERIFY2(col1.sqlTypeString() == m_context.helperAggregate().typeMapperService->map(sqlType(QVariant::String, 42)), "column col1 should be retyped to varchar(42) during migration");
+    QVERIFY2(col1.sqlTypeString() == m_context.helperAggregate().typeMapperService->map(SqlType(QVariant::String, 42)), "column col1 should be retyped to varchar(42) during migration");
 
-    Commands::CommandPtr command3(new Commands::AlterColumnType("col1", "testtable1", sqlType(QVariant::String, 43)));
+    Commands::CommandPtr command3(new Commands::AlterColumnType("col1", "testtable1", SqlType(QVariant::String, 43)));
     execution.execute(command3, m_context.commandServiceRepository(), serviceContext);
 
     //check if old column was removed and new column included successfully
     table = m_context.helperAggregate().dbReaderService->getTableDefinition("testtable1", m_context.database());
     col1 = table.fetchColumnByName("col1", success);
     QVERIFY2(success, "column col1 should exist");
-    QVERIFY2(col1.sqlTypeString() == m_context.helperAggregate().typeMapperService->map(sqlType(QVariant::String, 43)), "column col1 should be retyped to varchar(43) during migration");
+    QVERIFY2(col1.sqlTypeString() == m_context.helperAggregate().typeMapperService->map(SqlType(QVariant::String, 43)), "column col1 should be retyped to varchar(43) during migration");
 
     //TODO check if test data was copied correctly
 }
@@ -473,13 +473,13 @@ void BasicTest::testColumnType()
             .add(Column("integer_",             QVariant::Int))
             .add(Column("biginteger_",          QVariant::LongLong))
             .add(Column("double_",              QVariant::Double))
-            .add(Column("decimal_",    sqlType(QVariant::Double, 10, 5)))
+            .add(Column("decimal_",    SqlType(QVariant::Double, 10, 5)))
             .add(Column("date_",                QVariant::Date))
             .add(Column("time_",                QVariant::Time))
             .add(Column("datetime_",            QVariant::DateTime))
             .add(Column("char_1",               QVariant::Char))
-            .add(Column("char_",       sqlType(QVariant::Char, 5)))
-            .add(Column("varchar_",    sqlType(QVariant::String, 5)))
+            .add(Column("char_",       SqlType(QVariant::Char, 5)))
+            .add(Column("varchar_",    SqlType(QVariant::String, 5)))
             .add(Column("blob_",                QVariant::ByteArray));
     Commands::CommandPtr command(new Commands::CreateTable(testtable));
 

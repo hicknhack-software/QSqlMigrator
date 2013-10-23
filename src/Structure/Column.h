@@ -28,20 +28,12 @@
 
 #include "config.h"
 
+#include "Structure/SqlType.h"
+
 #include <QSharedPointer>
 #include <QString>
 #include <QFlags>
 #include <QVariant>
-
-// available in global namespace
-class sqlType {
-public:
-    sqlType() {}
-    sqlType(QVariant::Type t, int precision=0, int scale=0) : type(t), n(precision), m(scale) {}
-    QVariant::Type type;
-    int n;
-    int m;
-};
 
 namespace Structure {
 
@@ -67,7 +59,7 @@ public:
 
 public:
     explicit Column(const QString &name, const QString &sqlTypeString, Attributes attributes = None);
-    explicit Column(const QString &name, const sqlType &sqltype, Attributes attributes = None);
+    explicit Column(const QString &name, const SqlType &sqltype, Attributes attributes = None);
     Column(); // empty columns are needed at several places and using the constructor above generates warnings (ugly)
 
     bool isNullable() const;
@@ -80,7 +72,7 @@ public:
     const QString &defaultValue() const;
     const QString &name() const;
     const QString &sqlTypeString() const;
-    const ::sqlType &sqlType() const;
+    const SqlType &sqlType() const;
 
     Column &setDefault(const QString &defaultValue);
 
@@ -88,7 +80,7 @@ private:
     QSharedPointer<QString> m_defaultValue;
     QString m_name;
     bool m_hasSqlTypeString;
-    ::sqlType m_sqlType;
+    SqlType m_sqlType;
     QString m_sqlTypeString;
     /* const */ Attributes m_attributes;
 };
