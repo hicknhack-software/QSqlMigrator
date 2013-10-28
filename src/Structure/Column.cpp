@@ -29,10 +29,38 @@
 
 namespace Structure {
 
-Column::Column(const QString &name, const QString &sqlTypeString, Attributes attributes)
-    : m_defaultValue(0)
-    , m_name(name)
+Column::Column(const QString &name, const QString &sqlTypeString, const QString &defaultValue, Attributes attributes)
+    : m_name(name)
     , m_sqlTypeString(sqlTypeString)
+    , m_defaultValue(defaultValue)
+    , m_attributes(attributes)
+    , m_hasSqlTypeString(true)
+{
+    if(name.isEmpty()) {
+        ::qWarning() << LOG_PREFIX << "Column with empty name!";
+    }
+
+    if(sqlTypeString.isEmpty()) {
+        ::qWarning() << LOG_PREFIX << "Column" << m_name << "with empty type!";
+    }
+}
+
+Column::Column(const QString &name, const SqlType &sqltype, const QString &defaultValue, Attributes attributes)
+    : m_name(name)
+    , m_sqlType(sqltype)
+    , m_defaultValue(defaultValue)
+    , m_attributes(attributes)
+    , m_hasSqlTypeString(false)
+{
+    if(name.isEmpty()) {
+        ::qWarning() << LOG_PREFIX << "Column with empty name!";
+    }
+}
+
+Column::Column(const QString &name, const QString &sqlTypeString, Attributes attributes)
+    : m_name(name)
+    , m_sqlTypeString(sqlTypeString)
+    , m_defaultValue("")
     , m_attributes(attributes)
     , m_hasSqlTypeString(true)
 {
@@ -46,9 +74,9 @@ Column::Column(const QString &name, const QString &sqlTypeString, Attributes att
 }
 
 Column::Column(const QString &name, const SqlType &sqltype, Attributes attributes)
-    : m_defaultValue(0)
-    , m_name(name)
+    : m_name(name)
     , m_sqlType(sqltype)
+    , m_defaultValue("")
     , m_attributes(attributes)
     , m_hasSqlTypeString(false)
 {
@@ -58,9 +86,9 @@ Column::Column(const QString &name, const SqlType &sqltype, Attributes attribute
 }
 
 Column::Column()
-    : m_defaultValue(0)
-    , m_name("")
+    : m_name("")
     , m_sqlTypeString("")
+    , m_defaultValue("")
     , m_attributes(None)
     , m_hasSqlTypeString(false)
 {}
@@ -102,12 +130,12 @@ bool Column::isUnique() const
 
 const QString &Column::defaultValue() const
 {
-    return (*m_defaultValue.data());
+    return (m_defaultValue);
 }
 
 bool Column::hasDefaultValue() const
 {
-    return (!m_defaultValue.isNull());
+    return (!m_defaultValue.isEmpty());
 }
 
 bool Column::hasSqlTypeString() const
@@ -118,12 +146,6 @@ bool Column::hasSqlTypeString() const
 bool Column::isAutoIncremented() const
 {
     return m_attributes.testFlag(AutoIncrement);
-}
-
-Column &Column::setDefault(const QString &defaultValue)
-{
-    m_defaultValue = QSharedPointer<QString>(new QString(defaultValue));
-    return (*this);
 }
 
 } //namespace Structure

@@ -32,6 +32,7 @@
 
 namespace Structure {
 class Table;
+class Index;
 }
 
 namespace Helper {
@@ -43,6 +44,8 @@ public:
     ~SqliteDbReaderService();
 
     Structure::Table getTableDefinition(const QString &tableName
+                                        , QSqlDatabase database) const Q_DECL_OVERRIDE;
+    Structure::Index getIndexDefinition(const QString &indexName, const QString &tableName
                                         , QSqlDatabase database) const Q_DECL_OVERRIDE;
 };
 

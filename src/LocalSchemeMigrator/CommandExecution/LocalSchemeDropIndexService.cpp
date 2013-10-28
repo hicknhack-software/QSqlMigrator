@@ -23,32 +23,44 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef HELPER_SQLITEDBREADER_H
-#define HELPER_SQLITEDBREADER_H
+#include "LocalSchemeMigrator/CommandExecution/LocalSchemeDropIndexService.h"
 
-#include "Helper/DbReaderService.h"
+#include "Commands/DropIndex.h"
 
-#include "CommandExecution/CommandExecutionContext.h"
+#include <QDebug>
+#include <QStringList>
 
-namespace Structure {
-class Table;
-class Index;
+namespace CommandExecution {
+
+LocalSchemeDropIndexService::LocalSchemeDropIndexService()
+{
 }
 
-namespace Helper {
-
-class PostgresqlDbReaderService : public DbReaderService
+const QString &LocalSchemeDropIndexService::commandType() const
 {
-public:
-    PostgresqlDbReaderService();
-    ~PostgresqlDbReaderService();
+    return Commands::DropIndex::typeName();
+}
 
-    Structure::Table getTableDefinition(const QString &tableName
-                                        , QSqlDatabase database) const Q_DECL_OVERRIDE;
-    Structure::Index getIndexDefinition(const QString &indexName
-                                        , const QString &tableName, QSqlDatabase database) const Q_DECL_OVERRIDE;
-};
+bool LocalSchemeDropIndexService::execute(const Commands::ConstCommandPtr &command
+                                 , CommandExecution::LocalSchemeCommandExecutionContext &context
+                                 ) const
+{
+    QSharedPointer<const Commands::DropIndex> dropIndex(command.staticCast<const Commands::DropIndex>());
 
-} // namespace Helper
+    context.localScheme()->indexes().remove(dropIndex->name());
 
-#endif // HELPER_SQLITEDBREADER_H
+    return true;
+}
+
+bool LocalSchemeDropIndexService::isValid(const Commands::ConstCommandPtr &command
+                                          , const CommandExecution::LocalSchemeCommandExecutionContext &context) const
+{
+    Q_UNUSED(command);
+    Q_UNUSED(context);
+
+    //TODO check for index existence?!
+
+    return true;
+}
+
+} // namespace CommandExecution

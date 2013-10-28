@@ -47,13 +47,13 @@ QString SqliteColumnService::generateColumnDefinitionSql(const Column &column) c
         sqlColumnOptions << "NOT NULL";
     }
     if (column.isPrimary()) {
+        sqlColumnOptions << "PRIMARY KEY";
         // primary key may be automatically incremented
-        if (column.isAutoIncremented()) {
+        //if (column.isAutoIncremented()) {
             // in SQLite, the column of type INTEGER which is a PRIMARY KEY is an alias to ROWID,
             // which is a special column with AUTOINCREMENT
-            sqlColumnOptions << "PRIMARY KEY";
             //sqlColumnOptions << "AUTOINCREMENT"; //TODO: is this needed?
-        }
+        //}
     }
     if (column.isUnique()) {
         sqlColumnOptions << "UNIQUE";

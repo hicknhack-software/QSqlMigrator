@@ -8,6 +8,7 @@
 
 namespace Structure {
 class Table;
+class Index;
 }
 
 namespace CommandExecution {
@@ -24,6 +25,8 @@ public:
 
     virtual Structure::Table getTableDefinition(const QString &tableName
                                         , QSqlDatabase database) const = 0;
+    virtual Structure::Index getIndexDefinition(const QString &indexName, const QString &tableName
+                                                , QSqlDatabase database) const = 0;
 };
 
 } // namespace Helper

@@ -60,8 +60,8 @@ QString PostgresqlColumnService::generateColumnDefinitionSql(const Column &colum
             sqlTypeString = typeMapperService.map(column.sqlType());
         }
     }
-    // serials are already NOT NULL
-    if (!serial && !column.isNullable()) {
+    // primary keys are implicit NOT NULL, serials are already NOT NULL
+    if (!column.isPrimary() && !serial && !column.isNullable()) {
         sqlColumnOptions << "NOT NULL";
     }
     if (column.isUnique()) {

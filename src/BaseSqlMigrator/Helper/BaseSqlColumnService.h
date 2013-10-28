@@ -44,9 +44,8 @@ public:
 
     QString generateColumnsDefinitionSql(const QList<Structure::Column> &columnList) const Q_DECL_OVERRIDE;
 
-    QString generateIndexColumnDefinitionSql(const QString &columnName
-                                                     , const Structure::Index::SortOrder &sortOrder) const Q_DECL_OVERRIDE;
-    QString generateIndexColumnDefinitionSql(const Structure::Index::IndexHash &columns) const Q_DECL_OVERRIDE;
+    QString generateIndexColumnDefinitionSql(const Structure::Index::Column &column) const Q_DECL_OVERRIDE;
+    QString generateIndexColumnDefinitionSql(const Structure::Index::ColumnList &columns) const Q_DECL_OVERRIDE;
 };
 
 } // namespace Helper

@@ -28,6 +28,10 @@ SOURCES += \
 	 CommandExecution/CommandExecutionService.cpp \
 	 CommandExecution/CommandExecutionContext.cpp \
 	 CommandExecution/BaseCommandExecutionService.cpp \
+     CommandExecution/LocalSchemeBaseCommandExecutionService.cpp \
+     CommandExecution/LocalSchemeCommandExecutionContext.cpp \
+     CommandExecution/LocalSchemeCommandExecutionService.cpp \
+     CommandExecution/LocalSchemeCommandExecutionServiceRepository.cpp \
 	 Commands/RenameTable.cpp \
 	 Commands/RenameColumn.cpp \
 	 Commands/DropTable.cpp \
@@ -43,7 +47,9 @@ SOURCES += \
 	 MigrationExecution/MigrationExecutionService.cpp \
 	 MigrationExecution/MigrationExecutionContext.cpp \
 	 MigrationExecution/MigrationExecutionConfig.cpp \
-	 Structure/Table.cpp \
+     MigrationExecution/LocalSchemeMigrationExecutionService.cpp \
+     MigrationExecution/LocalSchemeMigrationExecutionContext.cpp \
+     Structure/Table.cpp \
 	 Structure/Index.cpp \
 	 Structure/Column.cpp \
 	 CommandExecution/CustomCommandService.cpp \
@@ -69,7 +75,19 @@ SOURCES += \
     Helper/DbReaderService.cpp \
     Helper/QuoteService.cpp \
     Helper/TypeMapperService.cpp \
-    Structure/SqlType.cpp
+    Structure/SqlType.cpp \
+    Structure/LocalScheme.cpp \
+    LocalSchemeMigrator/LocalSchemeMigrator.cpp \
+    LocalSchemeMigrator/CommandExecution/LocalSchemeAddColumnService.cpp \
+    LocalSchemeMigrator/CommandExecution/LocalSchemeAlterColumnTypeService.cpp \
+    LocalSchemeMigrator/CommandExecution/LocalSchemeCreateIndexService.cpp \
+    LocalSchemeMigrator/CommandExecution/LocalSchemeCreateTableService.cpp \
+    LocalSchemeMigrator/CommandExecution/LocalSchemeDropColumnService.cpp \
+    LocalSchemeMigrator/CommandExecution/LocalSchemeDropIndexService.cpp \
+    LocalSchemeMigrator/CommandExecution/LocalSchemeDropTableService.cpp \
+    LocalSchemeMigrator/CommandExecution/LocalSchemeRenameColumnService.cpp \
+    LocalSchemeMigrator/LocalSchemeComparisonService.cpp \
+    LocalSchemeMigrator/LocalSchemeComparisonContext.cpp
 
 HEADERS += \
 	 QSqlMigrator/QSqlMigratorService.h \
@@ -78,7 +96,11 @@ HEADERS += \
 	 CommandExecution/CommandExecutionService.h \
 	 CommandExecution/CommandExecutionContext.h \
 	 CommandExecution/BaseCommandExecutionService.h \
-	 Commands/RenameTable.h \
+     CommandExecution/LocalSchemeBaseCommandExecutionService.h \
+     CommandExecution/LocalSchemeCommandExecutionContext.h \
+     CommandExecution/LocalSchemeCommandExecutionService.h \
+     CommandExecution/LocalSchemeCommandExecutionServiceRepository.h \
+     Commands/RenameTable.h \
 	 Commands/RenameColumn.h \
 	 Commands/DropTable.h \
 	 Commands/DropIndex.h \
@@ -94,7 +116,9 @@ HEADERS += \
 	 MigrationExecution/MigrationExecutionService.h \
 	 MigrationExecution/MigrationExecutionContext.h \
 	 MigrationExecution/MigrationExecutionConfig.h \
-	 MigrationTracker/BaseMigrationTrackerService.h \
+     MigrationExecution/LocalSchemeMigrationExecutionService.h \
+     MigrationExecution/LocalSchemeMigrationExecutionContext.h \
+     MigrationTracker/BaseMigrationTrackerService.h \
 	 Structure/Table.h \
 	 Structure/Index.h \
 	 Structure/Column.h \
@@ -123,4 +147,16 @@ HEADERS += \
     Helper/DbReaderService.h \
     Helper/QuoteService.h \
     Helper/TypeMapperService.h \
-    Structure/SqlType.h
+    Structure/SqlType.h \
+    Structure/LocalScheme.h \
+    LocalSchemeMigrator/LocalSchemeMigrator.h \
+    LocalSchemeMigrator/CommandExecution/LocalSchemeAddColumnService.h \
+    LocalSchemeMigrator/CommandExecution/LocalSchemeAlterColumnTypeService.h \
+    LocalSchemeMigrator/CommandExecution/LocalSchemeCreateIndexService.h \
+    LocalSchemeMigrator/CommandExecution/LocalSchemeCreateTableService.h \
+    LocalSchemeMigrator/CommandExecution/LocalSchemeDropColumnService.h \
+    LocalSchemeMigrator/CommandExecution/LocalSchemeDropIndexService.h \
+    LocalSchemeMigrator/CommandExecution/LocalSchemeDropTableService.h \
+    LocalSchemeMigrator/CommandExecution/LocalSchemeRenameColumnService.h \
+    LocalSchemeMigrator/LocalSchemeComparisonService.h \
+    LocalSchemeMigrator/LocalSchemeComparisonContext.h

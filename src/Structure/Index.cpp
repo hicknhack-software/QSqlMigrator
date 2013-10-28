@@ -43,7 +43,7 @@ Index::Index(const QString &name, const QString &tableName)
     }
 }
 
-Index::Index(const QString &name, const QString &tableName, const QStringList &columnNames)
+Index::Index(const QString &name, const QString &tableName, const ColumnList &columns)
     : m_name(name)
     , m_tableName(tableName)
 {
@@ -55,8 +55,8 @@ Index::Index(const QString &name, const QString &tableName, const QStringList &c
         ::qWarning() << LOG_PREFIX << "Index" << m_name << "with empty table name!";
     }
 
-    foreach (const QString &columnName, columnNames) {
-        this->addColumn(columnName);
+    foreach (const Column &column, columns) {
+        m_columns.append(column);
     }
 }
 
@@ -70,7 +70,7 @@ const QString &Index::tableName() const
     return m_tableName;
 }
 
-const Index::IndexHash &Index::columns() const
+const Index::ColumnList &Index::columns() const
 {
     return m_columns;
 }
@@ -82,12 +82,14 @@ Index &Index::addColumn(const QString &columnName, Index::SortOrder sortOrder)
         return (*this);
     }
 
-    if(m_columns.contains(columnName)) {
-        ::qWarning() << LOG_PREFIX << "Column" << columnName << "already added to index" << m_name;
-        return (*this);
+    foreach(Column column, m_columns) {
+        if (column.name() == columnName) {
+            ::qWarning() << LOG_PREFIX << "Column" << columnName << "already added to index" << m_name;
+            return (*this);
+        }
     }
 
-    m_columns[columnName] = sortOrder;
+    m_columns.append(Column(columnName, sortOrder));
     return (*this);
 }
 

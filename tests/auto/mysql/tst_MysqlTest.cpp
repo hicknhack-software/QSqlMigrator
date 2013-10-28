@@ -44,20 +44,12 @@ class MysqlTest : public BasicTest
 
 public:
     MysqlTest();
-
-private Q_SLOTS:
-    void testCreateIndex();
 };
 
 MysqlTest::MysqlTest() : BasicTest(MYSQL_DRIVERNAME, MYSQLTEST_DATABASE_NAME
                             , &MysqlMigrator::buildContext, MYSQL_STRUCTURE_DATABASE
                             , MYSQL_HOSTNAME, MYSQL_HOSTPORT, MYSQL_USERNAME, MYSQL_PASSWORD)
 {
-}
-
-void MysqlTest::testCreateIndex()
-{
-    base_testCreadeIndex(QString("SHOW INDEXES FROM testtable1"), 2);
 }
 
 QTEST_MAIN(MysqlTest)

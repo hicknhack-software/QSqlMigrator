@@ -44,20 +44,12 @@ class PostgresqlTest : public BasicTest
 
 public:
     PostgresqlTest();
-
-private Q_SLOTS:
-    void testCreateIndex();
 };
 
 PostgresqlTest::PostgresqlTest() : BasicTest(POSTGRESQL_DRIVERNAME, POSTGRESQLTEST_DATABASE_NAME
                             , &PostgresqlMigrator::buildContext, POSTGRESQL_STRUCTURE_DATABASE
                             , POSTGRESQL_HOSTNAME, POSTGRESQL_HOSTPORT, POSTGRESQL_USERNAME, POSTGRESQL_PASSWORD)
 {
-}
-
-void PostgresqlTest::testCreateIndex()
-{
-    base_testCreadeIndex(QString("select indexname from pg_indexes where tablename = 'testtable1'"), 0);
 }
 
 QTEST_MAIN(PostgresqlTest)

@@ -23,32 +23,24 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef HELPER_SQLITEDBREADER_H
-#define HELPER_SQLITEDBREADER_H
+#ifndef COMMANDEXECUTION_LOCALSCHEMEADDCOLUMNSERVICE_H
+#define COMMANDEXECUTION_LOCALSCHEMEADDCOLUMNSERVICE_H
 
-#include "Helper/DbReaderService.h"
+#include "CommandExecution/LocalSchemeBaseCommandExecutionService.h"
 
-#include "CommandExecution/CommandExecutionContext.h"
+namespace CommandExecution {
 
-namespace Structure {
-class Table;
-class Index;
-}
-
-namespace Helper {
-
-class PostgresqlDbReaderService : public DbReaderService
+class QSQLMIGRATOR_DLL_EXPORT LocalSchemeAddColumnService : public LocalSchemeBaseCommandExecutionService
 {
 public:
-    PostgresqlDbReaderService();
-    ~PostgresqlDbReaderService();
+    LocalSchemeAddColumnService();
 
-    Structure::Table getTableDefinition(const QString &tableName
-                                        , QSqlDatabase database) const Q_DECL_OVERRIDE;
-    Structure::Index getIndexDefinition(const QString &indexName
-                                        , const QString &tableName, QSqlDatabase database) const Q_DECL_OVERRIDE;
+    const QString &commandType() const;
+
+    bool execute(const Commands::ConstCommandPtr &command, CommandExecution::LocalSchemeCommandExecutionContext &context) const;
+    bool isValid(const Commands::ConstCommandPtr &command, const CommandExecution::LocalSchemeCommandExecutionContext &context) const;
 };
 
-} // namespace Helper
+} // namespace CommandExecution
 
-#endif // HELPER_SQLITEDBREADER_H
+#endif // COMMANDEXECUTION_LOCALSCHEMEADDCOLUMNSERVICE_H

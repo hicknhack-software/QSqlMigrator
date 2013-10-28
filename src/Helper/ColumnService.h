@@ -20,9 +20,8 @@ public:
     virtual QString generateColumnDefinitionSql(const Structure::Column &column) const = 0;
     virtual QString generateColumnsDefinitionSql(const QList<Structure::Column> &columnList) const = 0;
 
-    virtual QString generateIndexColumnDefinitionSql(const QString &columnName
-                                                     , const Structure::Index::SortOrder &sortOrder) const = 0;
-    virtual QString generateIndexColumnDefinitionSql(const Structure::Index::IndexHash &columns) const = 0;
+    virtual QString generateIndexColumnDefinitionSql(const Structure::Index::Column& column) const = 0;
+    virtual QString generateIndexColumnDefinitionSql(const Structure::Index::ColumnList &columns) const = 0;
 };
 
 } // namespace Helper

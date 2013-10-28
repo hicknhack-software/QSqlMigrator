@@ -53,8 +53,6 @@ class BasicTest : public QObject
 {
     Q_OBJECT
 private Q_SLOTS:
-    virtual void testCreateIndex() = 0;
-
     //TODO add tests for "default value", "autoincrement" and other constraints
     //TODO check if versionTable is maintained correctly
     virtual void initTestCase();
@@ -73,6 +71,8 @@ private Q_SLOTS:
     void testDropColumn();
     void testRenameColumn();
     void testColumnType();
+    void testLocalSchemeMigration();
+    void testCreateIndex();
 
 protected:
     MigrationExecution::MigrationExecutionContext m_context;
@@ -95,8 +95,6 @@ protected:
     const QString m_password;
 
     bool (*m_buildContext)(MigrationExecution::MigrationExecutionContext &, QSqlDatabase);
-
-    void base_testCreadeIndex(const QString &queryString, int valueIndex);
 };
 
 #endif // BASICTEST_H

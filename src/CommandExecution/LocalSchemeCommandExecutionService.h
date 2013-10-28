@@ -23,32 +23,29 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef HELPER_SQLITEDBREADER_H
-#define HELPER_SQLITEDBREADER_H
+#ifndef COMMANDEXECUTION_LOCALSCHEMECOMMANDEXECUTIONSERVICE_H
+#define COMMANDEXECUTION_LOCALSCHEMECOMMANDEXECUTIONSERVICE_H
 
-#include "Helper/DbReaderService.h"
+#include "CommandExecution/LocalSchemeCommandExecutionContext.h"
+#include "CommandExecution/LocalSchemeCommandExecutionServiceRepository.h"
+#include "Commands/BaseCommand.h"
 
-#include "CommandExecution/CommandExecutionContext.h"
+namespace CommandExecution {
 
-namespace Structure {
-class Table;
-class Index;
-}
-
-namespace Helper {
-
-class PostgresqlDbReaderService : public DbReaderService
+class QSQLMIGRATOR_DLL_EXPORT LocalSchemeCommandExecutionService
 {
 public:
-    PostgresqlDbReaderService();
-    ~PostgresqlDbReaderService();
+    bool execute(const Commands::CommandPtr command
+                 , LocalSchemeCommandServiceRepositoryPtr serviceRepository
+                 , LocalSchemeCommandExecutionContext &context
+                 ) const;
 
-    Structure::Table getTableDefinition(const QString &tableName
-                                        , QSqlDatabase database) const Q_DECL_OVERRIDE;
-    Structure::Index getIndexDefinition(const QString &indexName
-                                        , const QString &tableName, QSqlDatabase database) const Q_DECL_OVERRIDE;
+    bool batch(const Commands::CommandPtrList &commandList
+               , LocalSchemeCommandServiceRepositoryPtr serviceRepository
+               , LocalSchemeCommandExecutionContext &context
+               ) const;
 };
 
-} // namespace Helper
+} // namespace CommandExecution
 
-#endif // HELPER_SQLITEDBREADER_H
+#endif // COMMANDEXECUTION_COMMANDEXECUTIONSERVICE_H

@@ -26,11 +26,13 @@
 #include "SqliteMigrator/Helper/SqliteDbReaderService.h"
 
 #include "Structure/Table.h"
+#include "Structure/Index.h"
 
 #include <QDebug>
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QSqlDatabase>
+#include <QStringList>
 
 using namespace Structure;
 
@@ -45,7 +47,7 @@ SqliteDbReaderService::~SqliteDbReaderService()
 Table SqliteDbReaderService::getTableDefinition(const QString &tableName
                                         , QSqlDatabase database) const
 {
-    Table table = Table(tableName);
+    ColumnList columns;
     QString queryString = QString("PRAGMA table_info(%1)").arg(tableName);
     QSqlQuery query = database.exec(queryString);
     QSqlError error = query.lastError();
@@ -65,16 +67,82 @@ Table SqliteDbReaderService::getTableDefinition(const QString &tableName
             }
             if (primaryKey) {
                 attr |= Column::Primary;
+                if (type == "integer")
+                    attr |= Column::AutoIncrement;
             }
 
-            Column col = Column(name, type, attr);
-            if (!defaultValue.isEmpty()) {
-                col.setDefault(defaultValue);
+            queryString = QString("PRAGMA index_list(%1)").arg(tableName);
+            QSqlQuery queryIndexList = database.exec(queryString);
+            error = queryIndexList.lastError();
+            if (error.isValid()) {
+                ::qDebug() << Q_FUNC_INFO << error.text();
+            } else {
+                while (queryIndexList.next()) {
+                    bool unique = queryIndexList.value(2).toBool();
+                    if (unique) {
+                        QString indexName = queryIndexList.value(1).toString();
+                        queryString = QString("PRAGMA index_info(%1)").arg(indexName);
+                        QSqlQuery queryIndexInfo = database.exec(queryString);
+                        error = queryIndexInfo.lastError();
+                        if (error.isValid()) {
+                            ::qDebug() << Q_FUNC_INFO << error.text();
+                        } else {
+                            while (queryIndexInfo.next()) {
+                                if (queryIndexInfo.value(2).toString() == name) {
+                                    attr |= Column::Unique;
+                                }
+                            }
+                        }
+                    }
+                }
             }
-            table.add(col);
+            Column col = Column(name, type, defaultValue, attr);
+            columns << Column(name, type, defaultValue, attr);
         }
     }
-    return table;
+    return Table(tableName, columns);
+}
+
+Structure::Index SqliteDbReaderService::getIndexDefinition(const QString &indexName, const QString &tableName, QSqlDatabase database) const
+{
+    Structure::Index::ColumnList columns;
+    QString sqlText;
+    QString queryString = QString("SELECT sql FROM sqlite_master WHERE name = '%1'").arg(indexName);
+    qDebug() << "complete query looks like: " << queryString;
+    QSqlQuery query = database.exec(queryString);
+    QSqlError error = query.lastError();
+    if (error.isValid()) {
+        ::qDebug() << Q_FUNC_INFO << error.text();
+    } else {
+        // should return one row with one column
+        query.next();
+        sqlText = query.value(0).toString();
+    }
+
+    // hacky - parse the SQL statement for creating the index, look for ASC or DESC keyword
+    int openParen = sqlText.indexOf("(");
+    int closeParen = sqlText.lastIndexOf(")");
+    QStringList columnTextList = sqlText.mid(openParen+1, closeParen-openParen-1).split(",");
+    foreach (const QString &columnText, columnTextList) {
+        if (columnText.contains("ASC", Qt::CaseInsensitive))
+            columns << Structure::Index::Column(columnText.simplified().split(" ")[0], Index::Ascending);
+        else if (columnText.contains("DESC", Qt::CaseInsensitive))
+            columns << Structure::Index::Column(columnText.simplified().split(" ")[0], Index::Descending);
+        else
+            columns << columnText.split(" ")[0];
+    }
+
+//    QString queryString = QString("PRAGMA index_info(%1)").arg(indexName);
+//    QSqlQuery query = database.exec(queryString);
+//    QSqlError error = query.lastError();
+//    if (error.isValid()) {
+//        ::qDebug() << Q_FUNC_INFO << error.text();
+//    } else {
+//        while (query.next()) {
+//            columns << query.value(2).toString();
+//        }
+//    }
+    return Structure::Index(indexName, tableName, columns);
 }
 
 } // namespace Helper

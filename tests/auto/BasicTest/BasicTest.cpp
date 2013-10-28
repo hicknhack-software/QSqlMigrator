@@ -28,6 +28,12 @@
 #include "CommandExecution/CommandExecutionContext.h"
 #include "CommandExecution/CommandExecutionService.h"
 
+#include "MigrationExecution/LocalSchemeMigrationExecutionContext.h"
+#include "MigrationExecution/LocalSchemeMigrationExecutionService.h"
+#include "LocalSchemeMigrator/LocalSchemeMigrator.h"
+#include "LocalSchemeMigrator/LocalSchemeComparisonContext.h"
+#include "LocalSchemeMigrator/LocalSchemeComparisonService.h"
+
 #include <QScopedPointer>
 #include <QSqlQuery>
 #include <QSqlError>
@@ -501,8 +507,7 @@ void BasicTest::testColumnType()
 
 }
 
-//TODO: add functionality to read index?
-void BasicTest::base_testCreadeIndex(const QString &queryString, int valueIndex)
+void BasicTest::testCreateIndex()
 {
     Commands::CommandPtr command(
                 new Commands::CreateTable(
@@ -513,13 +518,19 @@ void BasicTest::base_testCreadeIndex(const QString &queryString, int valueIndex)
                     .add(Column("col2", "varchar(23)"))
                     ));
 
-    Commands::CommandPtr command2(
-                new Commands::CreateIndex(
-                    Index("index1", "testtable1")
-                    .addColumn("name", Index::Ascending)
-                    .addColumn("col1", Index::Descending)
-                    .addColumn("col2")
-                    ));
+    QSharedPointer<Index> index;
+    if (m_driverName != "QMYSQL") {
+        index.reset(new Index("index1", "testtable1"));
+        index->addColumn("name", Index::Ascending);
+        index->addColumn("col2", Index::Descending);
+        index->addColumn("col1");
+    } else {
+        index.reset(new Index("index1", "testtable1"));
+        index->addColumn("name", Index::Ascending);
+        index->addColumn("col2", Index::Ascending); // MySQL doesn't implement Descending order for indexes
+        index->addColumn("col1");
+    }
+    Commands::CommandPtr command2(new Commands::CreateIndex(*index));
 
     CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig(), m_context.helperAggregate());
     CommandExecution::CommandExecutionService execution;
@@ -530,21 +541,13 @@ void BasicTest::base_testCreadeIndex(const QString &queryString, int valueIndex)
     QVERIFY2(tables.contains("testtable1"), "testtable should be created during migration!");
 
     //check if index was created successfully
-    bool indexPresent = false;
-    QSqlQuery query = m_context.database().exec(queryString);
-    QSqlError error = query.lastError();
-    QVERIFY2(!error.isValid(), "query should run without any error");
-    if (error.isValid()) {
-        ::qDebug() << Q_FUNC_INFO << error.text();
-    } else {
-        while (query.next()) {
-            QString name = query.value(valueIndex).toString();
-            if (name == "index1") {
-                indexPresent = true;
-            }
-        }
+    Structure::Index realIndex = m_context.helperAggregate().dbReaderService->getIndexDefinition("index1", "testtable1", m_context.database());
+    bool indexPresent = realIndex.columns() == index->columns();
+    if (!indexPresent) {
+            qDebug() << "local scheme index:" << m_context.helperAggregate().columnService->generateIndexColumnDefinitionSql(index->columns());
+            qDebug() << "real index:" << m_context.helperAggregate().columnService->generateIndexColumnDefinitionSql(realIndex.columns());
     }
-    QVERIFY2(indexPresent, "index1 should be created during CreateIndex");
+    QVERIFY2(indexPresent, "real and local scheme index differ");
 }
 
 void BasicTest::testDropColumn()
@@ -610,4 +613,77 @@ void BasicTest::testRenameColumn()
     QVERIFY2(columnRenamed, "col1 should be renamed to new_colum1 during migration");
 
     //TODO check if test data was copied correctly
+}
+
+void BasicTest::testLocalSchemeMigration()
+{
+    // migrations
+    Migration m;
+    m.add(new Commands::CreateTable(
+              Table("testtable1")
+              .add(Column("id1", QVariant::Int, Column::Primary | Column::AutoIncrement))
+              .add(Column("name1", SqlType(QVariant::String, 23), Column::Unique))
+              .add(Column("weight1", QVariant::Double))
+              ));
+
+    Migration m2;
+    m2.add(new Commands::CreateTable(
+               Table("testtable2")
+               .add(Column("id2", QVariant::Int, Column::Primary | Column::AutoIncrement))
+               .add(Column("name2", SqlType(QVariant::String, 23), Column::Unique))
+               .add(Column("weight2", QVariant::Double))
+               ));
+    m2.add(new Commands::CreateIndex(
+               Index("index1", "testtable1")
+               .addColumn("name1")
+               .addColumn("weight1")
+               ));
+
+    const QString migrationNo1 = "Migration No1";
+    const QString migrationNo2 = "Migration No2";
+    QMap<QString, const Migration*> migrationMap;
+    migrationMap[migrationNo1] = &m;
+    migrationMap[migrationNo2] = &m2;
+
+    bool success;
+
+    // execute migrations on real database
+    MigrationExecutionService migrator;
+    QScopedPointer<MigrationExecutionConfig> migrationConfig(new MigrationExecutionConfig);
+    MigrationExecutionContext migrationContext(migrationMap, *migrationConfig);
+    migrationContext.setDatabase(m_context.database());
+    migrationContext.setBaseMigrationTableService(m_context.baseMigrationTableService());
+    migrationContext.setCommandServiceRepository(m_context.commandServiceRepository());
+    migrationContext.setHelperAggregate(m_context.helperAggregate());
+
+    success = migrator.execute(migrationNo1, migrationContext);
+    QVERIFY2(success, "Migration should work!");
+    QStringList tables = m_context.database().tables(QSql::Tables);
+    QVERIFY2(tables.contains("testtable1"), "testtable should be created during migration!");
+
+    success = migrator.execute(migrationNo2, migrationContext);
+    QVERIFY2(success, "Migration should work!");
+    tables = m_context.database().tables(QSql::Tables);
+    QVERIFY2(tables.contains("testtable2"), "testtable should be created during migration!");
+
+    // execute migrations on local scheme
+    MigrationExecution::LocalSchemeMigrationExecutionService localSchemeMigrator;
+    LocalSchemePtr localScheme(new Structure::LocalScheme); // database equivalent
+    MigrationExecution::LocalSchemeMigrationExecutionContext localSchemeMigrationContext(migrationMap);
+    localSchemeMigrationContext.setLocalScheme(localScheme);
+    localSchemeMigrationContext.setLocalSchemeCommandServiceRepository(LocalSchemeMigrator::createCommandServiceRepository());
+
+    success = localSchemeMigrator.execute(migrationNo1, localSchemeMigrationContext);
+    QVERIFY2(success, "Migration should work!");
+    success = localSchemeMigrator.execute(migrationNo2, localSchemeMigrationContext);
+    QVERIFY2(success, "Migration should work!");
+
+    // compare local scheme with database
+    LocalSchemeMigrator::LocalSchemeComparisonContext comparisonContext;
+    comparisonContext.setDatabase(m_context.database());
+    comparisonContext.setHelperAggregate(m_context.helperAggregate());
+    comparisonContext.setLocalScheme(localScheme);
+    LocalSchemeMigrator::LocalSchemeComparisonService comparisonService;
+    success = comparisonService.compareLocalSchemeWithDatabase(comparisonContext);
+    QVERIFY2(success, "local scheme should be identical to actual database scheme");
 }

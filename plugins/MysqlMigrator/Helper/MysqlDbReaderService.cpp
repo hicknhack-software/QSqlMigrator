@@ -28,10 +28,12 @@
 #include "CommandExecution/CommandExecutionContext.h"
 
 #include "Structure/Table.h"
+#include "Structure/Index.h"
 
 #include <QDebug>
 #include <QSqlError>
 #include <QSqlQuery>
+#include <QStringList>
 
 using namespace Structure;
 
@@ -44,7 +46,7 @@ MysqlDbReaderService::MysqlDbReaderService()
 Table MysqlDbReaderService::getTableDefinition(const QString &tableName
                                           , QSqlDatabase database) const
 {
-    Table table = Table(tableName);
+    ColumnList columns;
     QString queryString = QString("DESCRIBE %1").arg(tableName);
     QSqlQuery query = database.exec(queryString);
     QSqlError error = query.lastError();
@@ -72,14 +74,31 @@ Table MysqlDbReaderService::getTableDefinition(const QString &tableName
                 attr |= Column::AutoIncrement;
             }
 
-            Column col = Column(name, type, attr);
-            if (!defaultValue.isEmpty()) {
-                col.setDefault(defaultValue);
+            //TODO: primary keys get default value set as 0?
+            if (key == "PRI" && defaultValue == "0") {
+                defaultValue = "";
             }
-            table.add(col);
+            columns << Column(name, type, defaultValue, attr);
         }
     }
-    return table;
+    return Table(tableName, columns);
+}
+
+Index MysqlDbReaderService::getIndexDefinition(const QString &indexName, const QString &tableName, QSqlDatabase database) const
+{
+    Structure::Index::ColumnList columns;
+    QString queryText = QString("SHOW INDEXES FROM %1 WHERE Key_name = \"%2\"").arg(tableName, indexName);
+    ::qDebug() << "query looks like: " << queryText;
+    QSqlQuery query = database.exec(queryText);
+    QSqlError error = query.lastError();
+    if (error.isValid()) {
+        ::qDebug() << Q_FUNC_INFO << error.text();
+    } else {
+        while (query.next()) {
+            columns << query.value(4).toString();
+        }
+    }
+    return Structure::Index(indexName, tableName, columns);
 }
 
 } // namespace Helper

@@ -23,32 +23,34 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef HELPER_SQLITEDBREADER_H
-#define HELPER_SQLITEDBREADER_H
+#ifndef COMMANDEXECUTION_LOCALSCHEMECOMMANDEXECUTIONSERVICEREPOSITORY_H
+#define COMMANDEXECUTION_LOCALSCHEMECOMMANDEXECUTIONSERVICEREPOSITORY_H
 
-#include "Helper/DbReaderService.h"
+#include "CommandExecution/LocalSchemeBaseCommandExecutionService.h"
 
-#include "CommandExecution/CommandExecutionContext.h"
+#include <QHash>
+#include <QSharedPointer>
+#include <QString>
+#include <QSharedPointer>
 
-namespace Structure {
-class Table;
-class Index;
-}
+namespace CommandExecution {
 
-namespace Helper {
+class LocalSchemeCommandExecutionServiceRepository;
+typedef QSharedPointer< LocalSchemeCommandExecutionServiceRepository > LocalSchemeCommandServiceRepositoryPtr;
 
-class PostgresqlDbReaderService : public DbReaderService
+class QSQLMIGRATOR_DLL_EXPORT LocalSchemeCommandExecutionServiceRepository
 {
 public:
-    PostgresqlDbReaderService();
-    ~PostgresqlDbReaderService();
+    LocalSchemeCommandExecutionServiceRepository();
 
-    Structure::Table getTableDefinition(const QString &tableName
-                                        , QSqlDatabase database) const Q_DECL_OVERRIDE;
-    Structure::Index getIndexDefinition(const QString &indexName
-                                        , const QString &tableName, QSqlDatabase database) const Q_DECL_OVERRIDE;
+    CommandExecution::LocalSchemeBaseCommandServicePtr getService(const QString &commandName) const;
+
+    void add(LocalSchemeBaseCommandServicePtr service);
+
+private:
+    QHash<QString, LocalSchemeBaseCommandServicePtr> m_serviceList;
 };
 
-} // namespace Helper
+} // namespace CommandExecution
 
-#endif // HELPER_SQLITEDBREADER_H
+#endif // COMMANDEXECUTION_LOCALSCHEMECOMMANDEXECUTIONSERVICEREPOSITORY_H

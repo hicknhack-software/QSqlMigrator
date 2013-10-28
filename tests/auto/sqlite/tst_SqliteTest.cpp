@@ -47,8 +47,6 @@ private Q_SLOTS:
     void cleanupTestCase();
     void init();
     void cleanup();
-
-    void testCreateIndex();
 };
 
 SqliteTest::SqliteTest() : BasicTest(SQLITE_DRIVERNAME, SQLITE_DATABASE_FILE, &SqliteMigrator::buildContext)
@@ -90,11 +88,6 @@ void SqliteTest::cleanup()
         m_context.database().close();
     }
     QFile::remove(m_testDatabaseName);
-}
-
-void SqliteTest::testCreateIndex()
-{
-    base_testCreadeIndex(QString("PRAGMA index_list(testtable1)"), 1);
 }
 
 QTEST_APPLESS_MAIN(SqliteTest)

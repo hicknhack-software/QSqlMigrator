@@ -41,24 +41,38 @@ class QSQLMIGRATOR_DLL_EXPORT Index
 public:
     enum SortOrder{
         Default = 0,
-        Ascending = 1,
-        Descending = 2
+        Ascending = 0, // ASC is default
+        Descending = 1
     };
-    typedef QHash<QString, SortOrder> IndexHash;
+
+    class Column {
+    private:
+        QString m_name;
+        SortOrder m_sortOrder;
+    public:
+        Column() {}
+        Column(const QString& name, const SortOrder& sortOrder = Default) : m_name(name), m_sortOrder(sortOrder) {}
+        const QString &name() const { return m_name; }
+        const SortOrder &sortOrder() const { return m_sortOrder; }
+        bool operator==(const Column& other) { return other.name() == m_name && other.sortOrder() == m_sortOrder; }
+    };
+
+    typedef QList<Column> ColumnList;
 
     explicit Index(const QString &name, const QString &tableName);
-    explicit Index(const QString &name, const QString &tableName, const QStringList &columnNames);
+    explicit Index(const QString &name, const QString &tableName, const ColumnList &columns);
 
-    const IndexHash &columns() const;
+    const ColumnList &columns() const;
     const QString &name() const;
     const QString &tableName() const;
 
+    //TODO: remove this method, sorting order of columns should be included on creation
     Index &addColumn(const QString &columnName, SortOrder sortOrder=Default);
 
 private:
     QString m_name;
     QString m_tableName;
-    IndexHash m_columns;
+    ColumnList m_columns;
 };
 
 } //namespace Structure

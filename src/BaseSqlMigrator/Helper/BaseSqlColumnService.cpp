@@ -44,12 +44,12 @@ QString BaseSqlColumnService::generateColumnsDefinitionSql(const QList<Column> &
     return sqlColumnDefinitions.join(", ");
 }
 
-QString BaseSqlColumnService::generateIndexColumnDefinitionSql(const QString &columnName
-                                                                      , const Index::SortOrder &sortOrder) const
+QString BaseSqlColumnService::generateIndexColumnDefinitionSql(const Index::Column& column) const
 {
     QString sqlSortOrder;
-    switch (sortOrder) {
-    case Index::Ascending:
+    switch (column.sortOrder()) {
+    //case Index::Ascending: // fall through
+    case Index::Default:
         sqlSortOrder = "ASC";
         break;
     case Index::Descending:
@@ -60,16 +60,15 @@ QString BaseSqlColumnService::generateIndexColumnDefinitionSql(const QString &co
         break;
     }
 
-    return QString("%1 %2").arg(columnName, sqlSortOrder);
+    return QString("%1 %2").arg(column.name(), sqlSortOrder);
 }
 
-QString BaseSqlColumnService::generateIndexColumnDefinitionSql(const Index::IndexHash &columns) const
+QString BaseSqlColumnService::generateIndexColumnDefinitionSql(const Index::ColumnList &columns) const
 {
     QStringList sqlIndexColumnDefinitions;
-    QHashIterator<QString, Index::SortOrder> i(columns);
+    QListIterator<Index::Column> i(columns);
     while (i.hasNext()) {
-        i.next();
-        sqlIndexColumnDefinitions << this->generateIndexColumnDefinitionSql(i.key(), i.value());
+        sqlIndexColumnDefinitions << this->generateIndexColumnDefinitionSql(i.next());
     }
     return sqlIndexColumnDefinitions.join(", ");
 }

@@ -59,9 +59,7 @@ bool MysqlAlterColumnTypeService::execute(const Commands::ConstCommandPtr &comma
     else
         newType = context.helperAggregate().typeMapperService->map(alterColumnType->newType());
 
-    Structure::Column modifiedColumn(originalColumn.name(), newType, originalColumn.attributes());
-    if (originalColumn.hasDefaultValue())
-        modifiedColumn.setDefault(originalColumn.defaultValue());
+    Structure::Column modifiedColumn(originalColumn.name(), newType, originalColumn.defaultValue(), originalColumn.attributes());
 
     QString columnDefinition = context.helperAggregate().columnService->generateColumnDefinitionSql(modifiedColumn);
 

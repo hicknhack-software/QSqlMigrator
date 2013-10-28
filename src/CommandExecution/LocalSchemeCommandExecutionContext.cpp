@@ -23,32 +23,18 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef HELPER_SQLITEDBREADER_H
-#define HELPER_SQLITEDBREADER_H
+#include "LocalSchemeCommandExecutionContext.h"
 
-#include "Helper/DbReaderService.h"
+namespace CommandExecution {
 
-#include "CommandExecution/CommandExecutionContext.h"
-
-namespace Structure {
-class Table;
-class Index;
+LocalSchemeCommandExecutionContext::LocalSchemeCommandExecutionContext(const LocalSchemePtr localScheme)
+    : m_localScheme(localScheme)
+{
 }
 
-namespace Helper {
-
-class PostgresqlDbReaderService : public DbReaderService
+LocalSchemePtr LocalSchemeCommandExecutionContext::localScheme() const
 {
-public:
-    PostgresqlDbReaderService();
-    ~PostgresqlDbReaderService();
+    return m_localScheme;
+}
 
-    Structure::Table getTableDefinition(const QString &tableName
-                                        , QSqlDatabase database) const Q_DECL_OVERRIDE;
-    Structure::Index getIndexDefinition(const QString &indexName
-                                        , const QString &tableName, QSqlDatabase database) const Q_DECL_OVERRIDE;
-};
-
-} // namespace Helper
-
-#endif // HELPER_SQLITEDBREADER_H
+} // namespace CommandExecution

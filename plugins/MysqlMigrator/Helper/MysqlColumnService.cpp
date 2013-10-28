@@ -51,7 +51,7 @@ QString MysqlColumnService::generateColumnDefinitionSql(const Column &column) co
     } // default is NULL for columns
     if (column.isPrimary()) {
         // TODO: handle PRIMARY KEY in function which call this one, so compound keys are handled easily
-        //sqlColumnOptions << "PRIMARY KEY";
+        sqlColumnOptions << "PRIMARY KEY";
         if (column.isAutoIncremented()) { // primary key may be automatically incremented
             sqlColumnOptions << "AUTO_INCREMENT";
         }

@@ -23,32 +23,30 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef HELPER_SQLITEDBREADER_H
-#define HELPER_SQLITEDBREADER_H
+#ifndef MIGRATIONEXECUTION_LOCALSCHEMEMIGRATIONEXECUTIONSERVICE_H
+#define MIGRATIONEXECUTION_LOCALSCHEMEMIGRATIONEXECUTIONSERVICE_H
 
-#include "Helper/DbReaderService.h"
+#include "MigrationExecution/LocalSchemeMigrationExecutionContext.h"
+#include "CommandExecution/LocalSchemeCommandExecutionService.h"
 
-#include "CommandExecution/CommandExecutionContext.h"
+namespace MigrationExecution {
 
-namespace Structure {
-class Table;
-class Index;
-}
-
-namespace Helper {
-
-class PostgresqlDbReaderService : public DbReaderService
+class QSQLMIGRATOR_DLL_EXPORT LocalSchemeMigrationExecutionService
 {
 public:
-    PostgresqlDbReaderService();
-    ~PostgresqlDbReaderService();
+    LocalSchemeMigrationExecutionService();
+    ~LocalSchemeMigrationExecutionService();
 
-    Structure::Table getTableDefinition(const QString &tableName
-                                        , QSqlDatabase database) const Q_DECL_OVERRIDE;
-    Structure::Index getIndexDefinition(const QString &indexName
-                                        , const QString &tableName, QSqlDatabase database) const Q_DECL_OVERRIDE;
+    bool execute(const QString &migrationName
+                 , LocalSchemeMigrationExecutionContext &migrationContext) const;
+
+    bool executeBatch(const QStringList &migrationList
+                      , LocalSchemeMigrationExecutionContext &migrationContext) const;
+
+private:
+    CommandExecution::LocalSchemeCommandExecutionService m_execution;
 };
 
-} // namespace Helper
+} //namespace MigrationExecution
 
-#endif // HELPER_SQLITEDBREADER_H
+#endif // MIGRATIONEXECUTION_LOCALSCHEMEMIGRATIONEXECUTIONSERVICE_H

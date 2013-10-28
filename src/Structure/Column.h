@@ -30,7 +30,6 @@
 
 #include "Structure/SqlType.h"
 
-#include <QSharedPointer>
 #include <QString>
 #include <QFlags>
 #include <QVariant>
@@ -58,6 +57,8 @@ public:
     Q_DECLARE_FLAGS(Attributes, Attribute)
 
 public:
+    explicit Column(const QString &name, const QString &sqlTypeString, const QString& defaultValue, Attributes attributes = None);
+    explicit Column(const QString &name, const SqlType &sqltype, const QString& defaultValue, Attributes attributes = None);
     explicit Column(const QString &name, const QString &sqlTypeString, Attributes attributes = None);
     explicit Column(const QString &name, const SqlType &sqltype, Attributes attributes = None);
     Column(); // empty columns are needed at several places and using the constructor above generates warnings (ugly)
@@ -74,10 +75,8 @@ public:
     const QString &sqlTypeString() const;
     const SqlType &sqlType() const;
 
-    Column &setDefault(const QString &defaultValue);
-
 private:
-    QSharedPointer<QString> m_defaultValue;
+    QString m_defaultValue;
     QString m_name;
     bool m_hasSqlTypeString;
     SqlType m_sqlType;

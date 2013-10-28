@@ -23,32 +23,33 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef HELPER_SQLITEDBREADER_H
-#define HELPER_SQLITEDBREADER_H
+#ifndef COMMANDEXECUTION_LOCALSCHEMEBASECOMMANDEXECUTIONSERVICE_H
+#define COMMANDEXECUTION_LOCALSCHEMEBASECOMMANDEXECUTIONSERVICE_H
 
-#include "Helper/DbReaderService.h"
+#include "CommandExecution/LocalSchemeCommandExecutionContext.h"
+#include "Commands/BaseCommand.h"
+#include "config.h"
 
-#include "CommandExecution/CommandExecutionContext.h"
+#include <QString>
+#include <QSharedPointer>
 
-namespace Structure {
-class Table;
-class Index;
-}
+namespace CommandExecution {
 
-namespace Helper {
+class LocalSchemeBaseCommandExecutionService;
+typedef QSharedPointer<LocalSchemeBaseCommandExecutionService> LocalSchemeBaseCommandServicePtr;
 
-class PostgresqlDbReaderService : public DbReaderService
+class QSQLMIGRATOR_DLL_EXPORT LocalSchemeBaseCommandExecutionService
 {
 public:
-    PostgresqlDbReaderService();
-    ~PostgresqlDbReaderService();
+    LocalSchemeBaseCommandExecutionService();
+    virtual ~LocalSchemeBaseCommandExecutionService() {}
 
-    Structure::Table getTableDefinition(const QString &tableName
-                                        , QSqlDatabase database) const Q_DECL_OVERRIDE;
-    Structure::Index getIndexDefinition(const QString &indexName
-                                        , const QString &tableName, QSqlDatabase database) const Q_DECL_OVERRIDE;
+    virtual const QString &commandType() const = 0;
+
+    virtual bool execute(const Commands::ConstCommandPtr &command, LocalSchemeCommandExecutionContext &context) const = 0;
+    virtual bool isValid(const Commands::ConstCommandPtr &command, const LocalSchemeCommandExecutionContext &context) const = 0;
 };
 
-} // namespace Helper
+} // namespace CommandExecution
 
-#endif // HELPER_SQLITEDBREADER_H
+#endif // COMMANDEXECUTION_LOCALSCHEMEBASECOMMANDEXECUTIONSERVICE_H

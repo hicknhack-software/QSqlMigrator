@@ -23,32 +23,40 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef HELPER_SQLITEDBREADER_H
-#define HELPER_SQLITEDBREADER_H
+#include "LocalSchemeMigrationExecutionContext.h"
+#include "Migrations/Migration.h"
+#include "CommandExecution/LocalSchemeCommandExecutionServiceRepository.h"
 
-#include "Helper/DbReaderService.h"
+namespace MigrationExecution {
 
-#include "CommandExecution/CommandExecutionContext.h"
-
-namespace Structure {
-class Table;
-class Index;
+LocalSchemeMigrationExecutionContext::LocalSchemeMigrationExecutionContext(const LocalSchemeMigrationExecutionContext::NameMigrationMap &migrations)
+    : m_migrations(migrations)
+{
 }
 
-namespace Helper {
-
-class PostgresqlDbReaderService : public DbReaderService
+LocalSchemePtr &LocalSchemeMigrationExecutionContext::localScheme()
 {
-public:
-    PostgresqlDbReaderService();
-    ~PostgresqlDbReaderService();
+    return m_localScheme;
+}
 
-    Structure::Table getTableDefinition(const QString &tableName
-                                        , QSqlDatabase database) const Q_DECL_OVERRIDE;
-    Structure::Index getIndexDefinition(const QString &indexName
-                                        , const QString &tableName, QSqlDatabase database) const Q_DECL_OVERRIDE;
-};
+const LocalSchemeMigrationExecutionContext::NameMigrationMap &LocalSchemeMigrationExecutionContext::migrationMap() const
+{
+    return m_migrations;
+}
 
-} // namespace Helper
+void LocalSchemeMigrationExecutionContext::setLocalScheme(const LocalSchemePtr localScheme)
+{
+    m_localScheme = localScheme;
+}
 
-#endif // HELPER_SQLITEDBREADER_H
+CommandExecution::LocalSchemeCommandServiceRepositoryPtr LocalSchemeMigrationExecutionContext::localSchemeCommandServiceRepository() const
+{
+    return m_commandServiceRepository;
+}
+
+void LocalSchemeMigrationExecutionContext::setLocalSchemeCommandServiceRepository(LocalSchemeCommandServiceRepositoryPtr commandServiceRepository)
+{
+    m_commandServiceRepository = commandServiceRepository;
+}
+
+} // namespace MigrationExecution

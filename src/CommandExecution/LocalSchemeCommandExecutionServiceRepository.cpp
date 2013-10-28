@@ -23,32 +23,33 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef HELPER_SQLITEDBREADER_H
-#define HELPER_SQLITEDBREADER_H
+#include "LocalSchemeCommandExecutionServiceRepository.h"
 
-#include "Helper/DbReaderService.h"
+#include <QDebug>
 
-#include "CommandExecution/CommandExecutionContext.h"
+namespace CommandExecution {
 
-namespace Structure {
-class Table;
-class Index;
+LocalSchemeCommandExecutionServiceRepository::LocalSchemeCommandExecutionServiceRepository()
+{
 }
 
-namespace Helper {
-
-class PostgresqlDbReaderService : public DbReaderService
+void LocalSchemeCommandExecutionServiceRepository::add(LocalSchemeBaseCommandServicePtr service)
 {
-public:
-    PostgresqlDbReaderService();
-    ~PostgresqlDbReaderService();
+    if(!service) {
+        ::qDebug() << LOG_PREFIX << Q_FUNC_INFO << "service is 0!";
+        return;
+    }
+    m_serviceList.insert(service->commandType(), service);
+}
 
-    Structure::Table getTableDefinition(const QString &tableName
-                                        , QSqlDatabase database) const Q_DECL_OVERRIDE;
-    Structure::Index getIndexDefinition(const QString &indexName
-                                        , const QString &tableName, QSqlDatabase database) const Q_DECL_OVERRIDE;
-};
+LocalSchemeBaseCommandServicePtr LocalSchemeCommandExecutionServiceRepository::getService(const QString &commandName) const
+{
+    if(commandName.isEmpty()) {
+        ::qDebug() << LOG_PREFIX << Q_FUNC_INFO << "commandName is empty!";
+        return LocalSchemeBaseCommandServicePtr();
+    }
 
-} // namespace Helper
+    return m_serviceList.value(commandName);
+}
 
-#endif // HELPER_SQLITEDBREADER_H
+} // namespace CommandExecution
