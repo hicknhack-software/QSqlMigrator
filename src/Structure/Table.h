@@ -31,7 +31,10 @@
 #include <QList>
 #include <QString>
 
+
 namespace Structure {
+
+typedef QList<Column> ColumnList;
 
 /*!
  * \brief The Table class represents basic table-structure.
@@ -39,6 +42,7 @@ namespace Structure {
 class QSQLMIGRATOR_DLL_EXPORT Table
 {
 public:
+    Table();
     explicit Table(const QString &name);
     Table(const QString &name, const QList<Column> &columns);
 
@@ -59,7 +63,7 @@ public:
 
 private:
     QString m_name;
-    QList<Column> m_columns;
+    ColumnList m_columns;
 };
 
 } //namespace Structure

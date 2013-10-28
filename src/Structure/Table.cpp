@@ -30,6 +30,10 @@
 
 namespace Structure {
 
+Table::Table()
+{
+}
+
 Table::Table(const QString &name)
     : m_name(name)
 {
