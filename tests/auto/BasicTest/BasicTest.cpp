@@ -142,8 +142,8 @@ void BasicTest::testCreateTable()
     Commands::CommandPtr command(
                 new Commands::CreateTable(
                     Table("testtable1")
-                    .add(Column("ID", "int", Column::Primary))
-                    .add(Column("name", "varchar(23)", Column::NotNullable))
+                    .add(Column("ID", QVariant::Int, Column::Primary))
+                    .add(Column("name", SqlType(QVariant::String, 23), Column::NotNullable))
                     ));
 
     CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig(), m_context.helperAggregate());
@@ -159,8 +159,8 @@ void BasicTest::testDropTable()
     Commands::CommandPtr command(
                 new Commands::CreateTable(
                     Table("testtable1")
-                    .add(Column("ID", "int", Column::Primary))
-                    .add(Column("name", "varchar(23)", Column::NotNullable))
+                    .add(Column("ID", QVariant::Int, Column::Primary))
+                    .add(Column("name", SqlType(QVariant::String, 23), Column::NotNullable))
                     ));
 
     CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig(), m_context.helperAggregate());
@@ -173,8 +173,8 @@ void BasicTest::testDropTable()
     Commands::CommandPtr command2(
                 new Commands::DropTable(
                     Table("testtable1")
-                    .add(Column("ID", "int", Column::Primary))
-                    .add(Column("name", "varchar(23)", Column::NotNullable))
+                    .add(Column("ID", QVariant::Int, Column::Primary))
+                    .add(Column("name", SqlType(QVariant::String, 23), Column::NotNullable))
                     ));
 
     execution.execute(command2, m_context.commandServiceRepository(), serviceContext);
@@ -193,21 +193,21 @@ void BasicTest::testTransaction()
     Migration m;
     m.add(new Commands::CreateTable(
               Table("testtable1")
-              .add(Column("ID", "int", Column::Primary))
-              .add(Column("name", "varchar(23)", Column::NotNullable))
+              .add(Column("ID", QVariant::Int, Column::Primary))
+              .add(Column("name", SqlType(QVariant::String, 23), Column::NotNullable))
               ));
 
     Migration m2;
     m2.add(new Commands::CreateTable(
                Table("testtable2")
-               .add(Column("ID", "int", Column::Primary))
-               .add(Column("name", "varchar(23)", Column::NotNullable))
+               .add(Column("ID", QVariant::Int, Column::Primary))
+               .add(Column("name", SqlType(QVariant::String, 23), Column::NotNullable))
                ));
 
     m2.add(new Commands::CreateTable(
                Table("testtable1")
-               .add(Column("ID", "int", Column::Primary))
-               .add(Column("name", "varchar(23)", Column::NotNullable))
+               .add(Column("ID", QVariant::Int, Column::Primary))
+               .add(Column("name", SqlType(QVariant::String, 23), Column::NotNullable))
                ));
 
     MigrationExecutionService migrator;
@@ -245,21 +245,21 @@ void BasicTest::testUndoCreateTable()
     Migration m;
     m.add(new Commands::CreateTable(
               Table("testtable1")
-              .add(Column("ID", "int", Column::Primary))
-              .add(Column("name", "varchar(23)", Column::NotNullable))
+              .add(Column("ID", QVariant::Int, Column::Primary))
+              .add(Column("name", SqlType(QVariant::String, 23), Column::NotNullable))
               ));
 
     Migration m2;
     m2.add(new Commands::CreateTable(
                Table("testtable2")
-               .add(Column("ID", "int", Column::Primary))
-               .add(Column("name", "varchar(23)", Column::NotNullable))
+               .add(Column("ID", QVariant::Int, Column::Primary))
+               .add(Column("name", SqlType(QVariant::String, 23), Column::NotNullable))
                ));
 
     m2.add(new Commands::CreateTable(
                Table("testtable1")
-               .add(Column("ID", "int", Column::Primary))
-               .add(Column("name", "varchar(23)", Column::NotNullable))
+               .add(Column("ID", QVariant::Int, Column::Primary))
+               .add(Column("name", SqlType(QVariant::String, 23), Column::NotNullable))
                ));
 
     //QTest::ignoreMessage();
@@ -298,8 +298,8 @@ void BasicTest::testUndoDropTable()
     //TODO run dropTable with tableName only to test TableRecovery in DropTable-Command
 
     Table testtable1 = Table("testtable1")
-            .add(Column("ID", "int", Column::Primary))
-            .add(Column("name", "varchar(23)", Column::NotNullable));
+            .add(Column("ID", QVariant::Int, Column::Primary))
+            .add(Column("name", SqlType(QVariant::String, 23), Column::NotNullable));
 
     Migration m;
     m.add(new Commands::CreateTable(testtable1));
@@ -311,14 +311,14 @@ void BasicTest::testUndoDropTable()
 
     m2.add(new Commands::CreateTable(
                Table("testtable2")
-               .add(Column("ID", "int", Column::Primary))
-               .add(Column("name", "varchar(23)", Column::NotNullable))
+               .add(Column("ID", QVariant::Int, Column::Primary))
+               .add(Column("name", SqlType(QVariant::String, 23), Column::NotNullable))
                ));
 
     m2.add(new Commands::CreateTable(
                Table("testtable2")
-               .add(Column("ID", "int", Column::Primary))
-               .add(Column("name", "varchar(23)", Column::NotNullable))
+               .add(Column("ID", QVariant::Int, Column::Primary))
+               .add(Column("name", SqlType(QVariant::String, 23), Column::NotNullable))
                ));
 
     MigrationExecutionService migrator;
@@ -351,15 +351,15 @@ void BasicTest::testMigrationDirections()
     Migration m;
     m.add(new Commands::CreateTable(
               Table("testtable1")
-              .add(Column("ID", "int", Column::Primary))
-              .add(Column("name", "varchar(23)", Column::NotNullable))
+              .add(Column("ID", QVariant::Int, Column::Primary))
+              .add(Column("name", SqlType(QVariant::String, 23), Column::NotNullable))
               ));
 
     Migration m2;
     m2.add(new Commands::CreateTable(
                Table("testtable2")
-               .add(Column("ID", "int", Column::Primary))
-               .add(Column("name", "varchar(23)", Column::NotNullable))
+               .add(Column("ID", QVariant::Int, Column::Primary))
+               .add(Column("name", SqlType(QVariant::String, 23), Column::NotNullable))
                ));
 
     MigrationExecutionService migrator;
@@ -393,8 +393,8 @@ void BasicTest::testDropTableRevert()
 {
     Migration m;
     Table table1 = Table("testtable1")
-            .add(Column("ID", "int", Column::Primary))
-            .add(Column("name", "varchar(23)", Column::NotNullable));
+            .add(Column("ID", QVariant::Int, Column::Primary))
+            .add(Column("name", SqlType(QVariant::String, 23), Column::NotNullable));
     m.add(new Commands::CreateTable(table1));
 
     Migration m2;
@@ -512,10 +512,10 @@ void BasicTest::testCreateIndex()
     Commands::CommandPtr command(
                 new Commands::CreateTable(
                     Table("testtable1")
-                    .add(Column("ID", "int", Column::Primary))
-                    .add(Column("name", "varchar(23)", Column::NotNullable))
-                    .add(Column("col1", "varchar(23)"))
-                    .add(Column("col2", "varchar(23)"))
+                    .add(Column("ID", QVariant::Int, Column::Primary))
+                    .add(Column("name", SqlType(QVariant::String, 23), Column::NotNullable))
+                    .add(Column("col1", SqlType(QVariant::String, 23)))
+                    .add(Column("col2", SqlType(QVariant::String, 23)))
                     ));
 
     QSharedPointer<Index> index;
@@ -555,10 +555,10 @@ void BasicTest::testDropColumn()
     Commands::CommandPtr command(
                 new Commands::CreateTable(
                     Table("testtable1")
-                    .add(Column("ID", "INTEGER", Column::Primary))
-                    .add(Column("name", "varchar(23)", Column::NotNullable))
-                    .add(Column("col1", "varchar(23)"))
-                    .add(Column("col2", "varchar(23)"))
+                    .add(Column("ID", QVariant::Int, Column::Primary))
+                    .add(Column("name", SqlType(QVariant::String, 23), Column::NotNullable))
+                    .add(Column("col1", SqlType(QVariant::String, 23)))
+                    .add(Column("col2", SqlType(QVariant::String, 23)))
                     ));
 
     CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig(), m_context.helperAggregate());
@@ -585,10 +585,10 @@ void BasicTest::testRenameColumn()
     Commands::CommandPtr command(
                 new Commands::CreateTable(
                     Table("testtable1")
-                    .add(Column("ID", "INTEGER", Column::Primary))
-                    .add(Column("name", "varchar(23)", Column::NotNullable))
-                    .add(Column("col1", "varchar(23)"))
-                    .add(Column("col2", "varchar(23)"))
+                    .add(Column("ID", QVariant::Int, Column::Primary))
+                    .add(Column("name", SqlType(QVariant::String, 23), Column::NotNullable))
+                    .add(Column("col1", SqlType(QVariant::String, 23)))
+                    .add(Column("col2", SqlType(QVariant::String, 23)))
                     ));
 
     CommandExecution::CommandExecutionContext serviceContext(m_context.database(), m_context.migrationConfig(), m_context.helperAggregate());
