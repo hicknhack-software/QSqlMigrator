@@ -49,8 +49,15 @@ QString PostgresqlColumnService::generateColumnDefinitionSql(const Column &colum
     bool serial = false;
     if (column.isAutoIncremented()) {
         // PostgreSQL has no auto increment, instead there are serials (as types)
-        sqlTypeString = "SERIAL"; // TODO: what do with SMALLSERIAL and BIGSERIAL?
-        //TODO: maybe check given type to be of integer?
+        // QVariant has no Short
+        if (column.sqlType().type() == QVariant::Int)
+            sqlTypeString = "SERIAL";
+        else if (column.sqlType().type() == QVariant::LongLong)
+            sqlTypeString = "BIGSERIAL";
+        else {
+            qWarning() << "column" << column.name() << "has auto increment specified but is not of integer type";
+            sqlTypeString = "SERIAL";
+        }
         serial = true;
     } else {
         if (column.hasSqlTypeString())
