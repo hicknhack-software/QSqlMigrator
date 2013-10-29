@@ -21,6 +21,13 @@ cd %TEMP%
 mkdir qmysql
 cd qmysql
 
+3.a) Patch for Visual Studio 2012
+You will get conflict with winsock linkage. 
+To prevent that do the following patches:
+* qsql_mysql_p.h - move >>#include "qt_windows.h"<< before qt
+* main.cpp - move >>#include ".../qsql_mysql_p.h" before qt
+* qsql_mysql.cpp - add >>#undef min<< & >>#undef max<< after >>#include "qsql_mysql_p.h"<<
+
 4. Create the makefiles with qmake
 qmake "INCLUDEPATH+=%MYSQL%/include" "LIBS+=%MYSQL%/lib/libmysql.lib" %QTDIR%\src\plugins\sqldrivers\mysql\mysql.pro
 

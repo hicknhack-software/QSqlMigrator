@@ -1,6 +1,3 @@
-superuser: postgres
-password: root
+The psql driver should be prebuilt for qt binary installations.
 
-port 5432
-
-http://gnuwin32.sourceforge.net/packages/libintl.htm
+You need the "libpg.dll"/.so and "libintl.dll"/.so in your path.

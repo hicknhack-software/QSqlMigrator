@@ -35,7 +35,7 @@ using namespace Structure;
 using namespace Migrations;
 using namespace MigrationExecution;
 
-#define POSTGRESQL_STRUCTURE_DATABASE "postgresql"
+#define POSTGRESQL_STRUCTURE_DATABASE "postgres"
 #define POSTGRESQLTEST_DATABASE_NAME "qdb_migrator_test_db"
 
 class PostgresqlTest : public BasicTest
