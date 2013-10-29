@@ -86,6 +86,7 @@ SOURCES += \
     LocalSchemeMigrator/CommandExecution/LocalSchemeDropIndexService.cpp \
     LocalSchemeMigrator/CommandExecution/LocalSchemeDropTableService.cpp \
     LocalSchemeMigrator/CommandExecution/LocalSchemeRenameColumnService.cpp \
+    LocalSchemeMigrator/CommandExecution/LocalSchemeRenameTableService.cpp \
     LocalSchemeMigrator/LocalSchemeComparisonService.cpp \
     LocalSchemeMigrator/LocalSchemeComparisonContext.cpp
 
@@ -158,5 +159,6 @@ HEADERS += \
     LocalSchemeMigrator/CommandExecution/LocalSchemeDropIndexService.h \
     LocalSchemeMigrator/CommandExecution/LocalSchemeDropTableService.h \
     LocalSchemeMigrator/CommandExecution/LocalSchemeRenameColumnService.h \
+    LocalSchemeMigrator/CommandExecution/LocalSchemeRenameTableService.h \
     LocalSchemeMigrator/LocalSchemeComparisonService.h \
     LocalSchemeMigrator/LocalSchemeComparisonContext.h

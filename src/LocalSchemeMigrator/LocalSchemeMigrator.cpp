@@ -8,6 +8,7 @@
 #include "LocalSchemeMigrator/CommandExecution/LocalSchemeDropIndexService.h"
 #include "LocalSchemeMigrator/CommandExecution/LocalSchemeDropTableService.h"
 #include "LocalSchemeMigrator/CommandExecution/LocalSchemeRenameColumnService.h"
+#include "LocalSchemeMigrator/CommandExecution/LocalSchemeRenameTableService.h"
 
 #include "CommandExecution/LocalSchemeCommandExecutionServiceRepository.h"
 
@@ -26,6 +27,7 @@ QSharedPointer<CommandExecution::LocalSchemeCommandExecutionServiceRepository> c
     commandRepository->add(LocalSchemeBaseCommandServicePtr(new LocalSchemeDropIndexService));
     commandRepository->add(LocalSchemeBaseCommandServicePtr(new LocalSchemeDropTableService));
     commandRepository->add(LocalSchemeBaseCommandServicePtr(new LocalSchemeRenameColumnService));
+    commandRepository->add(LocalSchemeBaseCommandServicePtr(new LocalSchemeRenameTableService));
 
     return commandRepository;
 }
