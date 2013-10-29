@@ -36,17 +36,17 @@ PostgresqlQuoteService::~PostgresqlQuoteService()
 }
 
 //TODO: merge quoteTableName and quoteColumnName in every QuoteService to quoteIdentifier ?
-QString PostgresqlQuoteService::quoteTableName(const QString &tableName)
+QString PostgresqlQuoteService::quoteTableName(const QString &tableName) const
 {
     return QString("\"%1\"").arg(tableName);
 }
 
-QString PostgresqlQuoteService::quoteColumnName(const QString &columnName)
+QString PostgresqlQuoteService::quoteColumnName(const QString &columnName) const
 {
     return QString("\"%1\"").arg(columnName);
 }
 
-QString PostgresqlQuoteService::quoteString(const QString &string)
+QString PostgresqlQuoteService::quoteString(const QString &string) const
 {
     return QString("'%1'").arg(string);
 }
@@ -55,7 +55,7 @@ QString PostgresqlQuoteService::quoteString(const QString &string)
     from http://www.postgresql.org/docs/9.3/static/sql-syntax-lexical.html (4.1.1. Identifiers and Key Words)
     To include the escape character in the identifier literally, it needs to be written twice.
  */
-QString PostgresqlQuoteService::quoteUnicodeString(const QString &string, const char UESCAPE)
+QString PostgresqlQuoteService::quoteUnicodeString(const QString &string, const char UESCAPE) const
 {
         return QString("U&\"%1\" UESCAPE '%2'").arg(string, UESCAPE);
 }

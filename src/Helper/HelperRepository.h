@@ -19,12 +19,23 @@ typedef QSharedPointer< HelperRepository > HelperRepositoryPtr;
 class QSQLMIGRATOR_DLL_EXPORT HelperRepository
 {
 public:
-    QSharedPointer<ColumnService> columnService;
-    QSharedPointer<DbReaderService> dbReaderService;
-    QSharedPointer<QuoteService> quoteService;
-    QSharedPointer<TypeMapperService> typeMapperService;
-
     HelperRepository();
+
+    void setColumnService(ColumnService *columnService);
+    void setDbReaderService(DbReaderService *dbReaderService);
+    void setQuoteService(QuoteService *quoteService);
+    void setTypeMapperService(TypeMapperService *typeMapperService);
+
+    const ColumnService &columnService() const;
+    const DbReaderService &dbReaderService() const;
+    const QuoteService &quoteService() const;
+    const TypeMapperService &typeMapperService() const;
+
+private:
+    QSharedPointer<ColumnService> m_columnService;
+    QSharedPointer<DbReaderService> m_dbReaderService;
+    QSharedPointer<QuoteService> m_quoteService;
+    QSharedPointer<TypeMapperService> m_typeMapperService;
 };
 
 } // namespace helper

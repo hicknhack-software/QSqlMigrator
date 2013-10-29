@@ -48,9 +48,9 @@ bool BaseSqlAddColumnService::execute(const Commands::ConstCommandPtr &command
 {
     QSharedPointer<const Commands::AddColumn> addColumn(command.staticCast<const Commands::AddColumn>());
 
-    QString columnDefinition = context.helperRepository().columnService->generateColumnDefinitionSql(addColumn->column());
+    QString columnDefinition = context.helperRepository().columnService().generateColumnDefinitionSql(addColumn->column());
     QString alterQuery = QString("ALTER TABLE %1 ADD COLUMN %2")
-            .arg(context.helperRepository().quoteService->quoteTableName(addColumn->tableName()), columnDefinition);
+            .arg(context.helperRepository().quoteService().quoteTableName(addColumn->tableName()), columnDefinition);
 
     bool success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
 

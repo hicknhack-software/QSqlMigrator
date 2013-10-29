@@ -40,9 +40,9 @@ public:
     BaseSqlQuoteService();
     virtual ~BaseSqlQuoteService() {};
 
-    QString quoteTableName(const QString &tableName) Q_DECL_OVERRIDE;
-    QString quoteColumnName(const QString &columnName) Q_DECL_OVERRIDE;
-    QString quoteString(const QString &string) Q_DECL_OVERRIDE;
+    QString quoteTableName(const QString &tableName) const Q_DECL_OVERRIDE;
+    QString quoteColumnName(const QString &columnName) const Q_DECL_OVERRIDE;
+    QString quoteString(const QString &string) const Q_DECL_OVERRIDE;
 };
 
 } // namespace Helper

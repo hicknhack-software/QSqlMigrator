@@ -47,7 +47,7 @@ bool MysqlAlterColumnTypeService::execute(const Commands::ConstCommandPtr &comma
     Structure::Column originalColumn;
     bool success;
     originalColumn = context.helperRepository()
-            .dbReaderService->getTableDefinition(alterColumnType->tableName(), context.database())
+            .dbReaderService().getTableDefinition(alterColumnType->tableName(), context.database())
             .fetchColumnByName(alterColumnType->columnName(), success);
 
     if (!success)
@@ -57,14 +57,14 @@ bool MysqlAlterColumnTypeService::execute(const Commands::ConstCommandPtr &comma
     if (alterColumnType->hasSqlTypeString())
         newType = alterColumnType->newTypeString();
     else
-        newType = context.helperRepository().typeMapperService->map(alterColumnType->newType());
+        newType = context.helperRepository().typeMapperService().map(alterColumnType->newType());
 
     Structure::Column modifiedColumn(originalColumn.name(), newType, originalColumn.defaultValue(), originalColumn.attributes());
 
-    QString columnDefinition = context.helperRepository().columnService->generateColumnDefinitionSql(modifiedColumn);
+    QString columnDefinition = context.helperRepository().columnService().generateColumnDefinitionSql(modifiedColumn);
 
     QString alterQuery = QString("ALTER TABLE %1 MODIFY COLUMN %2")
-            .arg(context.helperRepository().quoteService->quoteTableName(alterColumnType->tableName())
+            .arg(context.helperRepository().quoteService().quoteTableName(alterColumnType->tableName())
                  , columnDefinition);
 
     success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);

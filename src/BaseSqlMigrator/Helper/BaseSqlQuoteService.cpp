@@ -31,17 +31,17 @@ BaseSqlQuoteService::BaseSqlQuoteService()
 {
 }
 
-QString BaseSqlQuoteService::quoteTableName(const QString &tableName)
+QString BaseSqlQuoteService::quoteTableName(const QString &tableName) const
 {
      return QString("`%1`").arg(tableName);
 }
 
-QString BaseSqlQuoteService::quoteColumnName(const QString &columnName)
+QString BaseSqlQuoteService::quoteColumnName(const QString &columnName) const
 {
      return QString("`%1`").arg(columnName);
 }
 
-QString BaseSqlQuoteService::quoteString(const QString &string)
+QString BaseSqlQuoteService::quoteString(const QString &string) const
 {
      return QString("\"%1\"").arg(string);
 }

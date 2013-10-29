@@ -44,7 +44,7 @@ bool SqliteAlterColumnTypeService::execute(const Commands::ConstCommandPtr &comm
 {
     QSharedPointer<const Commands::AlterColumnType> alterColumnType(command.staticCast<const Commands::AlterColumnType>());
 
-    Structure::Table origTable = context.helperRepository().dbReaderService->getTableDefinition(alterColumnType->tableName(), context.database());
+    Structure::Table origTable = context.helperRepository().dbReaderService().getTableDefinition(alterColumnType->tableName(), context.database());
     Structure::Table newTable = Structure::Table(alterColumnType->tableName());
     Structure::Column originalColumn;
 
@@ -52,7 +52,7 @@ bool SqliteAlterColumnTypeService::execute(const Commands::ConstCommandPtr &comm
     if (alterColumnType->hasSqlTypeString())
         newType = alterColumnType->newTypeString();
     else
-        newType = context.helperRepository().typeMapperService->map(alterColumnType->newType());
+        newType = context.helperRepository().typeMapperService().map(alterColumnType->newType());
 
     foreach (Structure::Column column, origTable.columns()) {
         if (column.name() == alterColumnType->columnName()) {

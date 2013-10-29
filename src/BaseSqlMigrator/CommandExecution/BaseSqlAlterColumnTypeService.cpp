@@ -54,7 +54,7 @@ bool BaseSqlAlterColumnTypeService::execute(const Commands::ConstCommandPtr &com
     Structure::Column originalColumn;
     bool success;
     originalColumn = context.helperRepository()
-            .dbReaderService->getTableDefinition(alterColumnType->tableName(), context.database())
+            .dbReaderService().getTableDefinition(alterColumnType->tableName(), context.database())
             .fetchColumnByName(alterColumnType->columnName(), success);
 
     if (!success)
@@ -64,11 +64,11 @@ bool BaseSqlAlterColumnTypeService::execute(const Commands::ConstCommandPtr &com
     if (alterColumnType->hasSqlTypeString())
         newType = alterColumnType->newTypeString();
     else
-        newType = context.helperRepository().typeMapperService->map(alterColumnType->newType());
+        newType = context.helperRepository().typeMapperService().map(alterColumnType->newType());
 
     QString alterQuery = QString("ALTER TABLE %1 ALTER COLUMN %2 SET DATA TYPE %3")
-            .arg(context.helperRepository().quoteService->quoteTableName(alterColumnType->tableName())
-                 , context.helperRepository().quoteService->quoteColumnName(alterColumnType->columnName())
+            .arg(context.helperRepository().quoteService().quoteTableName(alterColumnType->tableName())
+                 , context.helperRepository().quoteService().quoteColumnName(alterColumnType->columnName())
                  , newType);
 
     success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);

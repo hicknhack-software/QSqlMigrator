@@ -13,9 +13,9 @@ public:
     QuoteService();
     virtual ~QuoteService();
 
-    virtual QString quoteTableName(const QString &tableName) = 0;
-    virtual QString quoteColumnName(const QString &columnName) = 0;
-    virtual QString quoteString(const QString &string) = 0;
+    virtual QString quoteTableName(const QString &tableName) const = 0;
+    virtual QString quoteColumnName(const QString &columnName) const = 0;
+    virtual QString quoteString(const QString &string) const = 0;
 };
 
 } // namespace Helper

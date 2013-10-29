@@ -78,10 +78,10 @@ void createHelperRepository(Helper::HelperRepository &helperRepository)
 
     using namespace Helper;
 
-    helperRepository.columnService.reset(new SqliteColumnService);
-    helperRepository.dbReaderService.reset(new SqliteDbReaderService);
-    helperRepository.quoteService.reset(new BaseSqlQuoteService);
-    helperRepository.typeMapperService.reset(new BaseSqlTypeMapperService);
+    helperRepository.setColumnService(new SqliteColumnService);
+    helperRepository.setDbReaderService(new SqliteDbReaderService);
+    helperRepository.setQuoteService(new BaseSqlQuoteService);
+    helperRepository.setTypeMapperService(new BaseSqlTypeMapperService);
 }
 
 bool buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDatabase database)

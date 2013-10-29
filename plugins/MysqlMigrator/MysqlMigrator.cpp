@@ -78,10 +78,10 @@ void createhelperRepository(Helper::HelperRepository &helperRepository)
 
     using namespace Helper;
 
-    helperRepository.columnService.reset(new MysqlColumnService);
-    helperRepository.dbReaderService.reset(new MysqlDbReaderService);
-    helperRepository.quoteService.reset(new BaseSqlQuoteService);
-    helperRepository.typeMapperService.reset(new MysqlTypeMapperService);
+    helperRepository.setColumnService(new MysqlColumnService);
+    helperRepository.setDbReaderService(new MysqlDbReaderService);
+    helperRepository.setQuoteService(new BaseSqlQuoteService);
+    helperRepository.setTypeMapperService(new MysqlTypeMapperService);
 }
 
 bool buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDatabase database)

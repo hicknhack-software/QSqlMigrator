@@ -452,21 +452,21 @@ void BasicTest::testAlterColumnType()
     execution.execute(command2, m_context.commandServiceRepository(), serviceContext);
 
     //check if old column was removed and new column included successfully
-    Structure::Table table = m_context.helperRepository().dbReaderService->getTableDefinition("testtable1", m_context.database());
+    Structure::Table table = m_context.helperRepository().dbReaderService().getTableDefinition("testtable1", m_context.database());
     Structure::Column col1;
     bool success;
     col1 = table.fetchColumnByName("col1", success);
     QVERIFY2(success, "column col1 should exist");
-    QVERIFY2(col1.sqlTypeString() == m_context.helperRepository().typeMapperService->map(SqlType(QVariant::String, 42)), "column col1 should be retyped to varchar(42) during migration");
+    QVERIFY2(col1.sqlTypeString() == m_context.helperRepository().typeMapperService().map(SqlType(QVariant::String, 42)), "column col1 should be retyped to varchar(42) during migration");
 
     Commands::CommandPtr command3(new Commands::AlterColumnType("col1", "testtable1", SqlType(QVariant::String, 43)));
     execution.execute(command3, m_context.commandServiceRepository(), serviceContext);
 
     //check if old column was removed and new column included successfully
-    table = m_context.helperRepository().dbReaderService->getTableDefinition("testtable1", m_context.database());
+    table = m_context.helperRepository().dbReaderService().getTableDefinition("testtable1", m_context.database());
     col1 = table.fetchColumnByName("col1", success);
     QVERIFY2(success, "column col1 should exist");
-    QVERIFY2(col1.sqlTypeString() == m_context.helperRepository().typeMapperService->map(SqlType(QVariant::String, 43)), "column col1 should be retyped to varchar(43) during migration");
+    QVERIFY2(col1.sqlTypeString() == m_context.helperRepository().typeMapperService().map(SqlType(QVariant::String, 43)), "column col1 should be retyped to varchar(43) during migration");
 
     //TODO check if test data was copied correctly
 }
@@ -496,13 +496,13 @@ void BasicTest::testColumnType()
     QStringList tables = m_context.database().tables(QSql::Tables);
     QVERIFY2(tables.contains(testtable.name()), "table should be created during migration!");
 
-    Structure::Table table = m_context.helperRepository().dbReaderService->getTableDefinition(testtable.name(), m_context.database());
+    Structure::Table table = m_context.helperRepository().dbReaderService().getTableDefinition(testtable.name(), m_context.database());
 
     foreach(Structure::Column column, testtable.columns()) {
         bool success;
         Structure::Column col = table.fetchColumnByName(column.name(), success);
         QVERIFY2(success, "column should exist");
-        QVERIFY2(m_context.helperRepository().typeMapperService->map(column.sqlType()) == col.sqlTypeString(), "wrong type");
+        QVERIFY2(m_context.helperRepository().typeMapperService().map(column.sqlType()) == col.sqlTypeString(), "wrong type");
     }
 
 }
@@ -541,11 +541,11 @@ void BasicTest::testCreateIndex()
     QVERIFY2(tables.contains("testtable1"), "testtable should be created during migration!");
 
     //check if index was created successfully
-    Structure::Index realIndex = m_context.helperRepository().dbReaderService->getIndexDefinition("index1", "testtable1", m_context.database());
+    Structure::Index realIndex = m_context.helperRepository().dbReaderService().getIndexDefinition("index1", "testtable1", m_context.database());
     bool indexPresent = realIndex.columns() == index->columns();
     if (!indexPresent) {
-            qDebug() << "local scheme index:" << m_context.helperRepository().columnService->generateIndexColumnDefinitionSql(index->columns());
-            qDebug() << "real index:" << m_context.helperRepository().columnService->generateIndexColumnDefinitionSql(realIndex.columns());
+            qDebug() << "local scheme index:" << m_context.helperRepository().columnService().generateIndexColumnDefinitionSql(index->columns());
+            qDebug() << "real index:" << m_context.helperRepository().columnService().generateIndexColumnDefinitionSql(realIndex.columns());
     }
     QVERIFY2(indexPresent, "real and local scheme index differ");
 }
@@ -576,7 +576,7 @@ void BasicTest::testDropColumn()
 
     //check if column was dropped successfully
     bool columnRemoved;
-    m_context.helperRepository().dbReaderService->getTableDefinition("testtable1", m_context.database()).fetchColumnByName("col1", columnRemoved);
+    m_context.helperRepository().dbReaderService().getTableDefinition("testtable1", m_context.database()).fetchColumnByName("col1", columnRemoved);
     QVERIFY2(!columnRemoved, "col1 should be removed during migration");
 }
 
@@ -605,7 +605,7 @@ void BasicTest::testRenameColumn()
     execution.execute(command2, m_context.commandServiceRepository(), serviceContext);
 
     //check if old column was removed and new column included successfully
-    Structure::Table table = m_context.helperRepository().dbReaderService->getTableDefinition("testtable1", m_context.database());
+    Structure::Table table = m_context.helperRepository().dbReaderService().getTableDefinition("testtable1", m_context.database());
     bool columnRenamed;
     Structure::Column column = table.fetchColumnByName("col1", columnRenamed);
     QVERIFY2(!columnRenamed, "col1 should be removed during migration");

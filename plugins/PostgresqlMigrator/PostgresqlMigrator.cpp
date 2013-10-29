@@ -77,10 +77,10 @@ void createHelperRepository(Helper::HelperRepository &helperRepository)
 
     using namespace Helper;
 
-    helperRepository.columnService.reset(new PostgresqlColumnService);
-    helperRepository.dbReaderService.reset(new PostgresqlDbReaderService);
-    helperRepository.quoteService.reset(new PostgresqlQuoteService);
-    helperRepository.typeMapperService.reset(new PostgresqlTypeMapperService);
+    helperRepository.setColumnService(new PostgresqlColumnService);
+    helperRepository.setDbReaderService(new PostgresqlDbReaderService);
+    helperRepository.setQuoteService(new PostgresqlQuoteService);
+    helperRepository.setTypeMapperService(new PostgresqlTypeMapperService);
 }
 
 bool buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDatabase database)

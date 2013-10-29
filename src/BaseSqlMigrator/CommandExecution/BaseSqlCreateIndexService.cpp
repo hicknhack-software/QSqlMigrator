@@ -47,11 +47,11 @@ bool BaseSqlCreateIndexService::execute(const Commands::ConstCommandPtr &command
 {
     QSharedPointer<const Commands::CreateIndex> createIndex(command.staticCast<const Commands::CreateIndex>());
 
-    QString columnDefinition = context.helperRepository().columnService->generateIndexColumnDefinitionSql(createIndex->index().columns());
+    QString columnDefinition = context.helperRepository().columnService().generateIndexColumnDefinitionSql(createIndex->index().columns());
 
     QString createQuery = QString("CREATE INDEX %1 ON %2 (%3)")
-            .arg(context.helperRepository().quoteService->quoteTableName(createIndex->index().name())
-                 , context.helperRepository().quoteService->quoteTableName(createIndex->index().tableName())
+            .arg(context.helperRepository().quoteService().quoteTableName(createIndex->index().name())
+                 , context.helperRepository().quoteService().quoteTableName(createIndex->index().tableName())
                  , columnDefinition);
 
     bool success = CommandExecution::BaseCommandExecutionService::executeQuery(createQuery, context);

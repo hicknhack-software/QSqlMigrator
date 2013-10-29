@@ -50,7 +50,7 @@ bool SqliteDropColumnService::execute(const Commands::ConstCommandPtr &command
 {
     QSharedPointer<const Commands::DropColumn> dropColumn(command.staticCast<const Commands::DropColumn>());
 
-    Structure::Table table = context.helperRepository().dbReaderService->getTableDefinition(dropColumn->tableName(), context.database());
+    Structure::Table table = context.helperRepository().dbReaderService().getTableDefinition(dropColumn->tableName(), context.database());
     bool success;
     Structure::Column originalColumn = table.fetchColumnByName(dropColumn->columnName(), success);
     if (!success)

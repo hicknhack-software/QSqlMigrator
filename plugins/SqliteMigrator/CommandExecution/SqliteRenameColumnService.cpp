@@ -45,7 +45,7 @@ bool SqliteRenameColumnService::execute(const Commands::ConstCommandPtr &command
 {
     QSharedPointer<const Commands::RenameColumn> renameColumn(command.staticCast<const Commands::RenameColumn>());
 
-    Table origTable = context.helperRepository().dbReaderService->getTableDefinition(renameColumn->tableName(), context.database());
+    Table origTable = context.helperRepository().dbReaderService().getTableDefinition(renameColumn->tableName(), context.database());
     Table table = Table(renameColumn->tableName());
     foreach (Column column, origTable.columns()) {
         if (column.name() == renameColumn->name()) {
