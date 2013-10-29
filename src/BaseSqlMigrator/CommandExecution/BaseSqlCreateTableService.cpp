@@ -48,9 +48,9 @@ bool BaseSqlCreateTableService::execute(const Commands::ConstCommandPtr &command
 {
     QSharedPointer<const Commands::CreateTable> createTable(command.staticCast<const Commands::CreateTable>());
 
-    QString columnDefinition = context.helperAggregate().columnService->generateColumnsDefinitionSql(createTable->table().columns());
+    QString columnDefinition = context.helperRepository().columnService->generateColumnsDefinitionSql(createTable->table().columns());
     QString createQuery = QString("CREATE TABLE %1 (%2)")
-            .arg(context.helperAggregate().quoteService->quoteTableName(createTable->table().name()), columnDefinition);
+            .arg(context.helperRepository().quoteService->quoteTableName(createTable->table().name()), columnDefinition);
 
     bool success = CommandExecution::BaseCommandExecutionService::executeQuery(createQuery, context);
 

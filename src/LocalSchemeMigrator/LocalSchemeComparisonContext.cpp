@@ -11,9 +11,9 @@ void LocalSchemeComparisonContext::setLocalScheme(const LocalSchemePtr &localSch
     m_localScheme = localScheme;
 }
 
-void LocalSchemeComparisonContext::setHelperAggregate(const Helper::HelperAggregate &helperAggregate)
+void LocalSchemeComparisonContext::setHelperRepository(const Helper::HelperRepository &helperRepository)
 {
-    m_helperAggregate = helperAggregate;
+    m_helperRepository = helperRepository;
 }
 
 void LocalSchemeComparisonContext::setDatabase(const QSqlDatabase &database)
@@ -26,9 +26,9 @@ const LocalSchemePtr &LocalSchemeComparisonContext::localScheme() const
     return m_localScheme;
 }
 
-const Helper::HelperAggregate &LocalSchemeComparisonContext::helperAggregate() const
+const Helper::HelperRepository &LocalSchemeComparisonContext::helperRepository() const
 {
-    return m_helperAggregate;
+    return m_helperRepository;
 }
 
 const QSqlDatabase &LocalSchemeComparisonContext::database() const

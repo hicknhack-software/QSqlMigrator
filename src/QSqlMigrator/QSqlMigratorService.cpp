@@ -37,7 +37,7 @@ namespace QSqlMigrator {
 
 QStringList QSqlMigratorService::appliedMigrations(const MigrationExecutionContext &context) const
 {
-    CommandExecution::CommandExecutionContext serviceContext(context.database(), context.migrationConfig(), context.helperAggregate());
+    CommandExecution::CommandExecutionContext serviceContext(context.database(), context.migrationConfig(), context.helperRepository());
     QStringList list = context.baseMigrationTableService()->migrationList(serviceContext);
     list.sort();
     return list;

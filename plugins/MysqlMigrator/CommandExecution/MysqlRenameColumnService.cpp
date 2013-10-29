@@ -49,7 +49,7 @@ bool MysqlRenameColumnService::execute(const Commands::ConstCommandPtr &command
 
     Structure::Column originalColumn;
     bool success;
-    originalColumn = context.helperAggregate()
+    originalColumn = context.helperRepository()
             .dbReaderService->getTableDefinition(renameColumn->tableName(), context.database())
             .fetchColumnByName(renameColumn->name(), success);
 
@@ -58,10 +58,10 @@ bool MysqlRenameColumnService::execute(const Commands::ConstCommandPtr &command
 
     Structure::Column modifiedColumn(renameColumn->newName(), originalColumn.sqlTypeString(), originalColumn.attributes());
 
-    QString columnDefinition = context.helperAggregate().columnService->generateColumnDefinitionSql(modifiedColumn);
+    QString columnDefinition = context.helperRepository().columnService->generateColumnDefinitionSql(modifiedColumn);
 
     QString alterQuery = QString("ALTER TABLE %1 CHANGE COLUMN %2 %3")
-            .arg(context.helperAggregate().quoteService->quoteTableName(renameColumn->tableName())
+            .arg(context.helperRepository().quoteService->quoteTableName(renameColumn->tableName())
                  , renameColumn->name()
                  , columnDefinition);
 

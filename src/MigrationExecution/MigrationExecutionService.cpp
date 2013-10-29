@@ -80,7 +80,7 @@ bool MigrationExecutionService::execute(const QString &migrationName
     QSqlDatabase database = migrationContext.database();
 
     const MigrationExecutionConfig &migrationConfig = migrationContext.migrationConfig();
-    CommandExecution::CommandExecutionContext context(database, migrationConfig, migrationContext.helperAggregate());
+    CommandExecution::CommandExecutionContext context(database, migrationConfig, migrationContext.helperRepository());
     CommandPtrList undoCommands;
     if(migrationName.isEmpty()) {
         ::qWarning() << LOG_PREFIX << "migrationName is empty";
@@ -163,7 +163,7 @@ bool MigrationExecutionService::isMigrationRemembered(const QString &migrationNa
                                                       , const MigrationExecutionContext &context
                                                       , Direction direction) const
 {
-    CommandExecution::CommandExecutionContext serviceContext(context.database(), context.migrationConfig(), context.helperAggregate());
+    CommandExecution::CommandExecutionContext serviceContext(context.database(), context.migrationConfig(), context.helperRepository());
     MigrationTableServicePtr tableService = context.baseMigrationTableService();
     bool isExecuted = tableService->wasMigrationExecuted(migrationName, serviceContext);
 
@@ -183,7 +183,7 @@ bool MigrationExecutionService::rememberMigration(const QString &migrationName
                                                   , const MigrationExecutionContext &context
                                                   , Direction direction) const
 {
-    CommandExecution::CommandExecutionContext serviceContext(context.database(), context.migrationConfig(), context.helperAggregate());
+    CommandExecution::CommandExecutionContext serviceContext(context.database(), context.migrationConfig(), context.helperRepository());
     MigrationTableServicePtr tableService = context.baseMigrationTableService();
     switch (direction) {
     case Up:

@@ -25,7 +25,7 @@ bool LocalSchemeComparisonService::compareLocalSchemeWithDatabase(const LocalSch
     bool success = true;
 
     foreach (const Structure::Table &table, context.localScheme()->tables().values()) {
-        Structure::Table realTable = context.helperAggregate().dbReaderService->getTableDefinition(table.name(), context.database());
+        Structure::Table realTable = context.helperRepository().dbReaderService->getTableDefinition(table.name(), context.database());
         if (realTable.columns().length() != table.columns().length()) {
             qWarning() << LOG_PREFIX << "columns count doesn't match";
             success = false;
@@ -51,7 +51,7 @@ bool LocalSchemeComparisonService::compareLocalSchemeWithDatabase(const LocalSch
             {
                 QString sqlTypeString;
                 if (!column.hasSqlTypeString())
-                    sqlTypeString = context.helperAggregate().typeMapperService->map(column.sqlType());
+                    sqlTypeString = context.helperRepository().typeMapperService->map(column.sqlType());
                 else
                     sqlTypeString = column.sqlTypeString();
                 if (realColumn.sqlTypeString() != sqlTypeString) {
@@ -78,11 +78,11 @@ bool LocalSchemeComparisonService::compareLocalSchemeWithDatabase(const LocalSch
         }
     }
     foreach (const Structure::Index &index, context.localScheme()->indexes()) {
-        Structure::Index realIndex = context.helperAggregate().dbReaderService->getIndexDefinition(index.name(), index.tableName(), context.database());
+        Structure::Index realIndex = context.helperRepository().dbReaderService->getIndexDefinition(index.name(), index.tableName(), context.database());
         if (index.columns() != realIndex.columns()) {
             qWarning() << LOG_PREFIX << "table" << index.tableName() << "index" << index.name() << "have different columns";
-            qWarning() << LOG_PREFIX << "table" << index.tableName() << "local scheme index:" << context.helperAggregate().columnService->generateIndexColumnDefinitionSql(index.columns());
-            qWarning() << LOG_PREFIX << "table" << index.tableName() << "real index:" << context.helperAggregate().columnService->generateIndexColumnDefinitionSql(realIndex.columns());
+            qWarning() << LOG_PREFIX << "table" << index.tableName() << "local scheme index:" << context.helperRepository().columnService->generateIndexColumnDefinitionSql(index.columns());
+            qWarning() << LOG_PREFIX << "table" << index.tableName() << "real index:" << context.helperRepository().columnService->generateIndexColumnDefinitionSql(realIndex.columns());
             success = false;
         }
     }

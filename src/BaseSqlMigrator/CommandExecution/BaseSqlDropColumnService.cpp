@@ -51,7 +51,7 @@ bool BaseSqlDropColumnService::execute(const Commands::ConstCommandPtr &command
 
     Structure::Column originalColumn;
     bool success;
-    originalColumn = context.helperAggregate()
+    originalColumn = context.helperRepository()
             .dbReaderService->getTableDefinition(dropColumn->tableName(), context.database())
             .fetchColumnByName(dropColumn->columnName(), success);
 
@@ -59,8 +59,8 @@ bool BaseSqlDropColumnService::execute(const Commands::ConstCommandPtr &command
         return success; // failed, column doesn't exist
 
     QString alterQuery = QString("ALTER TABLE %1 DROP COLUMN %2")
-            .arg(context.helperAggregate().quoteService->quoteTableName(dropColumn->tableName())
-                 , context.helperAggregate().quoteService->quoteColumnName(dropColumn->columnName()));
+            .arg(context.helperRepository().quoteService->quoteTableName(dropColumn->tableName())
+                 , context.helperRepository().quoteService->quoteColumnName(dropColumn->columnName()));
 
     success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
 

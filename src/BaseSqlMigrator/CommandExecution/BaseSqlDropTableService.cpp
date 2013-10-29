@@ -48,10 +48,10 @@ bool BaseSqlDropTableService::execute(const Commands::ConstCommandPtr &command
 {
     QSharedPointer<const Commands::DropTable> dropTable(command.staticCast<const Commands::DropTable>());
 
-    Structure::Table origTable = context.helperAggregate().dbReaderService->getTableDefinition(dropTable->tableName(), context.database());
+    Structure::Table origTable = context.helperRepository().dbReaderService->getTableDefinition(dropTable->tableName(), context.database());
 
     QString dropQuery = QString("DROP TABLE %1")
-            .arg(context.helperAggregate().quoteService->quoteTableName(dropTable->tableName()));
+            .arg(context.helperRepository().quoteService->quoteTableName(dropTable->tableName()));
 
     bool success = CommandExecution::BaseCommandExecutionService::executeQuery(dropQuery, context);
 

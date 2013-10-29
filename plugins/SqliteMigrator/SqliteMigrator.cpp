@@ -36,7 +36,7 @@
 #include "SqliteMigrator/CommandExecution/SqliteDropColumnService.h"
 #include "SqliteMigrator/CommandExecution/SqliteRenameColumnService.h"
 
-#include "Helper/HelperAggregate.h"
+#include "Helper/HelperRepository.h"
 
 #include "BaseSqlMigrator/Helper/BaseSqlQuoteService.h"
 #include "SqliteMigrator/Helper/SqliteColumnService.h"
@@ -72,16 +72,16 @@ QSharedPointer<CommandExecution::CommandExecutionServiceRepository> createComman
     return commandRepository;
 }
 
-void createHelperAggregate(Helper::HelperAggregate &helperAggregate)
+void createHelperRepository(Helper::HelperRepository &helperRepository)
 {
     ::qDebug() << "creating SQLite helper aggregate";
 
     using namespace Helper;
 
-    helperAggregate.columnService.reset(new SqliteColumnService);
-    helperAggregate.dbReaderService.reset(new SqliteDbReaderService);
-    helperAggregate.quoteService.reset(new BaseSqlQuoteService);
-    helperAggregate.typeMapperService.reset(new BaseSqlTypeMapperService);
+    helperRepository.columnService.reset(new SqliteColumnService);
+    helperRepository.dbReaderService.reset(new SqliteDbReaderService);
+    helperRepository.quoteService.reset(new BaseSqlQuoteService);
+    helperRepository.typeMapperService.reset(new BaseSqlTypeMapperService);
 }
 
 bool buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDatabase database)
@@ -89,12 +89,12 @@ bool buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDa
     using namespace MigrationExecution;
 
     CommandServiceRepositoryPtr commandRepository = createCommandServiceRepository();
-    Helper::HelperAggregate helperAggregate;
-    createHelperAggregate(helperAggregate);
+    Helper::HelperRepository helperRepository;
+    createHelperRepository(helperRepository);
     MigrationTableServicePtr migrationTableService(new MigrationTracker::SqliteMigrationTableService);
 
     context.setCommandServiceRepository(commandRepository);
-    context.setHelperAggregate(helperAggregate);
+    context.setHelperRepository(helperRepository);
     context.setBaseMigrationTableService(migrationTableService);
     context.setDatabase(database);
 

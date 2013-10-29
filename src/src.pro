@@ -70,7 +70,6 @@ SOURCES += \
     BaseSqlMigrator/Helper/BaseSqlQuoteService.cpp \
     BaseSqlMigrator/Helper/BaseSqlTypeMapperService.cpp \
     BaseSqlMigrator/MigrationTracker/MigrationTableService.cpp \
-    Helper/HelperAggregate.cpp \
     Helper/ColumnService.cpp \
     Helper/DbReaderService.cpp \
     Helper/QuoteService.cpp \
@@ -88,7 +87,8 @@ SOURCES += \
     LocalSchemeMigrator/CommandExecution/LocalSchemeRenameColumnService.cpp \
     LocalSchemeMigrator/CommandExecution/LocalSchemeRenameTableService.cpp \
     LocalSchemeMigrator/LocalSchemeComparisonService.cpp \
-    LocalSchemeMigrator/LocalSchemeComparisonContext.cpp
+    LocalSchemeMigrator/LocalSchemeComparisonContext.cpp \
+    Helper/HelperRepository.cpp
 
 HEADERS += \
 	 QSqlMigrator/QSqlMigratorService.h \
@@ -143,7 +143,7 @@ HEADERS += \
     BaseSqlMigrator/Helper/BaseSqlQuoteService.h \
     BaseSqlMigrator/Helper/BaseSqlTypeMapperService.h \
     BaseSqlMigrator/MigrationTracker/MigrationTableService.h \
-    Helper/HelperAggregate.h \
+    Helper/HelperRepository.h \
     Helper/ColumnService.h \
     Helper/DbReaderService.h \
     Helper/QuoteService.h \

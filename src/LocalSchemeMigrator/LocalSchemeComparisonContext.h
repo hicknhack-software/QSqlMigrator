@@ -4,7 +4,7 @@
 #include "config.h"
 
 #include "Structure/LocalScheme.h"
-#include "Helper/HelperAggregate.h"
+#include "Helper/HelperRepository.h"
 
 #include <QSqlDatabase>
 
@@ -16,15 +16,15 @@ public:
     LocalSchemeComparisonContext();
 
     void setLocalScheme(const LocalSchemePtr &localScheme);
-    void setHelperAggregate(const Helper::HelperAggregate &helperAggregate);
+    void setHelperRepository(const Helper::HelperRepository &helperRepository);
     void setDatabase(const QSqlDatabase &database);
     const LocalSchemePtr &localScheme() const;
-    const Helper::HelperAggregate &helperAggregate() const;
+    const Helper::HelperRepository &helperRepository() const;
     const QSqlDatabase &database() const;
 
 private:
     LocalSchemePtr m_localScheme;
-    Helper::HelperAggregate m_helperAggregate;
+    Helper::HelperRepository m_helperRepository;
     QSqlDatabase m_database;
 };
 

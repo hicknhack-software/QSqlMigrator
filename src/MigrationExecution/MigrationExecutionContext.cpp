@@ -63,9 +63,9 @@ CommandServiceRepositoryPtr MigrationExecutionContext::commandServiceRepository(
     return m_commandServiceRepository;
 }
 
-const Helper::HelperAggregate &MigrationExecutionContext::helperAggregate() const
+const Helper::HelperRepository &MigrationExecutionContext::helperRepository() const
 {
-    return m_helperAggregate;
+    return m_helperRepository;
 }
 
 MigrationTableServicePtr MigrationExecutionContext::baseMigrationTableService() const
@@ -83,9 +83,9 @@ void MigrationExecutionContext::setCommandServiceRepository(CommandServiceReposi
     m_commandServiceRepository = commandServiceRepository;
 }
 
-void MigrationExecutionContext::setHelperAggregate(const Helper::HelperAggregate &helperAggregate)
+void MigrationExecutionContext::setHelperRepository(const Helper::HelperRepository &helperRepository)
 {
-    m_helperAggregate = helperAggregate;
+    m_helperRepository = helperRepository;
 }
 
 void MigrationExecutionContext::setBaseMigrationTableService(MigrationTableServicePtr baseMigrationTableService)

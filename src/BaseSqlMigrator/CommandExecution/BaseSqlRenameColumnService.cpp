@@ -53,9 +53,9 @@ bool BaseSqlRenameColumnService::execute(const Commands::ConstCommandPtr &comman
     QSharedPointer<const Commands::RenameColumn> renameColumn(command.staticCast<const Commands::RenameColumn>());
 
     QString alterQuery = QString("ALTER TABLE %1 RENAME COLUMN %2 TO %3")
-            .arg(context.helperAggregate().quoteService->quoteTableName(renameColumn->tableName())
-                 , context.helperAggregate().quoteService->quoteColumnName(renameColumn->name())
-                 , context.helperAggregate().quoteService->quoteColumnName(renameColumn->newName()));
+            .arg(context.helperRepository().quoteService->quoteTableName(renameColumn->tableName())
+                 , context.helperRepository().quoteService->quoteColumnName(renameColumn->name())
+                 , context.helperRepository().quoteService->quoteColumnName(renameColumn->newName()));
 
     bool success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
 

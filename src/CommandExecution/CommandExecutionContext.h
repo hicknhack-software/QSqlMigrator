@@ -28,7 +28,7 @@
 
 #include "Commands/BaseCommand.h"
 #include "MigrationExecution/MigrationExecutionConfig.h"
-#include "Helper/HelperAggregate.h"
+#include "Helper/HelperRepository.h"
 #include "config.h"
 
 #include <QSqlDatabase>
@@ -40,7 +40,7 @@ class QSQLMIGRATOR_DLL_EXPORT CommandExecutionContext
 public:
     CommandExecutionContext(const QSqlDatabase database
                             , const MigrationExecution::MigrationExecutionConfig &migrationConfig
-                            , const Helper::HelperAggregate &helperAggregate);
+                            , const Helper::HelperRepository &helperRepository);
 
     QSqlDatabase database() const;
 
@@ -49,7 +49,7 @@ public:
     bool isUndoUsed() const;
     Commands::CommandPtr currentUndoCommand() const;
     const MigrationExecution::MigrationExecutionConfig &migrationConfig() const;
-    const Helper::HelperAggregate &helperAggregate() const;
+    const Helper::HelperRepository &helperRepository() const;
 
     void setIsUndoUsed(bool isUndoUsed);
     void setUndoCommand(Commands::CommandPtr command);
@@ -58,7 +58,7 @@ public:
 private:
     QSqlDatabase m_database;
     const MigrationExecution::MigrationExecutionConfig m_migrationConfig;
-    const Helper::HelperAggregate m_helperAggregate;
+    const Helper::HelperRepository m_helperRepository;
 
     bool m_isUndoUsed;
     Commands::CommandPtr m_currentUndoCommand;

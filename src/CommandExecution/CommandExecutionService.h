@@ -26,7 +26,7 @@
 #ifndef COMMANDEXECUTION_COMMANDEXECUTIONSERVICE_H
 #define COMMANDEXECUTION_COMMANDEXECUTIONSERVICE_H
 
-#include "Helper/HelperAggregate.h"
+#include "Helper/HelperRepository.h"
 #include "CommandExecution/CommandExecutionContext.h"
 #include "CommandExecution/CommandExecutionServiceRepository.h"
 #include "Commands/BaseCommand.h"

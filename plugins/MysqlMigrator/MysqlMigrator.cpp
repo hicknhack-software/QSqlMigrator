@@ -36,7 +36,7 @@
 #include "MysqlMigrator/CommandExecution/MysqlAlterColumnTypeService.h"
 #include "MysqlMigrator/CommandExecution/MysqlRenameColumnService.h"
 
-#include "Helper/HelperAggregate.h"
+#include "Helper/helperRepository.h"
 
 #include "MysqlMigrator/Helper/MysqlColumnService.h"
 #include "MysqlMigrator/Helper/MysqlDbReaderService.h"
@@ -72,16 +72,16 @@ QSharedPointer<CommandExecution::CommandExecutionServiceRepository> createComman
     return commandRepository;
 }
 
-void createHelperAggregate(Helper::HelperAggregate &helperAggregate)
+void createhelperRepository(Helper::HelperRepository &helperRepository)
 {
     ::qDebug() << "creating MySQL helper aggregate";
 
     using namespace Helper;
 
-    helperAggregate.columnService.reset(new MysqlColumnService);
-    helperAggregate.dbReaderService.reset(new MysqlDbReaderService);
-    helperAggregate.quoteService.reset(new BaseSqlQuoteService);
-    helperAggregate.typeMapperService.reset(new MysqlTypeMapperService);
+    helperRepository.columnService.reset(new MysqlColumnService);
+    helperRepository.dbReaderService.reset(new MysqlDbReaderService);
+    helperRepository.quoteService.reset(new BaseSqlQuoteService);
+    helperRepository.typeMapperService.reset(new MysqlTypeMapperService);
 }
 
 bool buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDatabase database)
@@ -89,14 +89,14 @@ bool buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDa
     using namespace MigrationExecution;
 
     CommandServiceRepositoryPtr commandRepository = createCommandServiceRepository();
-    Helper::HelperAggregate helperAggregate;
-    createHelperAggregate(helperAggregate);
+    Helper::HelperRepository helperRepository;
+    createhelperRepository(helperRepository);
 
     MigrationTableServicePtr migrationTableService =
             MigrationTableServicePtr(new MigrationTracker::MigrationTableService);
 
     context.setCommandServiceRepository(commandRepository);
-    context.setHelperAggregate(helperAggregate);
+    context.setHelperRepository(helperRepository);
     context.setBaseMigrationTableService(migrationTableService);
     context.setDatabase(database);
 
