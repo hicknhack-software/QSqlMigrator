@@ -26,9 +26,9 @@
 
 #include "MysqlColumnService.h"
 
-#include "MysqlMigrator/Helper/MysqlTypeMapperService.h"
+#include "MigrationTracker/MigrationTrackerService.h"
 
-#include "BaseSqlMigrator/Helper/BaseSqlColumnService.h"
+#include "MysqlMigrator/Helper/MysqlTypeMapperService.h"
 
 #include <QStringList>
 
@@ -38,11 +38,12 @@ using namespace Structure;
 
 namespace Helper {
 
-MysqlColumnService::MysqlColumnService()
+MysqlColumnService::MysqlColumnService(const MysqlTypeMapperService &mysqlTypeMapperService)
+    : BaseSqlColumnService(mysqlTypeMapperService)
 {
 }
 
-QString MysqlColumnService::generateColumnDefinitionSql(const Column &column) const
+QStringList MysqlColumnService::buildColumnOptionsSql(const Column &column) const
 {
     QStringList sqlColumnOptions;
     // PRIMARY KEY implies NOT NULL
@@ -66,15 +67,7 @@ QString MysqlColumnService::generateColumnDefinitionSql(const Column &column) co
     if (column.hasDefaultValue()) {
         sqlColumnOptions << QString("DEFAULT (%1)").arg(column.defaultValue());
     }
-
-    QString sqlTypeString;
-    if (column.hasSqlTypeString())
-        sqlTypeString = column.sqlTypeString();
-    else {
-        MysqlTypeMapperService typeMapperService;
-        sqlTypeString = typeMapperService.map(column.sqlType());
-    }
-    return QString("%1 %2 %3").arg(column.name(), sqlTypeString, sqlColumnOptions.join(" "));
+    return sqlColumnOptions;
 }
 
 } // namespace Helper

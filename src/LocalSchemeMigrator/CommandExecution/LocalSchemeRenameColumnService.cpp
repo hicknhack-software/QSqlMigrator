@@ -46,25 +46,33 @@ const QString &LocalSchemeRenameColumnService::commandType() const
     return Commands::RenameColumn::typeName();
 }
 
-bool LocalSchemeRenameColumnService::execute(const Commands::ConstCommandPtr &command
-                                   , CommandExecution::LocalSchemeCommandExecutionContext &context
-                                    ) const
+bool LocalSchemeRenameColumnService::execute(const Commands::ConstCommandPtr &command,
+                                             CommandExecution::LocalSchemeCommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::RenameColumn> renameColumn(command.staticCast<const Commands::RenameColumn>());
 
-    Structure::ColumnList list = context.localScheme()->tables()[renameColumn->tableName()].columns();
-    int i=0;
-    foreach (const Structure::Column &column, list) {
-        if (column.name() == renameColumn->name()) {
-            if (column.hasSqlTypeString())
-                list.replace(i, Structure::Column(renameColumn->newName(), column.sqlTypeString(), column.defaultValue(), column.attributes()));
-            else
-                list.replace(i, Structure::Column(renameColumn->newName(), column.sqlType(), column.defaultValue(), column.attributes()));
-            break;
-        }
-        i++;
+    const Structure::Table* table = context.localScheme()->table( renameColumn->tableName() );
+    if( nullptr == table ) {
+        ::qWarning() << "table not found" << renameColumn->tableName();
+        return false;
     }
-    context.localScheme()->tables().insert(renameColumn->tableName(), Structure::Table(renameColumn->tableName(), list));
+
+    Structure::Table::Builder alteredTable(table->name(), table->columns());
+    bool found = false;
+    foreach (const Structure::Column &column, table->columns()) {
+        if (column.name() == renameColumn->name()) {
+            alteredTable << Structure::Column( renameColumn->newName(), column.type(), column.defaultValue(), column.attributes() );
+            found = true;
+        }
+        else {
+            alteredTable << column;
+        }
+    }
+    if (!found) {
+        ::qWarning() << "column not found" << renameColumn->tableName() << renameColumn->name();
+        return false;
+    }
+    context.localScheme()->alterTable( alteredTable );
 
     return true;
 }

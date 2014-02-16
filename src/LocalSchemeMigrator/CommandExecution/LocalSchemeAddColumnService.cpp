@@ -50,9 +50,15 @@ bool LocalSchemeAddColumnService::execute(const Commands::ConstCommandPtr &comma
 {
     QSharedPointer<const Commands::AddColumn> addColumn(command.staticCast<const Commands::AddColumn>());
 
-    Structure::ColumnList list = context.localScheme()->tables()[addColumn->tableName()].columns();
-    list.append(addColumn->column());
-    context.localScheme()->tables().insert(addColumn->tableName(), Structure::Table(addColumn->tableName(), list));
+    const Structure::Table* table = context.localScheme()->table( addColumn->tableName() );
+    if( nullptr == table ) {
+        ::qWarning() << "table not found" << addColumn->tableName();
+        return false;
+    }
+
+    Structure::Table::Builder alteredTable(table->name(), table->columns());
+    alteredTable << addColumn->column();
+    context.localScheme()->alterTable( alteredTable );
 
     return true;
 }

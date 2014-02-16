@@ -26,10 +26,9 @@
 #ifndef MYSQLMIGRATOR_H
 #define MYSQLMIGRATOR_H
 
-#include "CommandExecution/CommandExecutionServiceRepository.h"
+#include "MigrationExecution/MigrationExecutionContext.h"
 
-#include <QSqlDatabase>
-
+#include <Qt>
 
 #ifndef MYSQLMIGRATOR_DLL_EXPORT
 #   ifdef Q_OS_WIN
@@ -53,23 +52,9 @@ namespace MysqlMigrator {
 /*!
  * \brief   Use this function to setup your excution context for mysql migrations.
  *
- * Example:
- *
- * context c;
- *
- * QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
- * db.setHostName(HOSTNAME);
- * db.setPort(HOSTPORT);
- * db.setUserName(USERNAME);
- * db.setPassword(PASSWORD);
- * db.setDatabaseName(DATABASE_NAME);
- *
- * if(MysqlMigrator::buildContext(c, db)) {
- *      // do something
- * }
- *
+ * See Sqlite implementation for an usage example
  */
-bool MYSQLMIGRATOR_DLL_EXPORT buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDatabase database);
+MigrationExecution::MigrationExecutionContextPtr MYSQLMIGRATOR_DLL_EXPORT buildContext(MigrationExecution::MigrationExecutionContext::Builder &contextBuilder);
 
 } // namespace MysqlMigrator
 

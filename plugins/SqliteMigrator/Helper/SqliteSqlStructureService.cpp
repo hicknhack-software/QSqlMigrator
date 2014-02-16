@@ -23,7 +23,7 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "SqliteMigrator/Helper/SqliteDbReaderService.h"
+#include "SqliteMigrator/Helper/SqliteSqlStructureService.h"
 
 #include "Structure/Table.h"
 #include "Structure/Index.h"
@@ -38,72 +38,76 @@ using namespace Structure;
 
 namespace Helper {
 
-SqliteDbReaderService::SqliteDbReaderService()
+SqliteSqlStructureService::SqliteSqlStructureService()
 {}
 
-SqliteDbReaderService::~SqliteDbReaderService()
-{}
-
-Table SqliteDbReaderService::getTableDefinition(const QString &tableName
-                                        , QSqlDatabase database) const
+Table SqliteSqlStructureService::getTableDefinition(const QString &tableName,
+                                                    QSqlDatabase database) const
 {
     ColumnList columns;
     QString queryString = QString("PRAGMA table_info(%1)").arg(tableName);
-    QSqlQuery query = database.exec(queryString);
-    QSqlError error = query.lastError();
+    QSqlQuery columnsQuery = database.exec(queryString);
+    QSqlError error = columnsQuery.lastError();
     if (error.isValid()) {
         ::qDebug() << Q_FUNC_INFO << error.text();
-    } else {
-        while (query.next()) {
-            QString name = query.value(1).toString();
-            QString type = query.value(2).toString();
-            bool notNull = query.value(3).toBool();
-            QString defaultValue = query.value(4).toString();
-            bool primaryKey = query.value(5).toBool();
+        return Table(tableName, columns);
+    }
 
-            Column::Attributes attr = Column::None;
-            if (notNull) {
-                attr |= Column::NotNullable;
-            }
-            if (primaryKey) {
-                attr |= Column::Primary;
-                if (type == "integer")
-                    attr |= Column::AutoIncrement;
-            }
+    queryString = QString("PRAGMA index_list(%1)").arg(tableName);
+    QSqlQuery queryIndexList = database.exec(queryString);
+    error = queryIndexList.lastError();
+    if (error.isValid()) {
+        ::qDebug() << Q_FUNC_INFO << error.text();
+        return Table(tableName, columns);
+    }
+    QSet<QString> uniqueColumns;
+    while (queryIndexList.next()) {
+        bool unique = queryIndexList.value(2).toBool();
+        if (!unique)
+            continue;
 
-            queryString = QString("PRAGMA index_list(%1)").arg(tableName);
-            QSqlQuery queryIndexList = database.exec(queryString);
-            error = queryIndexList.lastError();
-            if (error.isValid()) {
-                ::qDebug() << Q_FUNC_INFO << error.text();
-            } else {
-                while (queryIndexList.next()) {
-                    bool unique = queryIndexList.value(2).toBool();
-                    if (unique) {
-                        QString indexName = queryIndexList.value(1).toString();
-                        queryString = QString("PRAGMA index_info(%1)").arg(indexName);
-                        QSqlQuery queryIndexInfo = database.exec(queryString);
-                        error = queryIndexInfo.lastError();
-                        if (error.isValid()) {
-                            ::qDebug() << Q_FUNC_INFO << error.text();
-                        } else {
-                            while (queryIndexInfo.next()) {
-                                if (queryIndexInfo.value(2).toString() == name) {
-                                    attr |= Column::Unique;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            Column col = Column(name, type, defaultValue, attr);
-            columns << Column(name, type, defaultValue, attr);
+        QString indexName = queryIndexList.value(1).toString();
+
+        queryString = QString("PRAGMA index_info(%1)").arg(indexName);
+        QSqlQuery queryIndexInfo = database.exec(queryString);
+        error = queryIndexInfo.lastError();
+        if (error.isValid()) {
+            ::qDebug() << Q_FUNC_INFO << error.text();
+            continue;
         }
+        while (queryIndexInfo.next()) {
+            QString column(queryIndexInfo.value(2).toString());
+            uniqueColumns.insert( column );
+        }
+    }
+
+    while (columnsQuery.next()) {
+        QString name = columnsQuery.value(1).toString();
+        QString type = columnsQuery.value(2).toString();
+        bool notNull = columnsQuery.value(3).toBool();
+        QString defaultValue = columnsQuery.value(4).toString();
+        bool primaryKey = columnsQuery.value(5).toBool();
+
+        Column::Attributes attr = Column::None;
+        if (notNull) {
+            attr |= Column::NotNullable;
+        }
+        if (primaryKey) {
+            attr |= Column::Primary;
+            if (type.startsWith("INTEGER", Qt::CaseInsensitive))
+                attr |= Column::AutoIncrement;
+        }
+        if (uniqueColumns.contains(name))
+            attr |= Column::Unique;
+
+        columns << Column(name, type, defaultValue, attr);
     }
     return Table(tableName, columns);
 }
 
-Structure::Index SqliteDbReaderService::getIndexDefinition(const QString &indexName, const QString &tableName, QSqlDatabase database) const
+Structure::Index SqliteSqlStructureService::getIndexDefinition(const QString &indexName,
+                                                               const QString &tableName,
+                                                               QSqlDatabase database) const
 {
     Structure::Index::ColumnList columns;
     QString sqlText;
@@ -132,16 +136,16 @@ Structure::Index SqliteDbReaderService::getIndexDefinition(const QString &indexN
             columns << columnText.split(" ")[0];
     }
 
-//    QString queryString = QString("PRAGMA index_info(%1)").arg(indexName);
-//    QSqlQuery query = database.exec(queryString);
-//    QSqlError error = query.lastError();
-//    if (error.isValid()) {
-//        ::qDebug() << Q_FUNC_INFO << error.text();
-//    } else {
-//        while (query.next()) {
-//            columns << query.value(2).toString();
-//        }
-//    }
+    //    QString queryString = QString("PRAGMA index_info(%1)").arg(indexName);
+    //    QSqlQuery query = database.exec(queryString);
+    //    QSqlError error = query.lastError();
+    //    if (error.isValid()) {
+    //        ::qDebug() << Q_FUNC_INFO << error.text();
+    //    } else {
+    //        while (query.next()) {
+    //            columns << query.value(2).toString();
+    //        }
+    //    }
     return Structure::Index(indexName, tableName, columns);
 }
 

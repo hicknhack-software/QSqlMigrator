@@ -49,8 +49,3 @@ bool SqliteAddUser::up(const QSqlDatabase &database) const
     }
     return true;
 }
-
-Commands::CommandPtr SqliteAddUser::reverse() const
-{
-    return Commands::CommandPtr();
-}

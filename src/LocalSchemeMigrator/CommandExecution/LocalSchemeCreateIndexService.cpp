@@ -47,7 +47,7 @@ bool LocalSchemeCreateIndexService::execute(const Commands::ConstCommandPtr &com
 {
     QSharedPointer<const Commands::CreateIndex> createIndex(command.staticCast<const Commands::CreateIndex>());
 
-    context.localScheme()->indexes().insert(createIndex->name(), createIndex->index());
+    context.localScheme()->createIndex(createIndex->index());
 
     return true;
 }

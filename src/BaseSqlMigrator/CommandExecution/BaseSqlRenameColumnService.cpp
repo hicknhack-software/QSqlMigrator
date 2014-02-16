@@ -25,6 +25,8 @@
 ****************************************************************************/
 #include "BaseSqlMigrator/CommandExecution/BaseSqlRenameColumnService.h"
 
+#include "Helper/QuoteService.h"
+
 #include "Commands/RenameColumn.h"
 
 #include "Structure/Table.h"
@@ -46,23 +48,29 @@ const QString &BaseSqlRenameColumnService::commandType() const
     return Commands::RenameColumn::typeName();
 }
 
+bool BaseSqlRenameColumnService::execute(const Commands::RenameColumn &renameColumn, const CommandExecutionContext &context)
+{
+    const QString alterQuery =
+            QString("ALTER TABLE %1 RENAME COLUMN %2 TO %3")
+            .arg(context.helperRepository().quoteService().quoteTableName(renameColumn.tableName()))
+            .arg(context.helperRepository().quoteService().quoteColumnName(renameColumn.name()))
+            .arg(context.helperRepository().quoteService().quoteColumnName(renameColumn.newName()));
+
+    return CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
+}
+
 bool BaseSqlRenameColumnService::execute(const Commands::ConstCommandPtr &command
                                    , CommandExecution::CommandExecutionContext &context
                                     ) const
 {
     QSharedPointer<const Commands::RenameColumn> renameColumn(command.staticCast<const Commands::RenameColumn>());
+    Q_ASSERT(renameColumn);
 
-    QString alterQuery = QString("ALTER TABLE %1 RENAME COLUMN %2 TO %3")
-            .arg(context.helperRepository().quoteService().quoteTableName(renameColumn->tableName())
-                 , context.helperRepository().quoteService().quoteColumnName(renameColumn->name())
-                 , context.helperRepository().quoteService().quoteColumnName(renameColumn->newName()));
-
-    bool success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
+    bool success = execute(*renameColumn, context);
 
     if (success && context.isUndoUsed()) {
         context.setUndoCommand(renameColumn->reverse());
     }
-
     return success;
 }
 

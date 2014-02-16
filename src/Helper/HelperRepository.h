@@ -1,43 +1,38 @@
-#ifndef HELPER_HELPERAGGREGATE_H
-#define HELPER_HELPERAGGREGATE_H
-
-#include "Helper/ColumnService.h"
-#include "Helper/DbReaderService.h"
-#include "Helper/QuoteService.h"
-#include "Helper/TypeMapperService.h"
+#ifndef HELPER_HELPERREPOSITORY_H
+#define HELPER_HELPERREPOSITORY_H
 
 #include "config.h"
 
-#include <QSharedPointer>
-
 namespace Helper {
 
-class HelperRepository;
-typedef QSharedPointer< HelperRepository > HelperRepositoryPtr;
+class QuoteService;
+class TypeMapperService;
+class ColumnService;
+class SqlStructureService;
 
-//TODO: move this class into src/Helper/
+/*!
+ * \brief a simple repository of all helper classes
+ */
 class QSQLMIGRATOR_DLL_EXPORT HelperRepository
 {
 public:
-    HelperRepository();
+    HelperRepository(const QuoteService &quoteService,
+                     const TypeMapperService &typeMapperService,
+                     const ColumnService &columnService,
+                     const SqlStructureService &sqlStructureService);
 
-    void setColumnService(ColumnService *columnService);
-    void setDbReaderService(DbReaderService *dbReaderService);
-    void setQuoteService(QuoteService *quoteService);
-    void setTypeMapperService(TypeMapperService *typeMapperService);
-
-    const ColumnService &columnService() const;
-    const DbReaderService &dbReaderService() const;
     const QuoteService &quoteService() const;
     const TypeMapperService &typeMapperService() const;
+    const ColumnService &columnService() const;
+    const SqlStructureService &sqlStructureService() const;
 
 private:
-    QSharedPointer<ColumnService> m_columnService;
-    QSharedPointer<DbReaderService> m_dbReaderService;
-    QSharedPointer<QuoteService> m_quoteService;
-    QSharedPointer<TypeMapperService> m_typeMapperService;
+    const QuoteService &m_quoteService;
+    const TypeMapperService &m_typeMapperService;
+    const ColumnService &m_columnService;
+    const SqlStructureService &m_sqlStructureService;
 };
 
 } // namespace helper
 
-#endif // HELPER_HELPERAGGREGATE_H
+#endif // HELPER_HELPERREPOSITORY_H

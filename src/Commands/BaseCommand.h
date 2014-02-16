@@ -38,6 +38,9 @@ typedef QSharedPointer<BaseCommand> CommandPtr;
 typedef QSharedPointer<const BaseCommand> ConstCommandPtr;
 typedef QList<CommandPtr> CommandPtrList;
 
+/*!
+ * \brief abstract class for value object representing all kinds of commands
+ */
 class QSQLMIGRATOR_DLL_EXPORT BaseCommand
 {
 public:
@@ -45,6 +48,7 @@ public:
     virtual ~BaseCommand() {}
 
     const QString &name() const;
+
     virtual CommandPtr reverse() const = 0;
 
 private:

@@ -27,7 +27,11 @@
 
 #include "SqliteMigrator/CommandExecution/SqliteAlterColumnService.h"
 
+#include "Helper/SqlStructureService.h"
+
 #include "Commands/RenameColumn.h"
+
+#include "Structure/Table.h"
 
 #include <QDebug>
 #include <QStringList>
@@ -45,20 +49,23 @@ bool SqliteRenameColumnService::execute(const Commands::ConstCommandPtr &command
 {
     QSharedPointer<const Commands::RenameColumn> renameColumn(command.staticCast<const Commands::RenameColumn>());
 
-    Table origTable = context.helperRepository().dbReaderService().getTableDefinition(renameColumn->tableName(), context.database());
-    Table table = Table(renameColumn->tableName());
-    foreach (Column column, origTable.columns()) {
+    Table table( context.helperRepository().sqlStructureService().getTableDefinition(renameColumn->tableName(), context.database()) );
+    Table::Builder alteredTable(renameColumn->tableName());
+    bool found = false;
+    foreach (const Column &column, table.columns()) {
         if (column.name() == renameColumn->name()) {
-            Column newColumn = Column(renameColumn->newName(), column.sqlTypeString(), column.attributes());
-            table.add(newColumn);
+            alteredTable << Column(renameColumn->newName(), column.type(), column.attributes());
+            found = true;
         } else {
-            table.add(column);
+            alteredTable << column;
         }
     }
+    if (!found) {
+        ::qWarning() << "Column not found" << renameColumn->name();
+        return false;
+    }
 
-    SqliteAlterColumnService alterColumnService;
-
-    bool success = alterColumnService.execute(origTable, table, context);
+    bool success = SqliteAlterColumnService::execute(table, alteredTable, context);
 
     if (success && context.isUndoUsed()) {
         context.setUndoCommand(renameColumn->reverse());

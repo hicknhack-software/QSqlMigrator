@@ -31,46 +31,56 @@ namespace Helper {
 
 BaseSqlTypeMapperService::BaseSqlTypeMapperService()
 {
-    typeMap.insert(QVariant::Bool,      "boolean");
-    typeMap.insert(QVariant::Int,       "integer");
-    typeMap.insert(QVariant::LongLong,  "bigint");
-    typeMap.insert(QVariant::Double,    "double");
-    typeMap.insert(QVariant::Date,      "date");
-    typeMap.insert(QVariant::Time,      "time");
-    typeMap.insert(QVariant::DateTime,  "datetime");
-    typeMap.insert(QVariant::Char,      "char(%1)");
-    typeMap.insert(QVariant::String,    "varchar(%1)");
-    typeMap.insert(QVariant::ByteArray, "blob");
+    using namespace Structure;
+
+    m_typeMap.insert(Type::Char,            "CHAR(%1)");
+    m_typeMap.insert(Type::VarChar,         "VARCHAR(%1)");
+    m_typeMap.insert(Type::Binary,          "BINARY(%1)");
+    m_typeMap.insert(Type::VarBinary,       "VARBINARY(%1)");
+    m_typeMap.insert(Type::Boolean,         "BOOLEAN");
+    m_typeMap.insert(Type::SmallInt,        "SMALLINT");
+    m_typeMap.insert(Type::Integer,         "INTEGER(%1)");
+    m_typeMap.insert(Type::BigInt,          "BIGINT");
+    m_typeMap.insert(Type::Decimal,         "DECIMAL(%1,%2)");
+    m_typeMap.insert(Type::Float,           "FLOAT");
+    m_typeMap.insert(Type::DoublePrecision, "DOUBLE PRECISION");
+    m_typeMap.insert(Type::Date,            "DATE");
+    m_typeMap.insert(Type::Time,            "TIME");
+    m_typeMap.insert(Type::Timestamp,       "TIMESTAMP");
+    m_typeMap.insert(Type::Interval,        "INTERVAL");
+    //    typeMap.insert(Type::Array,           "ARRAY(%1)");
+    //    typeMap.insert(Type::Multiset,        "MULTISET");
+    //    typeMap.insert(Type::Xml,             "XML");
 }
 
-QString BaseSqlTypeMapperService::map(const SqlType &type) const
+QString BaseSqlTypeMapperService::map(const Structure::Type &type) const
 {
-    QString sqlTypeString;
+    if( type.isString() )
+        return type.string();
 
-    switch (type.type()) {
-    case QVariant::Char:
-        if (type.precision())
-            sqlTypeString = typeMap[QVariant::Char].arg(type.precision());
-        else
-            sqlTypeString = typeMap[QVariant::Char].arg(1);
-        break;
-    case QVariant::String:
-        sqlTypeString = typeMap[QVariant::String].arg(type.precision());
-        break;
-    case QVariant::Double:
-        if (type.precision() !=0 && type.scale() != 0)
-            sqlTypeString = QString("numeric(%1,%2)").arg(QString::number(type.precision()), QString::number(type.scale()));
-        else
-            sqlTypeString = typeMap[QVariant::Double];
-        break;
+    using namespace Structure;
+
+    switch (type.base())
+    {
+    case Type::Char:
+        return m_typeMap[Type::Char].arg(type.precision(1));
+
+    case Type::Integer:
+        return m_typeMap[Type::Integer].arg(type.precision(10));
+
+    case Type::Decimal:
+        return m_typeMap[Type::Decimal].arg(type.precision()).arg(type.scale());
+
+    case Type::VarChar:
+    case Type::Binary:
+    case Type::VarBinary:
+        return m_typeMap[type.base()].arg(type.precision());
+
     default:
-        if (!typeMap.contains(type.type()))
+        if (!m_typeMap.contains(type.base()))
             ::qWarning() << "unknown type";
-        sqlTypeString = typeMap[type.type()];
-        break;
+        return m_typeMap[type.base()];
     }
-
-    return sqlTypeString;
 }
 
 } // namespace Helper

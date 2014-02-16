@@ -39,12 +39,12 @@
 #include "Helper/helperRepository.h"
 
 #include "MysqlMigrator/Helper/MysqlColumnService.h"
-#include "MysqlMigrator/Helper/MysqlDbReaderService.h"
+#include "MysqlMigrator/Helper/MysqlStructureService.h"
 #include "BaseSqlMigrator/Helper/BaseSqlQuoteService.h"
 #include "MysqlMigrator/Helper/MysqlTypeMapperService.h"
 
 #include "CommandExecution/CustomCommandService.h"
-#include "BaseSqlMigrator/MigrationTracker/MigrationTableService.h"
+#include "BaseSqlMigrator/MigrationTracker/BaseMigrationTableService.h"
 #include "MigrationExecution/MigrationExecutionContext.h"
 
 #include <QSqlDatabase>
@@ -53,7 +53,7 @@
 
 namespace MysqlMigrator {
 
-QSharedPointer<CommandExecution::CommandExecutionServiceRepository> createCommandServiceRepository()
+QSharedPointer<CommandExecution::CommandExecutionServiceRepository> createCommandRepository()
 {
     using namespace CommandExecution;
 
@@ -72,39 +72,38 @@ QSharedPointer<CommandExecution::CommandExecutionServiceRepository> createComman
     return commandRepository;
 }
 
-void createhelperRepository(Helper::HelperRepository &helperRepository)
+const Helper::HelperRepository &createHelperRepository()
 {
     ::qDebug() << "creating MySQL helper aggregate";
 
     using namespace Helper;
 
-    helperRepository.setColumnService(new MysqlColumnService);
-    helperRepository.setDbReaderService(new MysqlDbReaderService);
-    helperRepository.setQuoteService(new BaseSqlQuoteService);
-    helperRepository.setTypeMapperService(new MysqlTypeMapperService);
+    static BaseSqlQuoteService quoteService;
+    static MysqlTypeMapperService typeMapperService;
+    static MysqlColumnService columnService(typeMapperService);
+    static MysqlStructureService dbReaderService;
+    static HelperRepository helperRepository(quoteService, typeMapperService, columnService, dbReaderService);
+
+    return helperRepository;
 }
 
-bool buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDatabase database)
+MigrationExecution::MigrationExecutionContextPtr buildContext(MigrationExecution::MigrationExecutionContext::Builder &contextBuilder)
 {
     using namespace MigrationExecution;
 
-    CommandServiceRepositoryPtr commandRepository = createCommandServiceRepository();
-    Helper::HelperRepository helperRepository;
-    createhelperRepository(helperRepository);
+    MigrationTableServicePtr migrationTableService(new MigrationTracker::BaseMigrationTableService());
 
-    MigrationTableServicePtr migrationTableService =
-            MigrationTableServicePtr(new MigrationTracker::MigrationTableService);
+    MigrationExecution::MigrationExecutionContextPtr context(contextBuilder.build(createCommandRepository(), createHelperRepository(), migrationTableService));
 
-    context.setCommandServiceRepository(commandRepository);
-    context.setHelperRepository(helperRepository);
-    context.setBaseMigrationTableService(migrationTableService);
-    context.setDatabase(database);
-
+    QSqlDatabase database(context->database());
     bool success = false;
-    if( context.database().open() ) {
-        success = migrationTableService->ensureVersionTable(context);
+    if (database.open()) {
+        success = migrationTableService->prepare(*context);
     }
-    return success;
+    if (!success )
+        context.clear();
+
+    return context;
 }
 
 } // namespace MysqlMigrator

@@ -47,7 +47,7 @@ bool LocalSchemeDropIndexService::execute(const Commands::ConstCommandPtr &comma
 {
     QSharedPointer<const Commands::DropIndex> dropIndex(command.staticCast<const Commands::DropIndex>());
 
-    context.localScheme()->indexes().remove(dropIndex->name());
+    context.localScheme()->dropIndex(dropIndex->name());
 
     return true;
 }

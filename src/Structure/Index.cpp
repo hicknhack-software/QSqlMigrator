@@ -30,67 +30,53 @@
 
 namespace Structure {
 
-Index::Index(const QString &name, const QString &tableName)
+Structure::Index::Builder::Builder(const QString &name, const QString &tableName)
     : m_name(name)
     , m_tableName(tableName)
 {
-    if(name.isEmpty()) {
-        ::qWarning() << LOG_PREFIX << "Index with empty name!";
-    }
-
     if(tableName.isEmpty()) {
-        ::qWarning() << LOG_PREFIX << "Index" << m_name << "with empty table name!";
+        ::qWarning() << LOG_PREFIX << "Index" << name << "with empty table name!";
     }
+}
+
+Index::Builder &Index::Builder::operator<<(const Index::Column &column)
+{
+    if( std::any_of( m_columns.begin(), m_columns.end(), [&column](const Index::Column& other)->bool { return other.name() == column.name(); } ) ) {
+        ::qWarning() << LOG_PREFIX << "Column is added twice to an index!" << m_name;
+        return *this;
+    }
+    m_columns << column;
+    return *this;
+}
+
+Index::Builder::operator Index() const
+{
+    if( m_tableName.isEmpty() ) {
+        return Index(m_name, m_columns);
+    }
+    return Index(m_name, m_tableName, m_columns);
 }
 
 Index::Index(const QString &name, const QString &tableName, const ColumnList &columns)
     : m_name(name)
     , m_tableName(tableName)
+    , m_columns(columns)
+{
+    if(name.isEmpty()) {
+        ::qWarning() << LOG_PREFIX << "Index with empty name!" << tableName;
+    }
+    if(tableName.isEmpty()) {
+        ::qWarning() << LOG_PREFIX << "Index" << name << "with empty table name!";
+    }
+}
+
+Index::Index(const QString &name, const Index::ColumnList &columns)
+    : m_name(name)
+    , m_columns(columns)
 {
     if(name.isEmpty()) {
         ::qWarning() << LOG_PREFIX << "Index with empty name!";
     }
-
-    if(tableName.isEmpty()) {
-        ::qWarning() << LOG_PREFIX << "Index" << m_name << "with empty table name!";
-    }
-
-    foreach (const Column &column, columns) {
-        m_columns.append(column);
-    }
-}
-
-const QString &Index::name() const
-{
-    return m_name;
-}
-
-const QString &Index::tableName() const
-{
-    return m_tableName;
-}
-
-const Index::ColumnList &Index::columns() const
-{
-    return m_columns;
-}
-
-Index &Index::addColumn(const QString &columnName, Index::SortOrder sortOrder)
-{
-    if(columnName.isEmpty()) {
-        ::qWarning() << LOG_PREFIX << "Can't add column with empty name to index" << m_name;
-        return (*this);
-    }
-
-    foreach(Column column, m_columns) {
-        if (column.name() == columnName) {
-            ::qWarning() << LOG_PREFIX << "Column" << columnName << "already added to index" << m_name;
-            return (*this);
-        }
-    }
-
-    m_columns.append(Column(columnName, sortOrder));
-    return (*this);
 }
 
 } //namespace Structure

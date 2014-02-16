@@ -25,6 +25,8 @@
 ****************************************************************************/
 #include "BaseSqlMigrator/CommandExecution/BaseSqlRenameTableService.h"
 
+#include "Helper/QuoteService.h"
+
 #include "Commands/RenameTable.h"
 
 #include <QDebug>
@@ -41,20 +43,26 @@ const QString &BaseSqlRenameTableService::commandType() const
     return Commands::RenameTable::typeName();
 }
 
+bool BaseSqlRenameTableService::execute(const Commands::RenameTable &renameTable, const CommandExecutionContext &context)
+{
+    const QString alterQuery =
+            QString("ALTER TABLE %1 RENAME TO %2")
+            .arg(context.helperRepository().quoteService().quoteTableName(renameTable.name()))
+            .arg(context.helperRepository().quoteService().quoteTableName(renameTable.newName()));
+
+    return CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
+}
+
 bool BaseSqlRenameTableService::execute(const Commands::ConstCommandPtr &command, CommandExecution::CommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::RenameTable> renameTable(command.staticCast<const Commands::RenameTable>());
+    Q_ASSERT(renameTable);
 
-    QString alterQuery = QString("ALTER TABLE %1 RENAME TO %2")
-            .arg(context.helperRepository().quoteService().quoteTableName(renameTable->name())
-                 , context.helperRepository().quoteService().quoteTableName(renameTable->newName()));
-
-    bool success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
+    bool success = execute(*renameTable, context);
 
     if (success && context.isUndoUsed()) {
         context.setUndoCommand(renameTable->reverse());
     }
-
     return success;
 }
 

@@ -44,8 +44,7 @@ SOURCES += \
      CommandExecution/SqliteRenameColumnService.cpp \
          MigrationTracker/SqliteMigrationTableService.cpp \
          SqliteMigrator.cpp \
-    Helper/SqliteDbReaderService.cpp \
-    Helper/SqliteColumnService.cpp
+    Helper/SqliteSqlStructureService.cpp
 
 HEADERS += \
          DatabaseLock.h \
@@ -55,8 +54,7 @@ HEADERS += \
      CommandExecution/SqliteRenameColumnService.h \
          MigrationTracker/SqliteMigrationTableService.h \
          SqliteMigrator.h \
-    Helper/SqliteDbReaderService.h \
-    Helper/SqliteColumnService.h
+    Helper/SqliteSqlStructureService.h
 
 unix:!symbian {
 	 maemo5 {

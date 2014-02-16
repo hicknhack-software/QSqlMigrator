@@ -28,16 +28,16 @@
 
 #include "config.h"
 
-#include "Structure/SqlType.h"
+#include "Structure/Type.h"
 
 #include <QString>
 #include <QFlags>
-#include <QVariant>
 
 namespace Structure {
 
 /*!
- * \brief The Column class represents a basic column-structure.
+ * \brief value object representing the column-structure.
+ *
  * Columns are default NULL (as in SQLite, MySQL and PostgreSQL).
  * According to the SQL standard, PRIMARY KEY should always imply NOT NULL.
  * UNIQUE columns can contain several NULL values (as in SQLite, MySQL and PostgreSQL)
@@ -48,40 +48,35 @@ class QSQLMIGRATOR_DLL_EXPORT Column
 public:
     enum Attribute {
         None = 0,
-        //Nullable = 0,
         NotNullable = (1 << 0),
         Unique = (1 << 1),
-        Primary = (1 << 2) | (1 << 0),
+        Primary = (1 << 2) | NotNullable | Unique,
         AutoIncrement = (1 << 3)
     };
-    Q_DECLARE_FLAGS(Attributes, Attribute)
+    typedef QFlags<Attribute> Attributes;
 
-public:
-    explicit Column(const QString &name, const QString &sqlTypeString, const QString& defaultValue, Attributes attributes = None);
-    explicit Column(const QString &name, const SqlType &sqltype, const QString& defaultValue, Attributes attributes = None);
-    explicit Column(const QString &name, const QString &sqlTypeString, Attributes attributes = None);
-    explicit Column(const QString &name, const SqlType &sqltype, Attributes attributes = None);
-    Column(); // empty columns are needed at several places and using the constructor above generates warnings (ugly)
+public:    
+    explicit Column(const QString &name, const Type &type, const QString& defaultValue, Attributes attributes = None);
+    explicit Column(const QString &name, const Type &type, Attributes attributes = None);
+
+    const QString &name() const;
+    const Type &type() const;
+    const QString &defaultValue() const;
+    const Attributes &attributes() const;
+
+    bool isValid() const;
+    bool hasDefaultValue() const;
 
     bool isNullable() const;
     bool isPrimary() const;
     bool isUnique() const;
-    bool hasDefaultValue() const;
-    bool hasSqlTypeString() const;
     bool isAutoIncremented() const;
-    const Attributes &attributes() const;
-    const QString &defaultValue() const;
-    const QString &name() const;
-    const QString &sqlTypeString() const;
-    const SqlType &sqlType() const;
 
 private:
-    QString m_defaultValue;
-    QString m_name;
-    bool m_hasSqlTypeString;
-    SqlType m_sqlType;
-    QString m_sqlTypeString;
-    /* const */ Attributes m_attributes;
+    const QString m_name;
+    const Type m_type;
+    const QString m_defaultValue;
+    const Attributes m_attributes;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Column::Attributes)

@@ -23,10 +23,10 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef HELPER_SQLITEDBREADER_H
-#define HELPER_SQLITEDBREADER_H
+#ifndef HELPER_POSTGRESQLSTRUCTURESERVICE_H
+#define HELPER_POSTGRESQLSTRUCTURESERVICE_H
 
-#include "Helper/DbReaderService.h"
+#include "Helper/SqlStructureService.h"
 
 #include "CommandExecution/CommandExecutionContext.h"
 
@@ -37,18 +37,20 @@ class Index;
 
 namespace Helper {
 
-class PostgresqlDbReaderService : public DbReaderService
+class PostgresqlStructureService : public SqlStructureService
 {
 public:
-    PostgresqlDbReaderService();
-    ~PostgresqlDbReaderService();
+    PostgresqlStructureService();
+    ~PostgresqlStructureService() QSQL_OVERRIDE_D {}
 
-    Structure::Table getTableDefinition(const QString &tableName
-                                        , QSqlDatabase database) const Q_DECL_OVERRIDE;
-    Structure::Index getIndexDefinition(const QString &indexName
-                                        , const QString &tableName, QSqlDatabase database) const Q_DECL_OVERRIDE;
+    Structure::Table getTableDefinition(const QString &tableName,
+                                        QSqlDatabase database) const Q_DECL_OVERRIDE;
+
+    Structure::Index getIndexDefinition(const QString &indexName,
+                                        const QString &tableName,
+                                        QSqlDatabase database) const Q_DECL_OVERRIDE;
 };
 
 } // namespace Helper
 
-#endif // HELPER_SQLITEDBREADER_H
+#endif // HELPER_POSTGRESQLSTRUCTURESERVICE_H

@@ -60,8 +60,8 @@ void SqliteTest::initTestCase()
 
 void SqliteTest::cleanupTestCase()
 {
-    if (m_context.database().isOpen()) {
-        m_context.database().close();
+    if (m_context->database().isOpen()) {
+        QSqlDatabase(m_context->database()).close();
     }
     if (QFile::exists(m_testDatabaseName)) {
         QFile::remove(m_testDatabaseName);
@@ -71,21 +71,20 @@ void SqliteTest::cleanupTestCase()
 void SqliteTest::init()
 {
     QSqlDatabase database;
-    if(!QSqlDatabase::contains(/*default-connection*/)) {
+    if (!QSqlDatabase::contains(/*default-connection*/)) {
         database = QSqlDatabase::addDatabase(m_driverName);
         database.setDatabaseName(m_testDatabaseName);
+        m_contextBuilder.setDatabase(database);
     }
-    else
-        database = m_context.database();
 
-    bool success = SqliteMigrator::buildContext(m_context, database);
-    QVERIFY2(success, "context should be builded correctly!");
+    m_context = SqliteMigrator::buildContext(m_contextBuilder);
+    QVERIFY2(m_context, "context should be builded correctly!");
 }
 
 void SqliteTest::cleanup()
 {
-    if (m_context.database().isOpen()) {
-        m_context.database().close();
+    if (m_context->database().isOpen()) {
+        QSqlDatabase(m_context->database()).close();
     }
     QFile::remove(m_testDatabaseName);
 }

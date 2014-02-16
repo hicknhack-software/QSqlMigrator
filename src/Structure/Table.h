@@ -31,7 +31,6 @@
 #include <QList>
 #include <QString>
 
-
 namespace Structure {
 
 typedef QList<Column> ColumnList;
@@ -42,29 +41,65 @@ typedef QList<Column> ColumnList;
 class QSQLMIGRATOR_DLL_EXPORT Table
 {
 public:
-    Table();
-    explicit Table(const QString &name);
-    Table(const QString &name, const QList<Column> &columns);
+    class QSQLMIGRATOR_DLL_EXPORT Builder
+    {
+    public:
+        explicit Builder(const QString &name, const ColumnList& columns = ColumnList());
+        Builder& operator <<(const Column& column);
+        operator Table();
+
+    private:
+        QString m_name;
+        ColumnList m_columns;
+    };
+
+    Table(const QString &name, const ColumnList &columns);
 
     const QString &name() const;
-    const QList<Column> &columns() const;
+    const ColumnList &columns() const;
 
-    const QString joinedColumnNames(const QString &delimiter = ", ") const;
+    bool isValid() const;
 
-    static const Table copyWithoutColumn(const Table &table, const QString &columnName);
+    bool hasColumn(const QString &columnName) const;
 
-    Table &add(const Column &column);
+    //! \return a generated list of all column names
+    QStringList columnNames() const;
 
-    inline Table &operator<<(const Column &column) {
-        return this->add(column);
-    }
+    //! \return the cloned table without the specified column
+    Table cloneWithoutColumn(const QString &columnName) const;
 
-    Column fetchColumnByName(const QString &name, bool &success);
+    //! \return the column with the given name
+    Column fetchColumnByName(const QString &name, bool &success) const;
 
 private:
-    QString m_name;
-    ColumnList m_columns;
+    const QString m_name;
+    const ColumnList m_columns;
 };
+
+inline Table::Builder::Builder(const QString &name, const ColumnList &columns)
+    : m_name(name)
+    , m_columns(columns)
+{}
+
+inline Table::Builder::operator Table()
+{
+    return Table(m_name, m_columns);
+}
+
+inline const QString &Table::name() const
+{
+    return m_name;
+}
+
+inline const ColumnList &Table::columns() const
+{
+    return m_columns;
+}
+
+inline bool Table::isValid() const
+{
+    return (!m_name.isEmpty()) && (!m_columns.isEmpty());
+}
 
 } //namespace Structure
 

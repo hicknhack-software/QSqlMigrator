@@ -23,12 +23,12 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef HELPER_BASESQLDBREADERSERVICE_H
-#define HELPER_BASESQLDBREADERSERVICE_H
+#ifndef HELPER_MYSQLSTRUCTURESERVICE_H
+#define HELPER_MYSQLSTRUCTURESERVICE_H
 
 #include "MysqlMigrator/MysqlMigrator.h"
 
-#include "Helper/DbReaderService.h"
+#include "Helper/SqlStructureService.h"
 
 #include <QString>
 #include <QSqlDatabase>
@@ -44,18 +44,20 @@ class CommandExecutionContext;
 
 namespace Helper {
 
-class MYSQLMIGRATOR_DLL_EXPORT MysqlDbReaderService : public DbReaderService
+class MYSQLMIGRATOR_DLL_EXPORT MysqlStructureService : public SqlStructureService
 {
 public:
-    MysqlDbReaderService();
-    virtual ~MysqlDbReaderService() {};
+    MysqlStructureService();
+    ~MysqlStructureService() QSQL_OVERRIDE_D {}
 
-    Structure::Table getTableDefinition(const QString &tableName
-                                        , QSqlDatabase database) const Q_DECL_OVERRIDE;
-    Structure::Index getIndexDefinition(const QString &indexName, const QString &tableName
-                                        , QSqlDatabase database) const Q_DECL_OVERRIDE;
+    Structure::Table getTableDefinition(const QString &tableName,
+                                        QSqlDatabase database) const Q_DECL_OVERRIDE;
+
+    Structure::Index getIndexDefinition(const QString &indexName,
+                                        const QString &tableName,
+                                        QSqlDatabase database) const Q_DECL_OVERRIDE;
 };
 
 } // namespace Helper
 
-#endif // HELPER_BASESQLDBREADER_H
+#endif // HELPER_MYSQLSTRUCTURESERVICE_H

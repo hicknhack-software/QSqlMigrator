@@ -32,17 +32,17 @@ M20131501_191807_CreateUsers::M20131501_191807_CreateUsers()
     using namespace Structure;
     using namespace Commands;
 
-    Table table("users");
-    table << Column( "id", "int", Column::Primary )
-          << Column( "name", "varchar(50)" )
-          << Column( "email", "varchar(100)" )
-          << Column( "password_salt", "varchar(64)" )
-          << Column( "password_encrypted", "varchar(64)" );
+    Table::Builder table("users");
+    table << Column( "id", Type::Integer, Column::Primary )
+          << Column( "name", Type(Type::VarChar, 50) )
+          << Column( "email", Type(Type::VarChar, 100) )
+          << Column( "password_salt", Type(Type::VarChar, 64) )
+          << Column( "password_encrypted", Type(Type::VarChar, 64) );
 
     this->add(new CreateTable(table));
 
-    Index emailIndex( "users_email", "users" );
-    emailIndex.addColumn("email");
+    Index::Builder emailIndex( "users_email", "users" );
+    emailIndex << Index::Column("email");
 
     this->add(new CreateIndex(emailIndex));
 }

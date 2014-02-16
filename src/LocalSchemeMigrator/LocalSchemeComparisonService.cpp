@@ -1,5 +1,11 @@
 #include "LocalSchemeComparisonService.h"
 
+#include "LocalSchemeMigrator/LocalSchemeComparisonContext.h"
+
+#include "Helper/ColumnService.h"
+#include "Helper/SqlStructureService.h"
+#include "Helper/TypeMapperService.h"
+
 #include "Structure/Table.h"
 
 #include <QDebug>
@@ -11,21 +17,12 @@ LocalSchemeComparisonService::LocalSchemeComparisonService()
 {
 }
 
-LocalSchemeComparisonService::~LocalSchemeComparisonService()
-{
-}
-
-//bool LocalSchemeComparisonService::compareDatabaseWithLocalScheme(const LocalSchemeComparisonContext &context, QStringList tables, QStringList indexes) const
-//{
-//    return true;
-//}
-
 bool LocalSchemeComparisonService::compareLocalSchemeWithDatabase(const LocalSchemeComparisonContext &context) const
 {
     bool success = true;
 
     foreach (const Structure::Table &table, context.localScheme()->tables().values()) {
-        Structure::Table realTable = context.helperRepository().dbReaderService().getTableDefinition(table.name(), context.database());
+        Structure::Table realTable = context.helperRepository().sqlStructureService().getTableDefinition(table.name(), context.database());
         if (realTable.columns().length() != table.columns().length()) {
             qWarning() << LOG_PREFIX << "columns count doesn't match";
             success = false;
@@ -49,13 +46,9 @@ bool LocalSchemeComparisonService::compareLocalSchemeWithDatabase(const LocalSch
                 success = false;
             }
             {
-                QString sqlTypeString;
-                if (!column.hasSqlTypeString())
-                    sqlTypeString = context.helperRepository().typeMapperService().map(column.sqlType());
-                else
-                    sqlTypeString = column.sqlTypeString();
-                if (realColumn.sqlTypeString() != sqlTypeString) {
-                    qWarning() << LOG_PREFIX << "table" << table.name() << "column" << column.name() << "is of type" << sqlTypeString << ", while real column is of type" << realColumn.sqlTypeString();
+                QString sqlTypeString = context.helperRepository().typeMapperService().map(column.type());
+                if(0 != QString::compare(sqlTypeString, realColumn.type().string(), Qt::CaseInsensitive)) {
+                    qWarning() << LOG_PREFIX << "table" << table.name() << "column" << column.name() << "is of type" << sqlTypeString << ", while real column is of type" << realColumn.type().string();
                     success = false;
                 }
             }
@@ -77,12 +70,12 @@ bool LocalSchemeComparisonService::compareLocalSchemeWithDatabase(const LocalSch
             }
         }
     }
-    foreach (const Structure::Index &index, context.localScheme()->indexes()) {
-        Structure::Index realIndex = context.helperRepository().dbReaderService().getIndexDefinition(index.name(), index.tableName(), context.database());
+    foreach (const Structure::Index &index, context.localScheme()->indices()) {
+        Structure::Index realIndex = context.helperRepository().sqlStructureService().getIndexDefinition(index.name(), index.tableName(), context.database());
         if (index.columns() != realIndex.columns()) {
             qWarning() << LOG_PREFIX << "table" << index.tableName() << "index" << index.name() << "have different columns";
-            qWarning() << LOG_PREFIX << "table" << index.tableName() << "local scheme index:" << context.helperRepository().columnService().generateIndexColumnDefinitionSql(index.columns());
-            qWarning() << LOG_PREFIX << "table" << index.tableName() << "real index:" << context.helperRepository().columnService().generateIndexColumnDefinitionSql(realIndex.columns());
+            qWarning() << LOG_PREFIX << "table" << index.tableName() << "local scheme index:" << context.helperRepository().columnService().generateIndexColumnsDefinitionSql(index.columns());
+            qWarning() << LOG_PREFIX << "table" << index.tableName() << "real index:" << context.helperRepository().columnService().generateIndexColumnsDefinitionSql(realIndex.columns());
             success = false;
         }
     }

@@ -38,11 +38,13 @@
 
 namespace Helper {
 
+class PostgresqlTypeMapperService;
+
 class POSTGRESQLMIGRATOR_DLL_EXPORT PostgresqlColumnService : public BaseSqlColumnService
 {
 public:
-    PostgresqlColumnService();
-    virtual ~PostgresqlColumnService() {};
+    PostgresqlColumnService(const PostgresqlTypeMapperService& postgresqlTypeMapperService);
+    ~PostgresqlColumnService() QSQL_OVERRIDE_D {}
 
     QString generateColumnDefinitionSql(const Structure::Column &column) const Q_DECL_OVERRIDE;
 };

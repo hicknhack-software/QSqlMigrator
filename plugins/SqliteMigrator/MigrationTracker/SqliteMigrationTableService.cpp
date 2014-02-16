@@ -25,17 +25,6 @@
 ****************************************************************************/
 #include "SqliteMigrator/MigrationTracker/SqliteMigrationTableService.h"
 
-#include "MigrationExecution/MigrationExecutionContext.h"
-
-#include <QDebug>
-#include <QSqlError>
-#include <QSqlQuery>
-#include <QSqlRecord>
-#include <QVariant>
-
-
-using namespace CommandExecution;
-
 namespace MigrationTracker {
 
 SqliteMigrationTableService::SqliteMigrationTableService()

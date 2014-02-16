@@ -28,36 +28,59 @@
 
 #include "Commands/BaseCommand.h"
 
-#include "Structure/SqlType.h"
+#include "Structure/Type.h"
 
 namespace Commands {
 
+/*!
+ * \brief value object representing the command to alter the type of a column in a table
+ */
 class QSQLMIGRATOR_DLL_EXPORT AlterColumnType : public BaseCommand
 {
 public:
-    explicit AlterColumnType(const QString &columnName, const QString &tableName
-                             , const QString &newTypeString, const QString &oldType = "");
-    explicit AlterColumnType(const QString &columnName, const QString &tableName
-                             , const SqlType &newType, const QString &oldType = "");
+    explicit AlterColumnType(const QString &columnName, const QString &tableName,
+                             const Structure::Type &newType, const Structure::Type &oldType);
 
-    bool hasOldType() const;
-    bool hasSqlTypeString() const;
-    const QString &columnName() const;
-    const SqlType &newType() const;
-    const QString &newTypeString() const;
-    const QString &oldType() const;
-    const QString &tableName() const;
+    explicit AlterColumnType(const QString &columnName, const QString &tableName,
+                             const Structure::Type &newType);
+
+    ~AlterColumnType() QSQL_OVERRIDE_D {}
+
     static const QString &typeName();
-    CommandPtr reverse() const;
+
+    const QString &tableName() const;
+    const QString &columnName() const;
+    const Structure::Type &newType() const;
+    const Structure::Type &oldType() const;
+
+    CommandPtr reverse() const Q_DECL_OVERRIDE;
 
 private:
     const QString m_tableName;
     const QString m_columnName;
-    const SqlType m_newType;
-    const QString m_newTypeString;
-    const bool m_hasSqlTypeString;
-    const QString m_oldType;
+    const Structure::Type m_newType;
+    const Structure::Type m_oldType;
 };
+
+inline const QString &AlterColumnType::tableName() const
+{
+    return m_tableName;
+}
+
+inline const QString &AlterColumnType::columnName() const
+{
+    return m_columnName;
+}
+
+inline const Structure::Type &AlterColumnType::newType() const
+{
+    return m_newType;
+}
+
+inline const Structure::Type &AlterColumnType::oldType() const
+{
+    return m_oldType;
+}
 
 } // namespace Commands
 

@@ -23,7 +23,9 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "MysqlMigrator/Helper/MysqlDbReaderService.h"
+#include "MysqlMigrator/Helper/MysqlStructureService.h"
+
+#include "MigrationTracker/MigrationTrackerService.h"
 
 #include "CommandExecution/CommandExecutionContext.h"
 
@@ -39,11 +41,11 @@ using namespace Structure;
 
 namespace Helper {
 
-MysqlDbReaderService::MysqlDbReaderService()
+MysqlStructureService::MysqlStructureService()
 {
 }
 
-Table MysqlDbReaderService::getTableDefinition(const QString &tableName
+Table MysqlStructureService::getTableDefinition(const QString &tableName
                                           , QSqlDatabase database) const
 {
     ColumnList columns;
@@ -84,7 +86,7 @@ Table MysqlDbReaderService::getTableDefinition(const QString &tableName
     return Table(tableName, columns);
 }
 
-Index MysqlDbReaderService::getIndexDefinition(const QString &indexName, const QString &tableName, QSqlDatabase database) const
+Index MysqlStructureService::getIndexDefinition(const QString &indexName, const QString &tableName, QSqlDatabase database) const
 {
     Structure::Index::ColumnList columns;
     QString queryText = QString("SHOW INDEXES FROM %1 WHERE Key_name = \"%2\"").arg(tableName, indexName);

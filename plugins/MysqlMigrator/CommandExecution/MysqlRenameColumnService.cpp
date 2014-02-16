@@ -25,6 +25,12 @@
 ****************************************************************************/
 #include "MysqlRenameColumnService.h"
 
+#include "MigrationTracker/MigrationTrackerService.h"
+
+#include "Helper/QuoteService.h"
+#include "Helper/ColumnService.h"
+#include "Helper/SqlStructureService.h"
+
 #include "Commands/RenameColumn.h"
 
 #include "Structure/Table.h"
@@ -41,36 +47,39 @@ MysqlRenameColumnService::MysqlRenameColumnService()
 {
 }
 
-bool MysqlRenameColumnService::execute(const Commands::ConstCommandPtr &command
-                                   , CommandExecution::CommandExecutionContext &context
-                                    ) const
+bool MysqlRenameColumnService::execute(const Commands::RenameColumn &renameColumn, const Structure::Column &originalColumn, const CommandExecutionContext &context)
+{
+    Structure::Column modifiedColumn(renameColumn.newName(), originalColumn.type(), originalColumn.defaultValue(), originalColumn.attributes());
+
+    const QString alterQuery =
+            QString("ALTER TABLE %1 CHANGE COLUMN %2 %3")
+            .arg(context.helperRepository().quoteService().quoteTableName(renameColumn.tableName()))
+            .arg(renameColumn.name())
+            .arg(context.helperRepository().columnService().generateColumnDefinitionSql(modifiedColumn));
+
+    return CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
+}
+
+bool MysqlRenameColumnService::execute(const Commands::ConstCommandPtr &command,
+                                       CommandExecution::CommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::RenameColumn> renameColumn(command.staticCast<const Commands::RenameColumn>());
+    Q_ASSERT(renameColumn);
 
-    Structure::Column originalColumn;
+    const Structure::Table originalTable(context.helperRepository().sqlStructureService()
+                                         .getTableDefinition(renameColumn->tableName(), context.database()));
     bool success;
-    originalColumn = context.helperRepository()
-            .dbReaderService().getTableDefinition(renameColumn->tableName(), context.database())
-            .fetchColumnByName(renameColumn->name(), success);
+    const Structure::Column originalColumn( originalTable.fetchColumnByName( renameColumn->name(), success ) );
+    if (!success) {
+        ::qWarning() << "could not find column" << renameColumn->tableName() << renameColumn->name();
+        return false;
+    }
 
-    if (!success)
-        return success; // failed, column doesn't exist
-
-    Structure::Column modifiedColumn(renameColumn->newName(), originalColumn.sqlTypeString(), originalColumn.attributes());
-
-    QString columnDefinition = context.helperRepository().columnService().generateColumnDefinitionSql(modifiedColumn);
-
-    QString alterQuery = QString("ALTER TABLE %1 CHANGE COLUMN %2 %3")
-            .arg(context.helperRepository().quoteService().quoteTableName(renameColumn->tableName())
-                 , renameColumn->name()
-                 , columnDefinition);
-
-    success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
+    success = execute(*renameColumn, originalColumn, context);
 
     if (success && context.isUndoUsed()) {
         context.setUndoCommand(renameColumn->reverse());
     }
-
     return success;
 }
 

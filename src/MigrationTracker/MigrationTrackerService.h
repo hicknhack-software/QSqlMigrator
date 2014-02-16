@@ -23,8 +23,8 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef MIGRATIONTRACKER_BASEMIGRATIONTRACKERSERVICE_H
-#define MIGRATIONTRACKER_BASEMIGRATIONTRACKERSERVICE_H
+#ifndef MIGRATIONTRACKER_MIGRATIONTRACKERSERVICE_H
+#define MIGRATIONTRACKER_MIGRATIONTRACKERSERVICE_H
 
 #include "CommandExecution/CommandExecutionContext.h"
 
@@ -36,27 +36,36 @@ class MigrationExecutionContext;
 
 namespace MigrationTracker {
 
-class QSQLMIGRATOR_DLL_EXPORT BaseMigrationTrackerService
+/*!
+ * \brief Interface of a service that is used to track successfully executed migrations
+ */
+class QSQLMIGRATOR_DLL_EXPORT MigrationTrackerService
 {
 public:
-    virtual ~BaseMigrationTrackerService() {}
+    virtual ~MigrationTrackerService() {}
 
+    //! \returns true if transactions can revert changes to table structures
     virtual bool canRevertStrucuturalChangesUsingTransactions() const = 0;
 
+    //! \return a list of all tracked successful migration executions
     virtual QStringList migrationList(const CommandExecution::CommandExecutionContext &context) const = 0;
 
-    virtual bool wasMigrationExecuted(const QString &migrationName
-                                      , const CommandExecution::CommandExecutionContext &context) const = 0;
+    //! \returns true if the specified migrations was tracked as successfully executed
+    virtual bool wasMigrationExecuted(const QString &migrationName,
+                                      const CommandExecution::CommandExecutionContext &context) const = 0;
 
-    virtual bool addMigration(const QString &migrationName
-                              , const CommandExecution::CommandExecutionContext &context) const = 0;
+    //! \return true, if it was able to sucessfully record that the migrations was executed
+    virtual bool addMigration(const QString &migrationName,
+                              const CommandExecution::CommandExecutionContext &context) const = 0;
 
-    virtual bool removeMigration(const QString &migrationName
-                                 , const CommandExecution::CommandExecutionContext &context) const = 0;
+    //! \return true, if it was able to sucessfully remove a migration from the tracked successfully executed migrations
+    virtual bool removeMigration(const QString &migrationName,
+                                 const CommandExecution::CommandExecutionContext &context) const = 0;
 
-    virtual bool ensureVersionTable(const MigrationExecution::MigrationExecutionContext &context) const = 0;
+    //! \return true, if the tracking was in place or was sucessfully prepared
+    virtual bool prepare(const MigrationExecution::MigrationExecutionContext &context) const = 0;
 };
 
 } // namespace MigrationTracker
 
-#endif // MIGRATIONTRACKER_BASEMIGRATIONTRACKERSERVICE_H
+#endif // MIGRATIONTRACKER_MIGRATIONTRACKERSERVICE_H

@@ -30,42 +30,42 @@
 namespace Commands {
 
 AlterColumnType::AlterColumnType(const QString &columnName, const QString &tableName
-                                 , const QString &newTypeString, const QString &oldType)
-    : BaseCommand(AlterColumnType::typeName())
-    , m_tableName(tableName)
-    , m_columnName(columnName)
-    , m_newTypeString(newTypeString)
-    , m_oldType(oldType)
-    , m_hasSqlTypeString(true)
-{
-    if(columnName.isEmpty()) {
-        ::qWarning() << LOG_PREFIX << AlterColumnType::typeName() << "command with empty columnName!";
-    }
-
-    if(tableName.isEmpty()) {
-        ::qWarning() << LOG_PREFIX << AlterColumnType::typeName() << "command" << columnName << "with empty tableName!";
-    }
-
-    if(newTypeString.isEmpty()) {
-        ::qWarning() << LOG_PREFIX << AlterColumnType::typeName() << "command" << columnName << "with empty newType";
-    }
-}
-
-AlterColumnType::AlterColumnType(const QString &columnName, const QString &tableName
-                                 , const SqlType &newType, const QString &oldType)
+                                 , const Structure::Type &newType, const Structure::Type &oldType)
     : BaseCommand(AlterColumnType::typeName())
     , m_tableName(tableName)
     , m_columnName(columnName)
     , m_newType(newType)
     , m_oldType(oldType)
-    , m_hasSqlTypeString(false)
 {
-    if(columnName.isEmpty()) {
+    if (columnName.isEmpty()) {
         ::qWarning() << LOG_PREFIX << AlterColumnType::typeName() << "command with empty columnName!";
     }
+    if (tableName.isEmpty()) {
+        ::qWarning() << LOG_PREFIX << AlterColumnType::typeName() << "command" << columnName << "with empty tableName!";
+    }
+    if (!m_newType.isValid()) {
+        ::qWarning() << LOG_PREFIX << AlterColumnType::typeName() << "command" << columnName << "with invalid new type!" << tableName;
+    }
+    if (!m_oldType.isValid()) {
+        ::qWarning() << LOG_PREFIX << AlterColumnType::typeName() << "command" << columnName << "with invalid old type!" << tableName;
+    }
+}
 
+AlterColumnType::AlterColumnType(const QString &columnName, const QString &tableName, const Structure::Type &newType)
+    : BaseCommand(AlterColumnType::typeName())
+    , m_tableName(tableName)
+    , m_columnName(columnName)
+    , m_newType(newType)
+    , m_oldType(Structure::Type::invalid())
+{
+    if(columnName.isEmpty()) {
+        ::qWarning() << LOG_PREFIX << AlterColumnType::typeName() << "command with empty columnName!" << tableName;
+    }
     if(tableName.isEmpty()) {
         ::qWarning() << LOG_PREFIX << AlterColumnType::typeName() << "command" << columnName << "with empty tableName!";
+    }
+    if (!m_newType.isValid()) {
+        ::qWarning() << LOG_PREFIX << AlterColumnType::typeName() << "command" << columnName << "with invalid new type!" << tableName;
     }
 }
 
@@ -77,45 +77,9 @@ const QString &AlterColumnType::typeName()
 
 CommandPtr AlterColumnType::reverse() const
 {
-    if (!hasOldType())
+    if (!m_oldType.isValid())
         return CommandPtr();
-
-    return CommandPtr(new AlterColumnType(columnName(), tableName(), oldType(), newTypeString()));
-}
-
-const QString &AlterColumnType::tableName() const
-{
-    return m_tableName;
-}
-
-const QString &AlterColumnType::columnName() const
-{
-    return m_columnName;
-}
-
-bool AlterColumnType::hasOldType() const
-{
-    return (!m_oldType.isEmpty());
-}
-
-bool AlterColumnType::hasSqlTypeString() const
-{
-    return m_hasSqlTypeString;
-}
-
-const QString &AlterColumnType::newTypeString() const
-{
-    return m_newTypeString;
-}
-
-const SqlType &AlterColumnType::newType() const
-{
-    return m_newType;
-}
-
-const QString &AlterColumnType::oldType() const
-{
-    return m_oldType;
+    return CommandPtr(new AlterColumnType(columnName(), tableName(), oldType(), newType()));
 }
 
 } // namespace Commands

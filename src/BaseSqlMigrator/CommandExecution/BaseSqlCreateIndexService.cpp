@@ -25,6 +25,9 @@
 ****************************************************************************/
 #include "BaseSqlMigrator/CommandExecution/BaseSqlCreateIndexService.h"
 
+#include "Helper/ColumnService.h"
+#include "Helper/QuoteService.h"
+
 #include "Commands/CreateIndex.h"
 #include "Commands/DropIndex.h"
 
@@ -41,25 +44,30 @@ const QString &BaseSqlCreateIndexService::commandType() const
     return Commands::CreateIndex::typeName();
 }
 
-bool BaseSqlCreateIndexService::execute(const Commands::ConstCommandPtr &command
-                                   , CommandExecution::CommandExecutionContext &context
-                                   ) const
+bool BaseSqlCreateIndexService::execute(const Commands::CreateIndex &createIndex, const CommandExecutionContext &context)
+{
+    const QString columnDefinition = context.helperRepository().columnService().generateIndexColumnsDefinitionSql(createIndex.index().columns());
+
+    const QString createQuery =
+            QString("CREATE INDEX %1 ON %2 (%3)")
+            .arg(context.helperRepository().quoteService().quoteTableName(createIndex.index().name()))
+            .arg(context.helperRepository().quoteService().quoteTableName(createIndex.index().tableName()))
+            .arg(columnDefinition);
+
+    return CommandExecution::BaseCommandExecutionService::executeQuery(createQuery, context);
+}
+
+bool BaseSqlCreateIndexService::execute(const Commands::ConstCommandPtr &command,
+                                        CommandExecution::CommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::CreateIndex> createIndex(command.staticCast<const Commands::CreateIndex>());
+    Q_ASSERT(createIndex);
 
-    QString columnDefinition = context.helperRepository().columnService().generateIndexColumnDefinitionSql(createIndex->index().columns());
-
-    QString createQuery = QString("CREATE INDEX %1 ON %2 (%3)")
-            .arg(context.helperRepository().quoteService().quoteTableName(createIndex->index().name())
-                 , context.helperRepository().quoteService().quoteTableName(createIndex->index().tableName())
-                 , columnDefinition);
-
-    bool success = CommandExecution::BaseCommandExecutionService::executeQuery(createQuery, context);
+    bool success = execute(*createIndex, context);
 
     if (success && context.isUndoUsed()) {
         context.setUndoCommand(createIndex->reverse());
     }
-
     return success;
 }
 

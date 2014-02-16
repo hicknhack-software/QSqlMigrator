@@ -38,7 +38,7 @@
 #include "MigrationExecution/MigrationExecutionContext.h"
 #include "MigrationExecution/MigrationExecutionService.h"
 #include "Migrations/Migration.h"
-#include "MigrationTracker/BaseMigrationTrackerService.h"
+#include "MigrationTracker/MigrationTrackerService.h"
 #include "Structure/Table.h"
 #include "Structure/Column.h"
 
@@ -75,12 +75,12 @@ private Q_SLOTS:
     void testCreateIndex();
 
 protected:
-    MigrationExecution::MigrationExecutionContext m_context;
+    MigrationExecution::MigrationExecutionContext::Builder m_contextBuilder;
+    MigrationExecution::MigrationExecutionContextPtr m_context;
 
-    BasicTest(const QString &driverName, const QString &testDatabaseName
-              , bool (*buildContext)(MigrationExecution::MigrationExecutionContext &, QSqlDatabase)
-              , const QString &structureDatabase = "", const QString &hostName = ""
-            , const int hostPort = 0, const QString &userName = "", const QString &password = "");
+    BasicTest(const QString &driverName, const QString &testDatabaseName,
+              MigrationExecution::MigrationExecutionContextPtr (*buildContext)(MigrationExecution::MigrationExecutionContext::Builder &),
+              const QString &structureDatabase = "", const QString &hostName = "", const int hostPort = 0, const QString &userName = "", const QString &password = "");
 
     QSqlDatabase m_structure_database;
 
@@ -94,7 +94,7 @@ protected:
     const QString m_userName;
     const QString m_password;
 
-    bool (*m_buildContext)(MigrationExecution::MigrationExecutionContext &, QSqlDatabase);
+    MigrationExecution::MigrationExecutionContextPtr (*m_buildContext)(MigrationExecution::MigrationExecutionContext::Builder &);
 };
 
 #endif // BASICTEST_H

@@ -27,6 +27,8 @@
 
 #include "PostgresqlMigrator/Helper/PostgresqlTypeMapperService.h"
 
+#include "MigrationTracker/MigrationTrackerService.h"
+
 #include <QStringList>
 
 #include <QDebug>
@@ -35,40 +37,44 @@ using namespace Structure;
 
 namespace Helper {
 
-PostgresqlColumnService::PostgresqlColumnService()
+PostgresqlColumnService::PostgresqlColumnService(const PostgresqlTypeMapperService &postgresqlTypeMapperService)
+    : BaseSqlColumnService(postgresqlTypeMapperService)
 {
 }
 
 QString PostgresqlColumnService::generateColumnDefinitionSql(const Column &column) const
 {
+    QString sqlTypeString;
+    if (column.type().isString()) {
+        sqlTypeString = column.type().string();
+
+        static const QStringList serialTypes = QStringList() << "SMALLSERIAL" << "SERIAL" << "BIGSERIAL";
+        if (column.isAutoIncremented() && serialTypes.contains( sqlTypeString, Qt::CaseInsensitive ) ) {
+            qWarning() << "column" << column.name() << "has auto increment specified but is not a serial type";
+        }
+    }
+    else {
+        if (column.isAutoIncremented()) {
+            // PostgreSQL has no auto increment, instead there are serials (as types)
+            // QVariant has no Short
+            if (column.type().base() == Type::Integer)
+                sqlTypeString = "SERIAL";
+            else if (column.type().base() == Type::BigInt)
+                sqlTypeString = "BIGSERIAL";
+            else {
+                qWarning() << "column" << column.name() << "has auto increment specified but is not of integer type";
+                sqlTypeString = "SERIAL";
+            }
+        } else {
+            sqlTypeString = m_typeMapperService.map(column.type());
+        }
+    }
+
     QStringList sqlColumnOptions;
     if (column.isPrimary()) {
         sqlColumnOptions << "PRIMARY KEY";
     }
-    QString sqlTypeString;
-    bool serial = false;
-    if (column.isAutoIncremented()) {
-        // PostgreSQL has no auto increment, instead there are serials (as types)
-        // QVariant has no Short
-        if (column.sqlType().type() == QVariant::Int)
-            sqlTypeString = "SERIAL";
-        else if (column.sqlType().type() == QVariant::LongLong)
-            sqlTypeString = "BIGSERIAL";
-        else {
-            qWarning() << "column" << column.name() << "has auto increment specified but is not of integer type";
-            sqlTypeString = "SERIAL";
-        }
-        serial = true;
-    } else {
-        if (column.hasSqlTypeString())
-            sqlTypeString = column.sqlTypeString();
-        else {
-            PostgresqlTypeMapperService typeMapperService;
-            sqlTypeString = typeMapperService.map(column.sqlType());
-        }
-    }
-    // primary keys are implicit NOT NULL, serials are already NOT NULL
-    if (!column.isPrimary() && !serial && !column.isNullable()) {
+    else if (!column.isAutoIncremented() && !column.isNullable()) {
         sqlColumnOptions << "NOT NULL";
     }
     if (column.isUnique()) {

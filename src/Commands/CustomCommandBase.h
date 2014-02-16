@@ -35,16 +35,24 @@
 
 namespace Commands {
 
+/*!
+ * \brief base class for custom commands
+ */
 class QSQLMIGRATOR_DLL_EXPORT CustomCommandBase : public BaseCommand
 {
 public:
     explicit CustomCommandBase(const QString &commandName);
+    ~CustomCommandBase() QSQL_OVERRIDE_D {}
 
-    virtual QString customName() const;
     static const QString &typeName();
+
+    const QString &customName() const;
 
     virtual bool up(const QSqlDatabase &database) const = 0;
     virtual bool down(const QSqlDatabase &database) const;
+
+    //! \return invalid command (not reversable)
+    CommandPtr reverse() const Q_DECL_OVERRIDE;
 
 private:
     QString m_customName;

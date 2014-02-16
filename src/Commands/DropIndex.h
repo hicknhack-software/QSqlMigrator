@@ -31,23 +31,36 @@
 
 namespace Commands {
 
+/*!
+ * \brief value object representing the command to drop an index
+ */
 class QSQLMIGRATOR_DLL_EXPORT DropIndex : public BaseCommand
 {
 public:
     explicit DropIndex(const QString &name);
     explicit DropIndex(const Structure::Index &index);
+    ~DropIndex() QSQL_OVERRIDE_D {}
 
-    bool hasIndex() const;
+    static const QString &typeName();
+
     const Structure::Index &index() const;
     const QString &name() const;
-    static const QString &typeName();
-    CommandPtr reverse() const;
+
+    CommandPtr reverse() const Q_DECL_OVERRIDE;
 
 private:
-    const bool m_hasIndex;
     const Structure::Index m_index;
-    const QString m_name;
 };
+
+inline const Structure::Index &DropIndex::index() const
+{
+    return m_index;
+}
+
+inline const QString &DropIndex::name() const
+{
+    return m_index.name();
+}
 
 } // namespace Commands
 

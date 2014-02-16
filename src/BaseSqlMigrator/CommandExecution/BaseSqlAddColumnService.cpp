@@ -25,6 +25,9 @@
 ****************************************************************************/
 #include "BaseSqlMigrator/CommandExecution/BaseSqlAddColumnService.h"
 
+#include "Helper/ColumnService.h"
+#include "Helper/QuoteService.h"
+
 #include "Commands/AddColumn.h"
 #include "Commands/DropColumn.h"
 
@@ -42,17 +45,23 @@ const QString &BaseSqlAddColumnService::commandType() const
     return Commands::AddColumn::typeName();
 }
 
+bool BaseSqlAddColumnService::execute(const Commands::AddColumn &addColumn, const CommandExecutionContext &context)
+{
+    QString columnDefinition = context.helperRepository().columnService().generateColumnDefinitionSql(addColumn.column());
+    QString alterQuery = QString("ALTER TABLE %1 ADD COLUMN %2")
+            .arg(context.helperRepository().quoteService().quoteTableName(addColumn.tableName()), columnDefinition);
+
+    return CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
+}
+
 bool BaseSqlAddColumnService::execute(const Commands::ConstCommandPtr &command
                                  , CommandExecution::CommandExecutionContext &context
                                  ) const
 {
     QSharedPointer<const Commands::AddColumn> addColumn(command.staticCast<const Commands::AddColumn>());
+    Q_ASSERT(addColumn);
 
-    QString columnDefinition = context.helperRepository().columnService().generateColumnDefinitionSql(addColumn->column());
-    QString alterQuery = QString("ALTER TABLE %1 ADD COLUMN %2")
-            .arg(context.helperRepository().quoteService().quoteTableName(addColumn->tableName()), columnDefinition);
-
-    bool success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
+    bool success = execute(*addColumn, context);
 
     if (success && context.isUndoUsed()) {
         context.setUndoCommand(addColumn->reverse());

@@ -43,22 +43,32 @@ const QString &LocalSchemeDropColumnService::commandType() const
     return Commands::DropColumn::typeName();
 }
 
-bool LocalSchemeDropColumnService::execute(const Commands::ConstCommandPtr &command
-                                  , CommandExecution::LocalSchemeCommandExecutionContext &context
-                                  ) const
+bool LocalSchemeDropColumnService::execute(const Commands::ConstCommandPtr &command,
+                                           CommandExecution::LocalSchemeCommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::DropColumn> dropColumn(command.staticCast<const Commands::DropColumn>());
 
-    Structure::ColumnList list = context.localScheme()->tables()[dropColumn->tableName()].columns();
-    int i=0;
-    foreach (const Structure::Column &column, list) {
-        if (column.name() == dropColumn->columnName()) {
-            list.removeAt(i);
-            break;
-        }
-        i++;
+    const Structure::Table* table = context.localScheme()->table( dropColumn->tableName() );
+    if( nullptr == table ) {
+        ::qWarning() << "table not found" << dropColumn->tableName();
+        return false;
     }
-    context.localScheme()->tables().insert(dropColumn->tableName(), Structure::Table(dropColumn->tableName(), list));
+
+    Structure::Table::Builder alteredTable(table->name(), table->columns());
+    bool found = false;
+    foreach (const Structure::Column &column, table->columns()) {
+        if (column.name() == dropColumn->columnName()) {
+            found = true;
+        }
+        else {
+            alteredTable << column;
+        }
+    }
+    if (!found) {
+        ::qWarning() << "column not found" << dropColumn->tableName() << dropColumn->columnName();
+        return false;
+    }
+    context.localScheme()->alterTable( alteredTable );
 
     return true;
 }

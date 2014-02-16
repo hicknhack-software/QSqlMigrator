@@ -30,6 +30,7 @@
 #include "Structure/Index.h"
 
 #include "Helper/ColumnService.h"
+#include "Helper/TypeMapperService.h"
 
 #include <QString>
 #include <QHash>
@@ -39,13 +40,19 @@ namespace Helper {
 class QSQLMIGRATOR_DLL_EXPORT BaseSqlColumnService : public ColumnService
 {
 public:
-    BaseSqlColumnService();
-    virtual ~BaseSqlColumnService() {};
+    BaseSqlColumnService(const TypeMapperService& typeMapperService);
+    ~BaseSqlColumnService() QSQL_OVERRIDE_D {}
 
+    virtual QStringList buildColumnOptionsSql(const Structure::Column &column) const;
+
+    QString generateColumnDefinitionSql(const Structure::Column &column) const Q_DECL_OVERRIDE;
     QString generateColumnsDefinitionSql(const QList<Structure::Column> &columnList) const Q_DECL_OVERRIDE;
 
     QString generateIndexColumnDefinitionSql(const Structure::Index::Column &column) const Q_DECL_OVERRIDE;
-    QString generateIndexColumnDefinitionSql(const Structure::Index::ColumnList &columns) const Q_DECL_OVERRIDE;
+    QString generateIndexColumnsDefinitionSql(const Structure::Index::ColumnList &columns) const Q_DECL_OVERRIDE;
+
+protected:
+    const TypeMapperService& m_typeMapperService;
 };
 
 } // namespace Helper

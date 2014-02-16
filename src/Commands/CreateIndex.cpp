@@ -27,12 +27,17 @@
 
 #include "Commands/DropIndex.h"
 
+#include <QDebug>
+
 namespace Commands {
 
 CreateIndex::CreateIndex(const Structure::Index &index)
     : BaseCommand(CreateIndex::typeName())
     , m_index(index)
 {
+    if( !m_index.isValid() ) {
+        ::qWarning() << LOG_PREFIX << CreateIndex::typeName() << "command with invalid index!";
+    }
 }
 
 const QString &CreateIndex::typeName()
@@ -44,11 +49,6 @@ const QString &CreateIndex::typeName()
 CommandPtr CreateIndex::reverse() const
 {
     return CommandPtr(new DropIndex(index()));
-}
-
-const Structure::Index &CreateIndex::index() const
-{
-    return m_index;
 }
 
 } // namespace Commands

@@ -31,8 +31,35 @@ using namespace Structure;
 
 namespace Helper {
 
-BaseSqlColumnService::BaseSqlColumnService()
+BaseSqlColumnService::BaseSqlColumnService(const TypeMapperService &typeMapperService)
+    : m_typeMapperService(typeMapperService)
 {
+}
+
+QStringList BaseSqlColumnService::buildColumnOptionsSql(const Column &column) const
+{
+    QStringList sqlColumnOptions;
+    if (column.isPrimary()) {
+        sqlColumnOptions << "PRIMARY KEY";
+    }
+    else if (!column.isNullable()) {
+        sqlColumnOptions << "NOT NULL";
+    }
+    if (column.isUnique()) {
+        sqlColumnOptions << "UNIQUE";
+    }
+    if (column.hasDefaultValue()) {
+        sqlColumnOptions << QString("DEFAULT (%1)").arg(column.defaultValue());
+    }
+    return sqlColumnOptions;
+}
+
+QString BaseSqlColumnService::generateColumnDefinitionSql(const Column &column) const
+{
+    const QStringList sqlColumnOptions = buildColumnOptionsSql(column);
+    const QString sqlTypeString = m_typeMapperService.map(column.type());
+
+    return QString("%1 %2 %3").arg(column.name(), sqlTypeString, sqlColumnOptions.join(" "));
 }
 
 QString BaseSqlColumnService::generateColumnsDefinitionSql(const QList<Column> &columnList) const
@@ -63,7 +90,7 @@ QString BaseSqlColumnService::generateIndexColumnDefinitionSql(const Index::Colu
     return QString("%1 %2").arg(column.name(), sqlSortOrder);
 }
 
-QString BaseSqlColumnService::generateIndexColumnDefinitionSql(const Index::ColumnList &columns) const
+QString BaseSqlColumnService::generateIndexColumnsDefinitionSql(const Index::ColumnList &columns) const
 {
     QStringList sqlIndexColumnDefinitions;
     QListIterator<Index::Column> i(columns);

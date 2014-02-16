@@ -2,23 +2,11 @@
 
 namespace LocalSchemeMigrator {
 
-LocalSchemeComparisonContext::LocalSchemeComparisonContext()
+LocalSchemeComparisonContext::LocalSchemeComparisonContext(const LocalSchemePtr &localScheme, const Helper::HelperRepository &helperRepository, const QSqlDatabase &database)
+    : m_localScheme(localScheme)
+    , m_helperRepository(helperRepository)
+    , m_database(database)
 {
-}
-
-void LocalSchemeComparisonContext::setLocalScheme(const LocalSchemePtr &localScheme)
-{
-    m_localScheme = localScheme;
-}
-
-void LocalSchemeComparisonContext::setHelperRepository(const Helper::HelperRepository &helperRepository)
-{
-    m_helperRepository = helperRepository;
-}
-
-void LocalSchemeComparisonContext::setDatabase(const QSqlDatabase &database)
-{
-    m_database = database;
 }
 
 const LocalSchemePtr &LocalSchemeComparisonContext::localScheme() const

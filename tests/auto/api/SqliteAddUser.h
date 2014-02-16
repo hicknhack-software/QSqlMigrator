@@ -34,9 +34,9 @@ class SqliteAddUser : public Commands::CustomCommandBase
 {
 public:
     SqliteAddUser(int id, const QString &userName, const QString &userMail, const QString &password);
+    ~SqliteAddUser() QSQL_OVERRIDE_D {}
 
-    bool up(const QSqlDatabase &database) const;
-    Commands::CommandPtr reverse() const;
+    bool up(const QSqlDatabase &database) const Q_DECL_OVERRIDE;
 
 private:
     const int m_id;

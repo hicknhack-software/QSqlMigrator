@@ -23,30 +23,33 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef HELPER_SQLITECOLUMNSERVICE_H
-#define HELPER_SQLITECOLUMNSERVICE_H
+#ifndef HELPER_SQLITEDBREADER_H
+#define HELPER_SQLITEDBREADER_H
 
-#include "BaseSqlMigrator/Helper/BaseSqlColumnService.h"
+#include "Helper/SqlStructureService.h"
 
-#include "SqliteMigrator/SqliteMigrator.h"
+#include "CommandExecution/CommandExecutionContext.h"
 
-#include "Structure/Column.h"
-#include "Structure/Index.h"
-
-#include <QString>
-#include <QHash>
+namespace Structure {
+class Table;
+class Index;
+}
 
 namespace Helper {
 
-class SQLITEMIGRATOR_DLL_EXPORT SqliteColumnService : public BaseSqlColumnService
+class SqliteSqlStructureService : public SqlStructureService
 {
 public:
-    SqliteColumnService();
-    virtual ~SqliteColumnService() {};
+    SqliteSqlStructureService();
+    ~SqliteSqlStructureService() QSQL_OVERRIDE_D {}
 
-    QString generateColumnDefinitionSql(const Structure::Column &column) const Q_DECL_OVERRIDE;
+    Structure::Table getTableDefinition(const QString &tableName
+                                        , QSqlDatabase database) const Q_DECL_OVERRIDE;
+
+    Structure::Index getIndexDefinition(const QString &indexName, const QString &tableName
+                                        , QSqlDatabase database) const Q_DECL_OVERRIDE;
 };
 
 } // namespace Helper
 
-#endif // HELPER_SQLITECOLUMNSERVICE_H
+#endif // HELPER_SQLITEDBREADER_H

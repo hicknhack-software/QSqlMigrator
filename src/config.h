@@ -42,4 +42,13 @@
 #   endif // Q_OS_WIN
 #endif // QSQLMIGRATOR_DLL_EXPORT
 
+#ifndef Q_DECL_OVERRIDE
+#   define Q_DECL_OVERRIDE
+#endif
+#if _MSC_VER >= 1700
+#   define QSQL_OVERRIDE_D Q_DECL_OVERRIDE
+#else
+#   define QSQL_OVERRIDE_D
+#endif
+
 #endif // QSQLMIGRATOR_CONFIG_H

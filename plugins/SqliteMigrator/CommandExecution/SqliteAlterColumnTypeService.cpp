@@ -26,9 +26,14 @@
 #include "SqliteMigrator/CommandExecution/SqliteAlterColumnTypeService.h"
 
 #include "SqliteMigrator/CommandExecution/SqliteAlterColumnService.h"
-#include "SqliteMigrator/Helper/SqliteDbReaderService.h"
+#include "SqliteMigrator/Helper/SqliteSqlStructureService.h"
+
+#include "Helper/TypeMapperService.h"
+#include "Helper/SqlStructureService.h"
 
 #include "Commands/AlterColumnType.h"
+
+#include "Structure/Table.h"
 
 #include <QDebug>
 #include <QStringList>
@@ -44,35 +49,31 @@ bool SqliteAlterColumnTypeService::execute(const Commands::ConstCommandPtr &comm
 {
     QSharedPointer<const Commands::AlterColumnType> alterColumnType(command.staticCast<const Commands::AlterColumnType>());
 
-    Structure::Table origTable = context.helperRepository().dbReaderService().getTableDefinition(alterColumnType->tableName(), context.database());
-    Structure::Table newTable = Structure::Table(alterColumnType->tableName());
-    Structure::Column originalColumn;
+    const Structure::Table origTable( context.helperRepository().sqlStructureService().getTableDefinition(alterColumnType->tableName(), context.database()) );
+    Structure::Table::Builder alteredTable(alterColumnType->tableName());
+    const Structure::Column* originalColumn = nullptr;
 
-    QString newType;
-    if (alterColumnType->hasSqlTypeString())
-        newType = alterColumnType->newTypeString();
-    else
-        newType = context.helperRepository().typeMapperService().map(alterColumnType->newType());
+    QString newType = context.helperRepository().typeMapperService().map(alterColumnType->newType());
 
-    foreach (Structure::Column column, origTable.columns()) {
+    foreach (const Structure::Column &column, origTable.columns()) {
         if (column.name() == alterColumnType->columnName()) {
-            originalColumn = column;
-            Structure::Column newColumn = Structure::Column(column.name(), newType, column.attributes());
-            newTable.add(newColumn);
+            originalColumn = &column;
+            alteredTable << Structure::Column(column.name(), newType, column.attributes());
         } else {
-            newTable.add(column);
+            alteredTable << column;
         }
     }
+    if (!originalColumn) {
+        ::qWarning() << "column was not found!" << alterColumnType->tableName() << alterColumnType->columnName();
+        return false;
+    }
 
-    SqliteAlterColumnService alterColumnService;
-    bool success = alterColumnService.execute(origTable, newTable, context);
+    bool success = SqliteAlterColumnService::execute(origTable, alteredTable, context);
 
     //TODO: add test for undo logic of SqliteMigrator command execution services
     if (success && context.isUndoUsed()) {
-        Commands::CommandPtr undoCommand(new Commands::AlterColumnType(alterColumnType->columnName()
-                                                                       , alterColumnType->tableName()
-                                                                       , originalColumn.sqlTypeString()
-                                                                       , newType));
+        Commands::CommandPtr undoCommand(new Commands::AlterColumnType(alterColumnType->columnName(), alterColumnType->tableName(),
+                                                                       originalColumn->type(), newType));
         context.setUndoCommand(undoCommand);
     }
 

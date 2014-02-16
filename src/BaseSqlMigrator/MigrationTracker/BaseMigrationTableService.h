@@ -23,31 +23,39 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef MIGRATIONTRACKER_MIGRATIONTABLESERVICE_H
-#define MIGRATIONTRACKER_MIGRATIONTABLESERVICE_H
+#ifndef MIGRATIONTRACKER_BASEMIGRATIONTABLESERVICE_H
+#define MIGRATIONTRACKER_BASEMIGRATIONTABLESERVICE_H
 
 #include "config.h"
 
-#include "MigrationTracker/BaseMigrationTrackerService.h"
+#include "MigrationTracker/MigrationTrackerService.h"
 
 namespace MigrationTracker {
 
-class QSQLMIGRATOR_DLL_EXPORT MigrationTableService : public MigrationTracker::BaseMigrationTrackerService
+/*!
+ * \brief Implementation of the successfully executed migration tracking through a databse table
+ */
+class QSQLMIGRATOR_DLL_EXPORT BaseMigrationTableService : public MigrationTracker::MigrationTrackerService
 {
 public:
-    ~MigrationTableService() {};
+    ~BaseMigrationTableService() QSQL_OVERRIDE_D {}
 
-    bool canRevertStrucuturalChangesUsingTransactions() const;
-    bool wasMigrationExecuted(const QString &migrationName
-                              , const CommandExecution::CommandExecutionContext &context) const;
-    QStringList migrationList(const CommandExecution::CommandExecutionContext &context) const;
+    bool canRevertStrucuturalChangesUsingTransactions() const Q_DECL_OVERRIDE;
 
-    bool addMigration(const QString &migrationName, const CommandExecution::CommandExecutionContext &context) const;
-    bool removeMigration(const QString &migrationName, const CommandExecution::CommandExecutionContext &context) const;
+    bool wasMigrationExecuted(const QString &migrationName,
+                              const CommandExecution::CommandExecutionContext &context) const Q_DECL_OVERRIDE;
 
-    bool ensureVersionTable(const MigrationExecution::MigrationExecutionContext &context) const;
+    QStringList migrationList(const CommandExecution::CommandExecutionContext &context) const Q_DECL_OVERRIDE;
+
+    bool addMigration(const QString &migrationName,
+                      const CommandExecution::CommandExecutionContext &context) const Q_DECL_OVERRIDE;
+
+    bool removeMigration(const QString &migrationName,
+                         const CommandExecution::CommandExecutionContext &context) const Q_DECL_OVERRIDE;
+
+    bool prepare(const MigrationExecution::MigrationExecutionContext &context) const Q_DECL_OVERRIDE;
 };
 
 } // namespace MigrationTracker
 
-#endif // MYSQLMIGRATIONTABLESERVICE_H
+#endif // MIGRATIONTRACKER_BASEMIGRATIONTABLESERVICE_H

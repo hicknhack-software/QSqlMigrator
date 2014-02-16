@@ -26,6 +26,8 @@
 #ifndef MIGRATIONEXECUTION_MIGRATIONEXECUTIONCONTEXT_H
 #define MIGRATIONEXECUTION_MIGRATIONEXECUTIONCONTEXT_H
 
+#include "CommandExecution/CommandExecutionServiceRepository.h"
+
 #include "MigrationExecution/MigrationExecutionConfig.h"
 
 #include "Helper/HelperRepository.h"
@@ -36,9 +38,9 @@
 
 class QSqlDatabase;
 
-namespace CommandExecution {
-class CommandExecutionServiceRepository;
-}
+//namespace CommandExecution {
+//class CommandExecutionServiceRepository;
+//}
 namespace Helper {
 class HelperRepository;
 }
@@ -46,43 +48,107 @@ namespace Migrations {
 class Migration;
 }
 namespace MigrationTracker {
-class BaseMigrationTrackerService;
+class MigrationTrackerService;
 }
 
 namespace MigrationExecution {
 
 typedef QSharedPointer<CommandExecution::CommandExecutionServiceRepository> CommandServiceRepositoryPtr;
-typedef QSharedPointer<Helper::HelperRepository> HelperRepositoryPtr;
-typedef QSharedPointer<MigrationTracker::BaseMigrationTrackerService> MigrationTableServicePtr;
+typedef QSharedPointer<MigrationTracker::MigrationTrackerService> MigrationTableServicePtr;
+
+class MigrationExecutionContext;
+typedef QSharedPointer<MigrationExecutionContext> MigrationExecutionContextPtr;
 
 class QSQLMIGRATOR_DLL_EXPORT MigrationExecutionContext
 {
 public:
-     typedef QMap<QString, const Migrations::Migration*> NameMigrationMap;
+    typedef QMap<QString, const Migrations::Migration*> NameMigrationMap;
 
-     MigrationExecutionContext(const NameMigrationMap &migrations, const MigrationExecutionConfig &migrationConfig);
-     MigrationExecutionContext(const NameMigrationMap &migrations);
+    class QSQLMIGRATOR_DLL_EXPORT Builder
+    {
+    public:
+        Builder(const NameMigrationMap &migrations);
 
-     MigrationTableServicePtr baseMigrationTableService() const;
-     CommandServiceRepositoryPtr commandServiceRepository() const;
-     const Helper::HelperRepository &helperRepository() const;
-     QSqlDatabase database() const;
-     const MigrationExecutionConfig &migrationConfig() const;
-     const NameMigrationMap &migrationMap() const;
+        void setConfig(const MigrationExecutionConfig &migrationConfig);
+        void setDatabase(const QSqlDatabase &database);
 
-     void setBaseMigrationTableService(MigrationTableServicePtr baseMigrationTableService);
-     void setCommandServiceRepository(CommandServiceRepositoryPtr commandServiceRepository);
-     void setHelperRepository(const Helper::HelperRepository &helperRepository);
-     void setDatabase(QSqlDatabase database);
+        MigrationExecutionContextPtr build(const CommandServiceRepositoryPtr &commandServiceRepository,
+                                           const Helper::HelperRepository &helperRepository,
+                                           const MigrationTableServicePtr &migrationTableService) const;
+
+    private:
+        const NameMigrationMap m_migrations;
+        MigrationExecutionConfig m_migrationConfig;
+        QSqlDatabase m_database;
+    };
+
+    MigrationExecutionContext(const NameMigrationMap &migrations,
+                              const MigrationExecutionConfig &migrationConfig,
+                              const QSqlDatabase &database,
+                              const CommandServiceRepositoryPtr &commandServiceRepository,
+                              const Helper::HelperRepository &helperRepository,
+                              const MigrationTableServicePtr &migrationTableService);
+
+    const MigrationTableServicePtr baseMigrationTableService() const;
+    const CommandServiceRepositoryPtr commandServiceRepository() const;
+    const Helper::HelperRepository &helperRepository() const;
+    const QSqlDatabase &database() const;
+    const MigrationExecutionConfig &migrationConfig() const;
+    const NameMigrationMap &migrationMap() const;
 
 private:
-     const NameMigrationMap m_migrations;
-     MigrationExecutionConfig m_migrationConfig;
-     CommandServiceRepositoryPtr m_commandServiceRepository;
-     Helper::HelperRepository m_helperRepository;
-     QSqlDatabase m_database;
-     MigrationTableServicePtr m_migrationTableService;
+    const NameMigrationMap m_migrations;
+    const MigrationExecutionConfig m_migrationConfig;
+    const CommandServiceRepositoryPtr m_commandServiceRepository;
+    const Helper::HelperRepository m_helperRepository;
+    const QSqlDatabase m_database;
+    const MigrationTableServicePtr m_migrationTableService;
 };
+
+inline MigrationExecutionContext::Builder::Builder(const MigrationExecutionContext::NameMigrationMap &migrations)
+    : m_migrations(migrations)
+{
+}
+
+inline void MigrationExecutionContext::Builder::setConfig(const MigrationExecutionConfig &migrationConfig)
+{
+    m_migrationConfig = migrationConfig;
+}
+
+inline void MigrationExecutionContext::Builder::setDatabase(const QSqlDatabase &database)
+{
+    m_database = database;
+}
+
+inline const MigrationTableServicePtr MigrationExecutionContext::baseMigrationTableService() const
+{
+    return m_migrationTableService;
+}
+
+inline const CommandServiceRepositoryPtr MigrationExecutionContext::commandServiceRepository() const
+{
+    return m_commandServiceRepository;
+}
+
+inline const Helper::HelperRepository &MigrationExecutionContext::helperRepository() const
+{
+    return m_helperRepository;
+}
+
+inline const QSqlDatabase &MigrationExecutionContext::database() const
+{
+    return m_database;
+}
+
+inline const MigrationExecutionConfig &MigrationExecutionContext::migrationConfig() const
+{
+    return m_migrationConfig;
+}
+
+inline const MigrationExecutionContext::NameMigrationMap &MigrationExecutionContext::migrationMap() const
+{
+    return m_migrations;
+}
 
 } // namespace MigrationExecution
 

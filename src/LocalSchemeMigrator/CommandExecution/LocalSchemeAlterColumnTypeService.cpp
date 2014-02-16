@@ -51,20 +51,29 @@ bool LocalSchemeAlterColumnTypeService::execute(const Commands::ConstCommandPtr 
 {
     QSharedPointer<const Commands::AlterColumnType> alterColumnType(command.staticCast<const Commands::AlterColumnType>());
 
-    Structure::ColumnList list = context.localScheme()->tables()[alterColumnType->tableName()].columns();
-    int i=0;
-    foreach (const Structure::Column &column, list) {
-        if (column.name() == alterColumnType->columnName()) {
-            if (alterColumnType->hasSqlTypeString())
-                list.replace(i, Structure::Column(column.name(), alterColumnType->newTypeString(), column.defaultValue(), column.attributes()));
-            else
-                list.replace(i, Structure::Column(column.name(), alterColumnType->newType(), column.defaultValue(), column.attributes()));
-            break;
-        }
-        i++;
+    const Structure::Table* table = context.localScheme()->table( alterColumnType->tableName() );
+    if (nullptr == table) {
+        ::qWarning() << "table not found" << alterColumnType->tableName();
+        return false;
     }
-    context.localScheme()->tables().insert(alterColumnType->tableName(), Structure::Table(alterColumnType->tableName(), list));
 
+    Structure::Table::Builder alteredTable(table->name());
+    bool found = false;
+    foreach (const Structure::Column &column, table->columns()) {
+        if (column.name() == alterColumnType->columnName()) {
+            alteredTable << Structure::Column(column.name(), alterColumnType->newType(), column.defaultValue(), column.attributes());
+            found = true;
+        }
+        else {
+            alteredTable << column;
+        }
+    }
+    if (!found) {
+        ::qWarning() << "column not found" << alterColumnType->tableName() << alterColumnType->columnName();
+        return false;
+    }
+
+    context.localScheme()->alterTable( alteredTable );
     return true;
 }
 

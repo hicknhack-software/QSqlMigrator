@@ -28,6 +28,10 @@
 
 #include "CommandExecution/BaseCommandExecutionService.h"
 
+namespace Commands {
+class DropColumn;
+} // namespace Commands
+
 namespace CommandExecution {
 
 class QSQLMIGRATOR_DLL_EXPORT BaseSqlDropColumnService : public BaseCommandExecutionService
@@ -36,6 +40,8 @@ public:
     BaseSqlDropColumnService();
 
     const QString &commandType() const;
+
+    static bool execute(const Commands::DropColumn &dropColumn, const CommandExecution::CommandExecutionContext &context);
 
     bool execute(const Commands::ConstCommandPtr &command, CommandExecution::CommandExecutionContext &context) const;
     bool isValid(const Commands::ConstCommandPtr &command, const CommandExecution::CommandExecutionContext &context) const;

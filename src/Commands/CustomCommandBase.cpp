@@ -42,7 +42,7 @@ const QString &CustomCommandBase::typeName()
     return typeName;
 }
 
-QString CustomCommandBase::customName() const
+const QString &CustomCommandBase::customName() const
 {
     return m_customName;
 }
@@ -51,6 +51,11 @@ bool CustomCommandBase::down(const QSqlDatabase &database) const
 {
     Q_UNUSED(database);
     return false;
+}
+
+CommandPtr CustomCommandBase::reverse() const
+{
+    return Commands::CommandPtr();
 }
 
 } // namespace Commands

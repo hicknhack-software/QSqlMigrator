@@ -29,7 +29,7 @@
 #include "Migrations/MigrationRepository.h"
 #include "MigrationExecution/MigrationExecutionContext.h"
 #include "MigrationExecution/MigrationExecutionService.h"
-#include "MigrationTracker/BaseMigrationTrackerService.h"
+#include "MigrationTracker/MigrationTrackerService.h"
 
 using namespace MigrationExecution;
 

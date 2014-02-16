@@ -25,60 +25,55 @@
 ****************************************************************************/
 #include "MysqlMigrator/Helper/MysqlTypeMapperService.h"
 
+#include "MigrationTracker/MigrationTrackerService.h"
+
 #include <QDebug>
 
 namespace Helper {
 
 MysqlTypeMapperService::MysqlTypeMapperService()
 {
-    typeMap.insert(QVariant::Bool,      "tinyint(1)");
-    typeMap.insert(QVariant::Int,       "int(11)");
-    typeMap.insert(QVariant::LongLong,  "bigint(20)");
-    typeMap.insert(QVariant::ByteArray, "%1blob");
+    using namespace Structure;
+
+    m_typeMap.insert(Type::Boolean, "TINYINT(1)");
+    m_typeMap.insert(Type::Integer, "INT(%1)");
+    m_typeMap.insert(Type::BigInt,  "BIGINT(%1)");
+    m_typeMap.insert(Type::DoublePrecision,  "DOUBLE");
 }
 
-QString MysqlTypeMapperService::map(const SqlType &type) const
+QString MysqlTypeMapperService::map(const Structure::Type &type) const
 {
-    QString sqlTypeString;
+    using namespace Structure;
 
-    switch (type.type()) {
-    case QVariant::ByteArray:
-        if (const int precision = type.precision()) {
-            if (precision <= 255)
-                sqlTypeString = typeMap[QVariant::ByteArray].arg("tiny");
-            else if (precision <= 65535)
-                sqlTypeString = typeMap[QVariant::ByteArray].arg("");
-            else if (precision <= 16777215)
-                sqlTypeString = typeMap[QVariant::ByteArray].arg("medium");
-            else if (precision <= 4294967295)
-                sqlTypeString = typeMap[QVariant::ByteArray].arg("long");
-        }
-        else
-            sqlTypeString = typeMap[QVariant::ByteArray].arg("");
-        break;
-    case QVariant::Char:
-        if (!type.precision())
-            sqlTypeString = typeMap[QVariant::Char].arg(type.precision());
-        else
-            sqlTypeString = typeMap[QVariant::Char].arg(1);
-        break;
-    case QVariant::String:
-        sqlTypeString = typeMap[QVariant::String].arg(type.precision());
-        break;
-    case QVariant::Double:
-        if (type.precision() !=0 && type.scale() != 0)
-            sqlTypeString = QString("decimal(%1,%2)").arg(QString::number(type.precision()), QString::number(type.scale()));
-        else
-            sqlTypeString = typeMap[QVariant::Double];
-        break;
-    default:
-        if (!typeMap.contains(type.type()))
-            ::qWarning() << "unknown type";
-        sqlTypeString = typeMap[type.type()];
-        break;
+    switch (type.base())
+    {
+    case Type::BigInt:
+        return m_typeMap[Type::BigInt].arg(type.precision(20));
+
+    case Type::VarBinary:
+    {
+        const quint64 precision = type.precision();
+        if (precision <= 255 && precision > 0)
+            return "TINYBLOB";
+        if (precision <= 65535)
+            return "BLOB";
+        if (precision <= 16777215)
+            return "MEDIUMBLOB";
+        if (precision <= 4294967295)
+            return "LONGBLOB";
+        ::qWarning() << "blob is too large";
+        return "LONGBLOB";
     }
-
-    return sqlTypeString;
+    case Type::VarChar:
+    {
+        const quint64 precision = type.precision();
+        if (precision > 65535)
+            return "TEXT";
+        return BaseSqlTypeMapperService::map(type);
+    }
+    default:
+        return BaseSqlTypeMapperService::map(type);
+    }
 }
 
 } // namespace Helper

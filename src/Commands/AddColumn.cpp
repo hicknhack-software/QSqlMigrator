@@ -35,8 +35,11 @@ AddColumn::AddColumn(const Structure::Column &column, const QString &tableName)
     , m_tableName(tableName)
     , m_column(column)
 {
-    if(tableName.isEmpty()) {
+    if (tableName.isEmpty()) {
         ::qWarning() << LOG_PREFIX << AddColumn::typeName() << "command" << column.name() << "with empty tableName!";
+    }
+    if (!column.isValid()) {
+        ::qWarning() << LOG_PREFIX << AddColumn::typeName() << "command" << tableName << "with invalid column!" << column.name();
     }
 }
 
@@ -49,16 +52,6 @@ const QString &AddColumn::typeName()
 CommandPtr AddColumn::reverse() const
 {
     return CommandPtr(new DropColumn(column(), tableName()));
-}
-
-const QString &AddColumn::tableName() const
-{
-    return m_tableName;
-}
-
-const Structure::Column &AddColumn::column() const
-{
-    return m_column;
 }
 
 } // namespace Commands

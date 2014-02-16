@@ -25,6 +25,8 @@
 ****************************************************************************/
 #include "PostgresqlTypeMapperService.h"
 
+#include "MigrationTracker/MigrationTrackerService.h"
+
 #include "Structure/Column.h"
 
 #include <QDebug>
@@ -33,12 +35,29 @@ namespace Helper {
 
 PostgresqlTypeMapperService::PostgresqlTypeMapperService()
 {
-    typeMap.insert(QVariant::Double,    "double precision");
-    typeMap.insert(QVariant::Time,      "time without time zone");
-    typeMap.insert(QVariant::DateTime,  "timestamp without time zone");
-    typeMap.insert(QVariant::Char,      "character(%1)");
-    typeMap.insert(QVariant::String,    "character varying(%1)");
-    typeMap.insert(QVariant::ByteArray, "bytea");
+    using namespace Structure;
+
+    m_typeMap.insert(Type::Char,      "CHARACTER(%1)");
+    m_typeMap.insert(Type::VarChar,   "CHARACTER VARYING(%1)");
+    m_typeMap.insert(Type::Integer,   "INTEGER");
+    m_typeMap.insert(Type::Time,      "TIME WITHOUT TIME ZONE");
+    m_typeMap.insert(Type::Timestamp, "TIMESTAMP WITHOUT TIME ZONE");
+    m_typeMap.insert(Type::Binary,    "BYTEA");
+    m_typeMap.insert(Type::Decimal,   "NUMERIC(%1,%2)");
+}
+
+QString PostgresqlTypeMapperService::map(const Structure::Type &type) const
+{
+    using namespace Structure;
+
+    switch (type.base())
+    {
+    case Type::Integer:
+        return m_typeMap[Type::Integer];
+
+    default:
+        return BaseSqlTypeMapperService::map(type);
+    }
 }
 
 } // namespace Helper

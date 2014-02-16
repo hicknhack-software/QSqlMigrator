@@ -26,23 +26,21 @@
 #ifndef COMMANDEXECUTION_SQLITEALTERCOLUMNSERVICE_H
 #define COMMANDEXECUTION_SQLITEALTERCOLUMNSERVICE_H
 
-#include "Structure/Column.h"
-#include "Structure/Table.h"
-
-#include "CommandExecution/CommandExecutionContext.h"
+namespace Structure {
+class Table;
+} // namespace Structure
 
 namespace CommandExecution {
+
+class CommandExecutionContext;
 
 /*! used only internally in other services, because SQLite can't alter columns */
 //TODO: move into Helper
 class SqliteAlterColumnService
 {
 public:
-    SqliteAlterColumnService();
-
-    bool execute(const Structure::Table &origTable
-                 , const Structure::Table &newTable
-                 , CommandExecution::CommandExecutionContext &context) const;
+    static bool execute(const Structure::Table &origTable, const Structure::Table &newTable,
+                        CommandExecution::CommandExecutionContext &context);
 };
 
 } // namespace CommandExecution

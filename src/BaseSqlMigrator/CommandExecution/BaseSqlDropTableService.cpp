@@ -25,6 +25,9 @@
 ****************************************************************************/
 #include "BaseSqlMigrator/CommandExecution/BaseSqlDropTableService.h"
 
+#include "Helper/SqlStructureService.h"
+#include "Helper/QuoteService.h"
+
 #include "Commands/DropTable.h"
 #include "Commands/CreateTable.h"
 
@@ -42,23 +45,29 @@ const QString &BaseSqlDropTableService::commandType() const
     return Commands::DropTable::typeName();
 }
 
+bool BaseSqlDropTableService::execute(const Commands::DropTable &dropTable, const CommandExecutionContext &context)
+{
+    const QString dropQuery =
+            QString("DROP TABLE %1")
+            .arg(context.helperRepository().quoteService().quoteTableName(dropTable.tableName()));
+
+    return CommandExecution::BaseCommandExecutionService::executeQuery(dropQuery, context);
+}
+
 bool BaseSqlDropTableService::execute(const Commands::ConstCommandPtr &command
                                  , CommandExecution::CommandExecutionContext &context
                                  ) const
 {
     QSharedPointer<const Commands::DropTable> dropTable(command.staticCast<const Commands::DropTable>());
+    Q_ASSERT(dropTable);
 
-    Structure::Table origTable = context.helperRepository().dbReaderService().getTableDefinition(dropTable->tableName(), context.database());
+    const Structure::Table originalTable( context.helperRepository().sqlStructureService().getTableDefinition(dropTable->tableName(), context.database()) );
 
-    QString dropQuery = QString("DROP TABLE %1")
-            .arg(context.helperRepository().quoteService().quoteTableName(dropTable->tableName()));
-
-    bool success = CommandExecution::BaseCommandExecutionService::executeQuery(dropQuery, context);
+    bool success = execute(*dropTable, context);
 
     if (success) {
-        context.setUndoCommand(Commands::CommandPtr(new Commands::CreateTable(origTable)));
+        context.setUndoCommand(Commands::CommandPtr(new Commands::CreateTable(originalTable)));
     }
-
     return success;
 }
 

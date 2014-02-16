@@ -31,22 +31,37 @@
 
 namespace Commands {
 
+/*!
+ * \brief value object representing the command to drop a table
+ */
 class QSQLMIGRATOR_DLL_EXPORT DropTable : public BaseCommand
 {
 public:
     explicit DropTable(const QString &name);
     explicit DropTable(const Structure::Table &table);
+    ~DropTable() QSQL_OVERRIDE_D {}
 
-    bool hasTable() const;
+    static const QString &typeName();
+
     const Structure::Table &table() const;
     const QString &tableName() const;
-    static const QString &typeName();
-    CommandPtr reverse() const;
+
+    CommandPtr reverse() const Q_DECL_OVERRIDE;
 
 private:
     Structure::Table m_table;
     bool m_hasTable;
 };
+
+inline const Structure::Table &DropTable::table() const
+{
+    return m_table;
+}
+
+inline const QString &DropTable::tableName() const
+{
+    return m_table.name();
+}
 
 } // namespace Commands
 

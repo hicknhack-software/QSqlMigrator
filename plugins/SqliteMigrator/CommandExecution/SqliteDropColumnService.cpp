@@ -25,11 +25,11 @@
 ****************************************************************************/
 #include "SqliteMigrator/CommandExecution/SqliteDropColumnService.h"
 
-#include "SqliteMigrator/Helper/SqliteDbReaderService.h"
-
 #include "BaseSqlMigrator/CommandExecution/BaseSqlRenameTableService.h"
 #include "BaseSqlMigrator/CommandExecution/BaseSqlCreateTableService.h"
 #include "BaseSqlMigrator/CommandExecution/BaseSqlDropTableService.h"
+
+#include "Helper/SqlStructureService.h"
 
 #include "Commands/CreateTable.h"
 #include "Commands/AddColumn.h"
@@ -45,51 +45,50 @@ namespace CommandExecution {
 SqliteDropColumnService::SqliteDropColumnService()
 {}
 
-bool SqliteDropColumnService::execute(const Commands::ConstCommandPtr &command
-                                 , CommandExecution::CommandExecutionContext &context) const
+bool SqliteDropColumnService::execute(const Commands::ConstCommandPtr &command,
+                                      CommandExecution::CommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::DropColumn> dropColumn(command.staticCast<const Commands::DropColumn>());
 
-    Structure::Table table = context.helperRepository().dbReaderService().getTableDefinition(dropColumn->tableName(), context.database());
-    bool success;
-    Structure::Column originalColumn = table.fetchColumnByName(dropColumn->columnName(), success);
-    if (!success)
-        return success;
-    table = Structure::Table::copyWithoutColumn(table, dropColumn->columnName());
+    Structure::Table table( context.helperRepository().sqlStructureService().getTableDefinition(dropColumn->tableName(), context.database()) );
+    Structure::Table::Builder alteredTable(dropColumn->tableName());
+    const Structure::Column* originalColumn = nullptr;
+    foreach (const Structure::Column &column, table.columns()) {
+        if (column.name() == dropColumn->columnName()) {
+            originalColumn = &column;
+        } else {
+            alteredTable << column;
+        }
+    }
+    if (!originalColumn) {
+        ::qWarning() << "Column not found" << dropColumn->tableName() << dropColumn->columnName();
+        return false;
+    }
 
-    QString tempTableName = QString("%1%2").arg(context.migrationConfig().temporaryTablePrefix
-                                                , dropColumn->tableName());
+    QString tempTableName = QString("%1%2").arg(context.migrationConfig().temporaryTablePrefix, dropColumn->tableName());
 
-    Commands::CommandPtr renameTable = Commands::CommandPtr(
-                new Commands::RenameTable(dropColumn->tableName(), tempTableName));
-
-    BaseSqlRenameTableService renameTableService;
-    success = renameTableService.execute(renameTable, context);
+    bool success = BaseSqlRenameTableService::execute(Commands::RenameTable(dropColumn->tableName(), tempTableName), context);
     if (!success)
         return false;
 
-    Commands::CommandPtr createTable = Commands::CommandPtr(new Commands::CreateTable(table));
-    BaseSqlCreateTableService createTableService;
-    success = createTableService.execute(createTable, context);
+    success = BaseSqlCreateTableService::execute(Commands::CreateTable(alteredTable), context);
     if (!success)
         return false;
 
-    QString copyQuery = QString("INSERT INTO %1 SELECT %2 FROM %3").arg(table.name()
-                                                                         , table.joinedColumnNames()
-                                                                         , tempTableName);
+    const QString copyQuery =
+            QString("INSERT INTO %1 SELECT %2 FROM %3")
+            .arg(table.name())
+            .arg(table.columnNames().join(", "))
+            .arg(tempTableName);
     success = CommandExecution::BaseCommandExecutionService::executeQuery(copyQuery, context);
     if (!success)
         return false;
 
-    Commands::CommandPtr dropTable = Commands::CommandPtr(new Commands::DropTable(tempTableName));
-    BaseSqlDropTableService dropTableService;
-    success = dropTableService.execute(dropTable, context);
+    success = BaseSqlDropTableService::execute(Commands::DropTable(tempTableName), context);
 
     if (success && context.isUndoUsed()) {
-        context.setUndoCommand(Commands::CommandPtr(new Commands::AddColumn(originalColumn
-                                                                            , dropColumn->tableName())));
+        context.setUndoCommand(Commands::CommandPtr(new Commands::AddColumn(*originalColumn, dropColumn->tableName())));
     }
-
     return success;
 }
 

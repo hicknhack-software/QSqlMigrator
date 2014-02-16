@@ -25,6 +25,9 @@
 ****************************************************************************/
 #include "BaseSqlMigrator/CommandExecution/BaseSqlDropColumnService.h"
 
+#include "Helper/SqlStructureService.h"
+#include "Helper/QuoteService.h"
+
 #include "Commands/DropColumn.h"
 #include "Commands/AddColumn.h"
 
@@ -43,30 +46,33 @@ const QString &BaseSqlDropColumnService::commandType() const
     return Commands::DropColumn::typeName();
 }
 
+bool BaseSqlDropColumnService::execute(const Commands::DropColumn &dropColumn, const CommandExecutionContext &context)
+{
+    const QString alterQuery =
+            QString("ALTER TABLE %1 DROP COLUMN %2")
+            .arg(context.helperRepository().quoteService().quoteTableName(dropColumn.tableName()))
+            .arg(context.helperRepository().quoteService().quoteColumnName(dropColumn.columnName()));
+
+    return CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
+}
+
 bool BaseSqlDropColumnService::execute(const Commands::ConstCommandPtr &command
                                   , CommandExecution::CommandExecutionContext &context
                                   ) const
 {
     QSharedPointer<const Commands::DropColumn> dropColumn(command.staticCast<const Commands::DropColumn>());
+    Q_ASSERT(dropColumn);
 
-    Structure::Column originalColumn;
-    bool success;
-    originalColumn = context.helperRepository()
-            .dbReaderService().getTableDefinition(dropColumn->tableName(), context.database())
-            .fetchColumnByName(dropColumn->columnName(), success);
+    Structure::Table originalTable(context.helperRepository().sqlStructureService().getTableDefinition(dropColumn->tableName(), context.database()));
 
-    if (!success)
-        return success; // failed, column doesn't exist
-
-    QString alterQuery = QString("ALTER TABLE %1 DROP COLUMN %2")
-            .arg(context.helperRepository().quoteService().quoteTableName(dropColumn->tableName())
-                 , context.helperRepository().quoteService().quoteColumnName(dropColumn->columnName()));
-
-    success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
+    bool success = execute(*dropColumn, context);
 
     if (success && context.isUndoUsed()) {
-        context.setUndoCommand(Commands::CommandPtr(new Commands::AddColumn(originalColumn
-                                                                            , dropColumn->tableName())));
+        Commands::CommandPtr undoCommand(new Commands::AddColumn(originalTable.fetchColumnByName(dropColumn->columnName(), success), dropColumn->tableName()));
+
+        if( success )
+            context.setUndoCommand(undoCommand);
+        return true;
     }
 
     return success;
@@ -77,9 +83,13 @@ bool BaseSqlDropColumnService::isValid(const Commands::ConstCommandPtr &command
 {
     QSharedPointer<const Commands::DropColumn> dropColumn(command.staticCast<const Commands::DropColumn>());
 
-    //check if table exists
-    if (!context.database().tables().contains(dropColumn->tableName())) {
-        ::qWarning() << "table doesn't exist!";
+    Structure::Table table(context.helperRepository().sqlStructureService().getTableDefinition(dropColumn->tableName(), context.database()));
+    if (!table.isValid()) {
+        ::qWarning() << "table doesn't exist!" << dropColumn->tableName();
+        return false;
+    }
+    if (!table.hasColumn(dropColumn->columnName())) {
+        ::qWarning() << "column doesn't exist!" << dropColumn->tableName() << dropColumn->columnName();
         return false;
     }
     return true;

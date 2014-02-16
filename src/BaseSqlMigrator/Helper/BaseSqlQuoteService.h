@@ -38,7 +38,7 @@ class QSQLMIGRATOR_DLL_EXPORT BaseSqlQuoteService : public QuoteService
 {
 public:
     BaseSqlQuoteService();
-    virtual ~BaseSqlQuoteService() {};
+    ~BaseSqlQuoteService() QSQL_OVERRIDE_D {}
 
     QString quoteTableName(const QString &tableName) const Q_DECL_OVERRIDE;
     QString quoteColumnName(const QString &columnName) const Q_DECL_OVERRIDE;

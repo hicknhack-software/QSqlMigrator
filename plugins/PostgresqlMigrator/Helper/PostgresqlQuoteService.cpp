@@ -25,6 +25,8 @@
 ****************************************************************************/
 #include "PostgresqlQuoteService.h"
 
+#include "MigrationTracker/MigrationTrackerService.h"
+
 namespace Helper {
 
 PostgresqlQuoteService::PostgresqlQuoteService()

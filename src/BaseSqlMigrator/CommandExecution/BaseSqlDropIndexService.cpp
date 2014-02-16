@@ -41,15 +41,23 @@ const QString &BaseSqlDropIndexService::commandType() const
     return Commands::DropIndex::typeName();
 }
 
+bool BaseSqlDropIndexService::execute(const Commands::DropIndex &dropIndex, const CommandExecutionContext &context)
+{
+    const QString sqlQuery =
+            QString("DROP INDEX %1")
+            .arg(dropIndex.name());
+
+    return CommandExecution::BaseCommandExecutionService::executeQuery(sqlQuery, context);
+}
+
 bool BaseSqlDropIndexService::execute(const Commands::ConstCommandPtr &command
                                  , CommandExecution::CommandExecutionContext &context
                                  ) const
 {
     QSharedPointer<const Commands::DropIndex> dropIndex(command.staticCast<const Commands::DropIndex>());
+    Q_ASSERT(dropIndex);
 
-    QString sDropQuery = QString("DROP INDEX %1").arg(dropIndex->name());
-
-    bool success = CommandExecution::BaseCommandExecutionService::executeQuery(sDropQuery, context);
+    bool success = execute(*dropIndex, context);
 
     //TODO: dropIndex doesn't have index, need to read it from database like
     // table definition (see BaseSqlDropTableService)
@@ -57,7 +65,6 @@ bool BaseSqlDropIndexService::execute(const Commands::ConstCommandPtr &command
         Commands::CommandPtr undoCommand(new Commands::DropIndex(dropIndex->index()));
         context.setUndoCommand(undoCommand);
     }
-
     return success;
 }
 

@@ -28,22 +28,40 @@
 
 #include "Commands/BaseCommand.h"
 
+#include <QString>
+
 namespace Commands {
 
+/*!
+ * \brief value object representing the command to rename a table
+ */
 class QSQLMIGRATOR_DLL_EXPORT RenameTable : public BaseCommand
 {
 public:
     explicit RenameTable(const QString &name, const QString &newName);
+    ~RenameTable() QSQL_OVERRIDE_D {}
 
     static const QString &typeName();
+
     const QString &name() const;
     const QString &newName() const;
-    CommandPtr reverse() const;
+
+    CommandPtr reverse() const Q_DECL_OVERRIDE;
 
 private:
     QString m_name;
     QString m_newName;
 };
+
+inline const QString &RenameTable::name() const
+{
+    return m_name;
+}
+
+inline const QString &RenameTable::newName() const
+{
+    return m_newName;
+}
 
 } // namespace Commands
 

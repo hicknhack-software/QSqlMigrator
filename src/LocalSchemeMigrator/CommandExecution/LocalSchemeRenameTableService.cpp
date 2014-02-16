@@ -46,9 +46,16 @@ bool LocalSchemeRenameTableService::execute(const Commands::ConstCommandPtr &com
 {
     QSharedPointer<const Commands::RenameTable> renameTable(command.staticCast<const Commands::RenameTable>());
 
-    Structure::Table origTable = context.localScheme()->tables()[renameTable->name()];
-    context.localScheme()->tables().remove(renameTable->name());
-    context.localScheme()->tables().insert(renameTable->newName(), Structure::Table(renameTable->newName(), origTable.columns()));
+    const Structure::Table* table = context.localScheme()->table( renameTable->name() );
+    if( nullptr == table ) {
+        ::qWarning() << "table not found" << renameTable->name();
+        return false;
+    }
+
+    Structure::Table::Builder alteredTable(renameTable->newName(), table->columns());
+
+    context.localScheme()->dropTable(renameTable->name());
+    context.localScheme()->createTable(alteredTable);
 
     return true;
 }

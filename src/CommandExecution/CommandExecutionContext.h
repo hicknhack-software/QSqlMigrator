@@ -38,9 +38,9 @@ namespace CommandExecution {
 class QSQLMIGRATOR_DLL_EXPORT CommandExecutionContext
 {
 public:
-    CommandExecutionContext(const QSqlDatabase database
-                            , const MigrationExecution::MigrationExecutionConfig &migrationConfig
-                            , const Helper::HelperRepository &helperRepository);
+    CommandExecutionContext(const QSqlDatabase database,
+                            const MigrationExecution::MigrationExecutionConfig &migrationConfig,
+                            const Helper::HelperRepository &helperRepository);
 
     QSqlDatabase database() const;
 

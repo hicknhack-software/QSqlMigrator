@@ -39,8 +39,8 @@
 #include "Helper/HelperRepository.h"
 
 #include "BaseSqlMigrator/Helper/BaseSqlQuoteService.h"
-#include "SqliteMigrator/Helper/SqliteColumnService.h"
-#include "SqliteMigrator/Helper/SqliteDbReaderService.h"
+#include "BaseSqlMigrator/Helper/BaseSqlColumnService.h"
+#include "SqliteMigrator/Helper/SqliteSqlStructureService.h"
 #include "BaseSqlMigrator/Helper/BaseSqlTypeMapperService.h"
 
 #include "CommandExecution/CustomCommandService.h"
@@ -72,38 +72,38 @@ QSharedPointer<CommandExecution::CommandExecutionServiceRepository> createComman
     return commandRepository;
 }
 
-void createHelperRepository(Helper::HelperRepository &helperRepository)
+Helper::HelperRepository &createHelperRepository()
 {
     ::qDebug() << "creating SQLite helper aggregate";
 
     using namespace Helper;
 
-    helperRepository.setColumnService(new SqliteColumnService);
-    helperRepository.setDbReaderService(new SqliteDbReaderService);
-    helperRepository.setQuoteService(new BaseSqlQuoteService);
-    helperRepository.setTypeMapperService(new BaseSqlTypeMapperService);
+    static BaseSqlQuoteService quoteService;
+    static BaseSqlTypeMapperService typeMapperService;
+    static BaseSqlColumnService columnService(typeMapperService);
+    static SqliteSqlStructureService structureService;
+    static HelperRepository repository(quoteService, typeMapperService, columnService, structureService);
+
+    return repository;
 }
 
-bool buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDatabase database)
+MigrationExecution::MigrationExecutionContextPtr buildContext(MigrationExecution::MigrationExecutionContext::Builder &contextBuilder)
 {
     using namespace MigrationExecution;
 
-    CommandServiceRepositoryPtr commandRepository = createCommandServiceRepository();
-    Helper::HelperRepository helperRepository;
-    createHelperRepository(helperRepository);
+    CommandServiceRepositoryPtr commandRepository(createCommandServiceRepository());
     MigrationTableServicePtr migrationTableService(new MigrationTracker::SqliteMigrationTableService);
 
-    context.setCommandServiceRepository(commandRepository);
-    context.setHelperRepository(helperRepository);
-    context.setBaseMigrationTableService(migrationTableService);
-    context.setDatabase(database);
+    auto context = contextBuilder.build(commandRepository, createHelperRepository(), migrationTableService);
 
+    QSqlDatabase database(context->database());
     bool success = false;
-    if( context.database().open() ) {
-        success = migrationTableService->ensureVersionTable(context);
+    if( database.open() ) {
+        success = migrationTableService->prepare(*context);
     }
-
-    return success;
+    if (!success)
+        context.clear();
+    return context;
 }
 
 } // namespace SqliteMigrator

@@ -69,12 +69,6 @@ SOURCES += \
     BaseSqlMigrator/Helper/BaseSqlColumnService.cpp \
     BaseSqlMigrator/Helper/BaseSqlQuoteService.cpp \
     BaseSqlMigrator/Helper/BaseSqlTypeMapperService.cpp \
-    BaseSqlMigrator/MigrationTracker/MigrationTableService.cpp \
-    Helper/ColumnService.cpp \
-    Helper/DbReaderService.cpp \
-    Helper/QuoteService.cpp \
-    Helper/TypeMapperService.cpp \
-    Structure/SqlType.cpp \
     Structure/LocalScheme.cpp \
     LocalSchemeMigrator/LocalSchemeMigrator.cpp \
     LocalSchemeMigrator/CommandExecution/LocalSchemeAddColumnService.cpp \
@@ -88,7 +82,9 @@ SOURCES += \
     LocalSchemeMigrator/CommandExecution/LocalSchemeRenameTableService.cpp \
     LocalSchemeMigrator/LocalSchemeComparisonService.cpp \
     LocalSchemeMigrator/LocalSchemeComparisonContext.cpp \
-    Helper/HelperRepository.cpp
+    Helper/HelperRepository.cpp \
+    BaseSqlMigrator/MigrationTracker/BaseMigrationTableService.cpp \
+    Structure/Type.cpp
 
 HEADERS += \
 	 QSqlMigrator/QSqlMigratorService.h \
@@ -119,7 +115,6 @@ HEADERS += \
 	 MigrationExecution/MigrationExecutionConfig.h \
      MigrationExecution/LocalSchemeMigrationExecutionService.h \
      MigrationExecution/LocalSchemeMigrationExecutionContext.h \
-     MigrationTracker/BaseMigrationTrackerService.h \
 	 Structure/Table.h \
 	 Structure/Index.h \
 	 Structure/Column.h \
@@ -142,13 +137,11 @@ HEADERS += \
     BaseSqlMigrator/Helper/BaseSqlColumnService.h \
     BaseSqlMigrator/Helper/BaseSqlQuoteService.h \
     BaseSqlMigrator/Helper/BaseSqlTypeMapperService.h \
-    BaseSqlMigrator/MigrationTracker/MigrationTableService.h \
     Helper/HelperRepository.h \
     Helper/ColumnService.h \
-    Helper/DbReaderService.h \
+    Helper/SqlStructureService.h \
     Helper/QuoteService.h \
     Helper/TypeMapperService.h \
-    Structure/SqlType.h \
     Structure/LocalScheme.h \
     LocalSchemeMigrator/LocalSchemeMigrator.h \
     LocalSchemeMigrator/CommandExecution/LocalSchemeAddColumnService.h \
@@ -161,4 +154,7 @@ HEADERS += \
     LocalSchemeMigrator/CommandExecution/LocalSchemeRenameColumnService.h \
     LocalSchemeMigrator/CommandExecution/LocalSchemeRenameTableService.h \
     LocalSchemeMigrator/LocalSchemeComparisonService.h \
-    LocalSchemeMigrator/LocalSchemeComparisonContext.h
+    LocalSchemeMigrator/LocalSchemeComparisonContext.h \
+    MigrationTracker/MigrationTrackerService.h \
+    BaseSqlMigrator/MigrationTracker/BaseMigrationTableService.h \
+    Structure/Type.h

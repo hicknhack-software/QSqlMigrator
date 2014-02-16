@@ -50,7 +50,7 @@ public:
     virtual bool isValid(const Commands::ConstCommandPtr &command, const CommandExecutionContext &context) const = 0;
 
 protected:
-    bool executeQuery(const QString &queryString, const CommandExecutionContext &context) const;
+    static bool executeQuery(const QString &queryString, const CommandExecutionContext &context);
 };
 
 } // namespace CommandExecution

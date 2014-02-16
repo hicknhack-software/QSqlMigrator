@@ -28,6 +28,10 @@
 
 #include "CommandExecution/BaseCommandExecutionService.h"
 
+namespace Commands {
+class RenameColumn;
+} // namespace Commands
+
 namespace CommandExecution {
 
 class QSQLMIGRATOR_DLL_EXPORT BaseSqlRenameColumnService : public BaseCommandExecutionService
@@ -36,6 +40,8 @@ public:
     BaseSqlRenameColumnService();
 
     const QString &commandType() const;
+
+    static bool execute(const Commands::RenameColumn &renameColumn, const CommandExecution::CommandExecutionContext &context);
 
     bool execute(const Commands::ConstCommandPtr &command, CommandExecution::CommandExecutionContext &context) const;
     bool isValid(const Commands::ConstCommandPtr &command, const CommandExecution::CommandExecutionContext &context) const;

@@ -34,7 +34,7 @@ namespace CommandExecution {
 BaseCommandExecutionService::BaseCommandExecutionService()
 {}
 
-bool BaseCommandExecutionService::executeQuery(const QString &queryString, const CommandExecutionContext &context) const
+bool BaseCommandExecutionService::executeQuery(const QString &queryString, const CommandExecutionContext &context)
 {
     ::qDebug() << LOG_PREFIX << "complete query-string looks like:";
     ::qDebug() << LOG_PREFIX << queryString;

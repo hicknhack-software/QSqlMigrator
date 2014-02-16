@@ -1,3 +1,60 @@
+
+This test runs only with a valid Qt PostgreSQL driver in place.
+
 The psql driver should be prebuilt for qt binary installations.
 
-You need the "libpg.dll"/.so and "libintl.dll"/.so in your path.
+You need the "libpg.dll"/.so and "libintl.dll"/.so in your path (See Step 7)
+
+Requirements to build for Windows
+---------------------------------
+
+A. Download a PostgreSql binary package and extract/install it to %POSTGRESQL%
+B. Make sure you have the qt sources available/installed in %QTDIR%
+C. Visual Studio >= 2008 (matching your qt version)
+
+Steps to build
+--------------
+
+1. Launch a compile command prompt
+
+2. Setup Qt Path
+2a) Execute the qtvars.bat (Qt 4.x only)
+%QTDIR%\bin\qtvars.bat
+
+2b) Add Qt bin path and fix QTDIR to src\qtbase (Qt 5.x)
+%QTDIR%\bin\qtenv2.bat
+set %QTDIR%=%QTDIR%\..\Src\qtbase
+
+3. Change directory to the build path
+cd %TEMP%
+mkdir build-qpsql
+cd build-qpsql
+
+Y. Add .qmake.conf to the project (Qt 5.x only)
+copy %QTDIR%\.qmake.conf %QTDIR%\src\plugins\sqldrivers\psql
+
+4. Create the makefiles with qmake
+qmake "INCLUDEPATH+=%POSTGRESQL%/include" "LIBS+=%POSTGRESQL%/lib/libpq.lib" %QTDIR%\src\plugins\sqldrivers\psql\psql.pro
+
+5. Run the makefile for debug and release
+nmake debug
+nmake release
+
+6. Make the created .dlls available
+6a) for the qt installation
+copy **\*.dll %QTDIR%\plugins\sqldrivers
+
+6b) for QSqlMigrator only
+mkdir %QSQLMIGRATOR%\bin\sqldrivers
+copy **\*.dll %QSQLMIGRATOR%\bin\sqldrivers
+
+7. Make the libpq.dll and it's dependencies available
+7a) for the qt installation
+copy %POSTGRESQL%\bin\libpq.dll %QTDIR%\bin
+copy %POSTGRESQL%\bin\libintl.dll %QTDIR%\bin
+
+7b) for QSqlMigrator only
+copy %POSTGRESQL%\bin\libpq.dll %QSQLMIGRATOR%\bin
+copy %POSTGRESQL%\bin\libintl.dll %QSQLMIGRATOR%\bin
+
+Notice: for OpenSLL support you will need libeay32.dll and ssleay32.dll as well

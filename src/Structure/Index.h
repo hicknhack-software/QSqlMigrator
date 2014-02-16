@@ -34,46 +34,116 @@
 namespace Structure {
 
 /*!
- * \brief The Index class represents a basic index-structure.
+ * \brief value object representing the structure of an sql index.
  */
 class QSQLMIGRATOR_DLL_EXPORT Index
 {
 public:
+    /*!
+     * \brief index sorting order
+     */
     enum SortOrder{
         Default = 0,
         Ascending = 0, // ASC is default
         Descending = 1
     };
 
-    class Column {
-    private:
-        QString m_name;
-        SortOrder m_sortOrder;
+    /*!
+     * \brief index column reference
+     */
+    class QSQLMIGRATOR_DLL_EXPORT Column
+    {
     public:
-        Column() {}
-        Column(const QString& name, const SortOrder& sortOrder = Default) : m_name(name), m_sortOrder(sortOrder) {}
-        const QString &name() const { return m_name; }
-        const SortOrder &sortOrder() const { return m_sortOrder; }
-        bool operator==(const Column& other) { return other.name() == m_name && other.sortOrder() == m_sortOrder; }
+        Column(const QString& name, const SortOrder& sortOrder = Default);
+
+        const QString &name() const;
+        const SortOrder &sortOrder() const;
+
+        bool operator==(const Column& other) const;
+
+    private:
+        const QString m_name;
+        const SortOrder m_sortOrder;
     };
 
     typedef QList<Column> ColumnList;
 
-    explicit Index(const QString &name, const QString &tableName);
-    explicit Index(const QString &name, const QString &tableName, const ColumnList &columns);
+    /*!
+     * \brief helper to build Index classes
+     */
+    class QSQLMIGRATOR_DLL_EXPORT Builder
+    {
+    public:
+        Builder(const QString &name, const QString &tableName);
+        Builder(const QString &name);
+        Builder& operator<<(const Index::Column& column);
+        operator Index() const;
 
-    const ColumnList &columns() const;
+    private:
+        QString m_name;
+        QString m_tableName;
+        ColumnList m_columns;
+    };
+
+    explicit Index(const QString &name, const QString &tableName, const ColumnList &columns);
+    explicit Index(const QString &name, const ColumnList &columns);
+
     const QString &name() const;
     const QString &tableName() const;
+    const ColumnList &columns() const;
 
-    //TODO: remove this method, sorting order of columns should be included on creation
-    Index &addColumn(const QString &columnName, SortOrder sortOrder=Default);
+    bool isValid() const;
 
 private:
-    QString m_name;
-    QString m_tableName;
+    const QString m_name;
+    const QString m_tableName;
     ColumnList m_columns;
 };
+
+inline Index::Column::Column(const QString &name, const Index::SortOrder &sortOrder)
+    : m_name(name)
+    , m_sortOrder(sortOrder)
+{}
+
+inline const QString &Index::Column::name() const
+{
+    return m_name;
+}
+
+inline const Index::SortOrder &Index::Column::sortOrder() const
+{
+    return m_sortOrder;
+}
+
+inline bool Index::Column::operator==(const Index::Column &other) const
+{
+    return other.name() == m_name;
+}
+
+inline Index::Builder::Builder(const QString &name)
+    : m_name(name)
+{
+}
+
+inline const QString &Index::name() const
+{
+    return m_name;
+}
+
+inline const QString &Index::tableName() const
+{
+    return m_tableName;
+}
+
+inline const Index::ColumnList &Index::columns() const
+{
+    return m_columns;
+}
+
+inline bool Index::isValid() const
+{
+    return (!m_name.isEmpty()) && (!m_columns.isEmpty());
+}
 
 } //namespace Structure
 

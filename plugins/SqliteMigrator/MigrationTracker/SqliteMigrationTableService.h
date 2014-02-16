@@ -26,17 +26,18 @@
 #ifndef MIGRATIONTRACKER_SQLITEMIGRATIONTABLESERVICE_H
 #define MIGRATIONTRACKER_SQLITEMIGRATIONTABLESERVICE_H
 
-#include "BaseSqlMigrator/MigrationTracker/MigrationTableService.h"
+#include "BaseSqlMigrator/MigrationTracker/BaseMigrationTableService.h"
 #include "SqliteMigrator/SqliteMigrator.h"
 
 namespace MigrationTracker {
 
-class SQLITEMIGRATOR_DLL_EXPORT SqliteMigrationTableService : public MigrationTracker::MigrationTableService
+class SQLITEMIGRATOR_DLL_EXPORT SqliteMigrationTableService : public MigrationTracker::BaseMigrationTableService
 {
 public:
     SqliteMigrationTableService();
+    ~SqliteMigrationTableService() QSQL_OVERRIDE_D {}
 
-    bool canRevertStrucuturalChangesUsingTransactions() const;
+    bool canRevertStrucuturalChangesUsingTransactions() const Q_DECL_OVERRIDE;
 };
 
 } // namespace MigrationTracker

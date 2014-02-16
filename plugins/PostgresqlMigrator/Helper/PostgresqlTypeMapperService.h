@@ -40,6 +40,9 @@ class POSTGRESQLMIGRATOR_DLL_EXPORT PostgresqlTypeMapperService : public BaseSql
 {
 public:
     PostgresqlTypeMapperService();
+    ~PostgresqlTypeMapperService() QSQL_OVERRIDE_D {}
+
+    QString map(const Structure::Type &type) const Q_DECL_OVERRIDE;
 };
 
 } // namespace Helper

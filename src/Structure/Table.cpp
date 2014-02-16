@@ -28,67 +28,60 @@
 #include <QDebug>
 #include <QStringList>
 
+#include <algorithm>
+
 namespace Structure {
 
-Table::Table()
+Table::Builder &Table::Builder::operator <<(const Column &column)
 {
-}
-
-Table::Table(const QString &name)
-    : m_name(name)
-{
-    if(name.isEmpty()) {
-        ::qWarning() << LOG_PREFIX << "Table with empty name!";
+    if (std::any_of( m_columns.begin(), m_columns.end(), [&column](const Column& other)->bool { return other.name() == column.name(); })) {
+        ::qWarning() << LOG_PREFIX << "Each table can only one column for each name" << m_name << column.name();
+        return *this;
     }
+    m_columns << column;
+    return *this;
 }
 
-Table::Table(const QString &name, const QList<Column> &columns)
+Table::Table(const QString &name, const ColumnList &columns)
     : m_name(name)
     , m_columns(columns)
 {
-    if(name.isEmpty()) {
+    if (name.isEmpty()) {
         ::qWarning() << LOG_PREFIX << "Table with empty name!";
     }
-}
-
-const QString &Table::name() const
-{
-    return m_name;
-}
-
-const QList<Column> &Table::columns() const
-{
-    return m_columns;
-}
-
-const QString Table::joinedColumnNames(const QString &delimiter) const
-{
-    QStringList slColumnNames;
-    foreach (const Column &column, m_columns) {
-        slColumnNames << column.name();
+    if (std::any_of(columns.begin(), columns.end(), [](const Column& column)->bool { return !column.isValid(); })) {
+        ::qWarning() << LOG_PREFIX << "Table with invalid columns!" << name;
     }
-    return slColumnNames.join(delimiter);
 }
 
-const Table Table::copyWithoutColumn(const Table &table, const QString &columnName)
+bool Table::hasColumn(const QString &columnName) const
+{
+    return std::any_of(m_columns.begin(), m_columns.end(), [&columnName](const Column& column)->bool { return column.name()==columnName; });
+}
+
+QStringList Table::columnNames() const
+{
+    QStringList columnNames;
+    foreach (const Column &column, m_columns) {
+        columnNames << column.name();
+    }
+    return columnNames;
+}
+
+Table Table::cloneWithoutColumn(const QString &columnName) const
 {
     QList<Column> newColumnList;
-    newColumnList.reserve( ::qMax( 0, table.columns().size() - 1 ));
-    foreach (const Column &column, table.columns()) {
+    newColumnList.reserve( ::qMax( 0, columns().size() - 1 ));
+    foreach (const Column &column, columns()) {
         if (column.name() != columnName) {
             newColumnList << column;
         }
     }
-    return Table(table.name(), newColumnList);
+    return Table(name(), newColumnList);
+
 }
 
-Table &Table::add(const Column &column)
-{
-    m_columns.append(column);
-    return (*this);
-}
-
-Column Table::fetchColumnByName(const QString &name, bool &success)
+Column Table::fetchColumnByName(const QString &name, bool &success) const
 {
     foreach (Structure::Column column, m_columns) {
         if (column.name() == name) {
@@ -97,7 +90,7 @@ Column Table::fetchColumnByName(const QString &name, bool &success)
         }
     }
     success = false;
-    return Column();
+    return Column(name, Type::invalid());
 }
 
 } //namespace Structure

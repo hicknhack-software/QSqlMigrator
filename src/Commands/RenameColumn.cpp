@@ -59,19 +59,4 @@ CommandPtr RenameColumn::reverse() const
     return CommandPtr(new RenameColumn(newName(), name(), tableName()));
 }
 
-const QString &RenameColumn::name() const
-{
-    return m_name;
-}
-
-const QString &RenameColumn::newName() const
-{
-    return m_newName;
-}
-
-const QString &RenameColumn::tableName() const
-{
-    return m_tableName;
-}
-
 } // namespace Commands

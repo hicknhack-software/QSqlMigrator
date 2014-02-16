@@ -25,6 +25,10 @@
 ****************************************************************************/
 #include "BaseSqlMigrator/CommandExecution/BaseSqlAlterColumnTypeService.h"
 
+#include "Helper/SqlStructureService.h"
+#include "Helper/TypeMapperService.h"
+#include "Helper/QuoteService.h"
+
 #include "Commands/AlterColumnType.h"
 
 #include "Structure/Table.h"
@@ -45,53 +49,52 @@ const QString &BaseSqlAlterColumnTypeService::commandType() const
     return Commands::AlterColumnType::typeName();
 }
 
-bool BaseSqlAlterColumnTypeService::execute(const Commands::ConstCommandPtr &command
-                                       , CommandExecution::CommandExecutionContext &context
-                                       ) const
+bool BaseSqlAlterColumnTypeService::execute(const Commands::AlterColumnType &alterColumnType, const CommandExecutionContext &context)
+{
+    const QString alterQuery =
+            QString("ALTER TABLE %1 ALTER COLUMN %2 SET DATA TYPE %3")
+            .arg(context.helperRepository().quoteService().quoteTableName(alterColumnType.tableName()))
+            .arg(context.helperRepository().quoteService().quoteColumnName(alterColumnType.columnName()))
+            .arg(context.helperRepository().typeMapperService().map(alterColumnType.newType()));
+
+    return CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
+}
+
+bool BaseSqlAlterColumnTypeService::execute(const Commands::ConstCommandPtr &command,
+                                            CommandExecution::CommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::AlterColumnType> alterColumnType(command.staticCast<const Commands::AlterColumnType>());
+    Q_ASSERT(alterColumnType);
 
-    Structure::Column originalColumn;
-    bool success;
-    originalColumn = context.helperRepository()
-            .dbReaderService().getTableDefinition(alterColumnType->tableName(), context.database())
-            .fetchColumnByName(alterColumnType->columnName(), success);
+    Structure::Table originalTable(context.helperRepository().sqlStructureService().getTableDefinition(alterColumnType->tableName(), context.database()));
 
-    if (!success)
-        return success; // failed, column doesn't exist
-
-    QString newType;
-    if (alterColumnType->hasSqlTypeString())
-        newType = alterColumnType->newTypeString();
-    else
-        newType = context.helperRepository().typeMapperService().map(alterColumnType->newType());
-
-    QString alterQuery = QString("ALTER TABLE %1 ALTER COLUMN %2 SET DATA TYPE %3")
-            .arg(context.helperRepository().quoteService().quoteTableName(alterColumnType->tableName())
-                 , context.helperRepository().quoteService().quoteColumnName(alterColumnType->columnName())
-                 , newType);
-
-    success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
+    bool success = execute(*alterColumnType, context);
 
     if (success && context.isUndoUsed()) {
-        Commands::CommandPtr undoCommand(new Commands::AlterColumnType(alterColumnType->columnName()
-                                                                       , alterColumnType->tableName()
-                                                                       , originalColumn.sqlTypeString()
-                                                                       , newType));
-        context.setUndoCommand(undoCommand);
+        Commands::CommandPtr undoCommand(new Commands::AlterColumnType(alterColumnType->columnName(),
+                                                                       alterColumnType->tableName(),
+                                                                       originalTable.fetchColumnByName(alterColumnType->columnName(), success).type(), alterColumnType->newType()));
+        if( success )
+            context.setUndoCommand(undoCommand);
+
+        return true;
     }
 
     return success;
 }
 
-bool BaseSqlAlterColumnTypeService::isValid(const Commands::ConstCommandPtr &command
-                                             , const CommandExecution::CommandExecutionContext &context) const
+bool BaseSqlAlterColumnTypeService::isValid(const Commands::ConstCommandPtr &command,
+                                            const CommandExecution::CommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::AlterColumnType> alterColumnType(command.staticCast<const Commands::AlterColumnType>());
 
-    //check if table exists
-    if (!context.database().tables().contains(alterColumnType->tableName())) {
-        ::qWarning() << "table doesn't exist!";
+    Structure::Table table(context.helperRepository().sqlStructureService().getTableDefinition(alterColumnType->tableName(), context.database()));
+    if (!table.isValid()) {
+        ::qWarning() << "table doesn't exist!" << alterColumnType->tableName();
+        return false;
+    }
+    if (!table.hasColumn(alterColumnType->columnName())) {
+        ::qWarning() << "column doesn't exist!" << alterColumnType->tableName() << alterColumnType->columnName();
         return false;
     }
     return true;

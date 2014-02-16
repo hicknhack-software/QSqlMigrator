@@ -30,18 +30,25 @@
 
 #include "Helper/TypeMapperService.h"
 
-#include "Structure/SqlType.h"
+#include "Structure/Type.h"
 
 #include <QString>
 
 namespace Helper {
 
+/*!
+ * \brief standard sql type mapping implementation
+ */
 class QSQLMIGRATOR_DLL_EXPORT BaseSqlTypeMapperService : public TypeMapperService
 {
 public:
     BaseSqlTypeMapperService();
+    ~BaseSqlTypeMapperService() QSQL_OVERRIDE_D {}
 
-    QString map(const SqlType &type) const Q_DECL_OVERRIDE;
+    QString map(const Structure::Type &type) const Q_DECL_OVERRIDE;
+
+protected:
+    QHash<Structure::Type::Base, QString> m_typeMap;
 };
 
 } // namespace Helper

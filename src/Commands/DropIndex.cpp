@@ -33,30 +33,20 @@ namespace Commands {
 
 DropIndex::DropIndex(const QString &name)
     : BaseCommand(DropIndex::typeName())
-    , m_hasIndex(false)
-    , m_index(Structure::Index("", ""))
-    , m_name(name)
+    , m_index(Structure::Index(name, Structure::Index::ColumnList()))
 {
-    if(name.isEmpty()) {
+    if (name.isEmpty()) {
         ::qWarning() << LOG_PREFIX << DropIndex::typeName() << "command with empty name!";
     }
 }
 
 DropIndex::DropIndex(const Structure::Index &index)
     : BaseCommand(DropIndex::typeName())
-    , m_hasIndex(true)
     , m_index(index)
 {
-}
-
-bool DropIndex::hasIndex() const
-{
-    return m_hasIndex;
-}
-
-const Structure::Index &DropIndex::index() const
-{
-    return m_index;
+    if (!m_index.isValid()) {
+        ::qWarning() << LOG_PREFIX << DropIndex::typeName() << "command with invalid index!";
+    }
 }
 
 const QString &DropIndex::typeName()
@@ -67,18 +57,9 @@ const QString &DropIndex::typeName()
 
 CommandPtr DropIndex::reverse() const
 {
-    if (!hasIndex())
+    if (!m_index.isValid())
         return CommandPtr();
     return CommandPtr(new CreateIndex(index()));
-}
-
-const QString &DropIndex::name() const
-{
-    if (this->hasIndex()) {
-        return m_index.name();
-    } else {
-        return m_name;
-    }
 }
 
 } // namespace Commands

@@ -32,10 +32,10 @@ M20132201_175827_CreateAddresses::M20132201_175827_CreateAddresses()
     using namespace Structure;
     using namespace Commands;
 
-    Table table("addresses");
-    table << Column( "city", "varchar(50)" )
-          << Column( "zip_code", "varchar(50)" )
-          << Column( "country", "varchar(50)" );
+    Table::Builder table("addresses");
+    table << Column( "city", Type(Type::VarChar, 50) )
+          << Column( "zip_code", Type(Type::VarChar, 50) )
+          << Column( "country", Type(Type::VarChar, 50) );
 
     this->add(new CreateTable(table));
 }

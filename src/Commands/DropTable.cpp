@@ -33,8 +33,7 @@ namespace Commands {
 
 DropTable::DropTable(const QString &name)
     : BaseCommand(DropTable::typeName())
-    , m_table(Structure::Table(name))
-    , m_hasTable(false)
+    , m_table(Structure::Table(name, Structure::ColumnList()))
 {
     if(name.isEmpty()) {
         ::qWarning() << LOG_PREFIX << DropTable::typeName() << "command with empty name!";
@@ -44,13 +43,10 @@ DropTable::DropTable(const QString &name)
 DropTable::DropTable(const Structure::Table &table)
     : BaseCommand(DropTable::typeName())
     , m_table(table)
-    , m_hasTable(true)
 {
-}
-
-const QString &DropTable::tableName() const
-{
-    return m_table.name();
+    if (!m_table.isValid()) {
+        ::qWarning() << LOG_PREFIX << DropTable::typeName() << "command with invalid table!";
+    }
 }
 
 const QString &DropTable::typeName()
@@ -61,19 +57,9 @@ const QString &DropTable::typeName()
 
 CommandPtr DropTable::reverse() const
 {
-    if (!hasTable())
+    if (!m_table.isValid())
         return CommandPtr();
     return CommandPtr(new CreateTable(table()));
-}
-
-bool DropTable::hasTable() const
-{
-    return m_hasTable;
-}
-
-const Structure::Table &DropTable::table() const
-{
-    return m_table;
 }
 
 } // namespace Commands

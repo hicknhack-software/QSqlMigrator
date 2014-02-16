@@ -23,7 +23,9 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "MigrationTableService.h"
+#include "BaseMigrationTableService.h"
+
+#include "Helper/QuoteService.h"
 
 #include "MigrationExecution/MigrationExecutionContext.h"
 
@@ -33,22 +35,23 @@
 
 namespace MigrationTracker {
 
-bool MigrationTableService::canRevertStrucuturalChangesUsingTransactions() const
+bool BaseMigrationTableService::canRevertStrucuturalChangesUsingTransactions() const
 {
     return false;
 }
 
-bool MigrationTableService::wasMigrationExecuted(const QString &migrationName
+bool BaseMigrationTableService::wasMigrationExecuted(const QString &migrationName
                                                       , const CommandExecution::CommandExecutionContext &context) const
 {
     return this->migrationList(context).contains(migrationName);
 }
 
-QStringList MigrationTableService::migrationList(const CommandExecution::CommandExecutionContext &context) const
+QStringList BaseMigrationTableService::migrationList(const CommandExecution::CommandExecutionContext &context) const
 {
-    QString versionTableName = context.migrationConfig().migrationVersionTableName;
-    QSqlQuery sqlQuery = context.database().exec(QString("SELECT version FROM %1")
-                                                 .arg(context.helperRepository().quoteService().quoteTableName(versionTableName)));
+    const QString versionTableName = context.migrationConfig().migrationVersionTableName;
+    QSqlQuery sqlQuery = context.database().exec(
+                QString("SELECT version FROM %1")
+                .arg(context.helperRepository().quoteService().quoteTableName(versionTableName)));
 
     QStringList migrationList;
     if (sqlQuery.lastError().isValid()) {
@@ -61,13 +64,15 @@ QStringList MigrationTableService::migrationList(const CommandExecution::Command
     return migrationList;
 }
 
-bool MigrationTableService::addMigration(const QString &migrationName
+bool BaseMigrationTableService::addMigration(const QString &migrationName
                                               , const CommandExecution::CommandExecutionContext &context) const
 {
-    QString versionTableName = context.migrationConfig().migrationVersionTableName;
-    QString query = QString("INSERT INTO %1 (version) VALUES (%2)")
-            .arg(context.helperRepository().quoteService().quoteTableName(versionTableName)
-                 , context.helperRepository().quoteService().quoteString(migrationName));
+    const QString versionTableName = context.migrationConfig().migrationVersionTableName;
+    const QString query =
+            QString("INSERT INTO %1 (version) VALUES (%2)")
+            .arg(context.helperRepository().quoteService().quoteTableName(versionTableName))
+            .arg(context.helperRepository().quoteService().quoteString(migrationName));
+
     ::qDebug() << "adding entry to version table. complete query looks like:";
     ::qDebug() << query;
     QSqlQuery sqlQuery = context.database().exec(query);
@@ -78,13 +83,14 @@ bool MigrationTableService::addMigration(const QString &migrationName
     return true;
 }
 
-bool MigrationTableService::removeMigration(const QString &migrationName
+bool BaseMigrationTableService::removeMigration(const QString &migrationName
                                                  , const CommandExecution::CommandExecutionContext &context) const
 {
-    QString versionTableName = context.migrationConfig().migrationVersionTableName;
-    QString query = QString("DELETE FROM %1 WHERE version = %2")
-            .arg(context.helperRepository().quoteService().quoteTableName(versionTableName)
-                 , context.helperRepository().quoteService().quoteString(migrationName));
+    const QString versionTableName = context.migrationConfig().migrationVersionTableName;
+    const QString query =
+            QString("DELETE FROM %1 WHERE version = %2")
+            .arg(context.helperRepository().quoteService().quoteTableName(versionTableName))
+            .arg(context.helperRepository().quoteService().quoteString(migrationName));
     ::qDebug() << "removing entry to version table. complete query looks like:";
     ::qDebug() << query;
     QSqlQuery sqlQuery = context.database().exec(query);
@@ -95,12 +101,13 @@ bool MigrationTableService::removeMigration(const QString &migrationName
     return true;
 }
 
-bool MigrationTableService::ensureVersionTable(const MigrationExecution::MigrationExecutionContext &context) const
+bool BaseMigrationTableService::prepare(const MigrationExecution::MigrationExecutionContext &context) const
 {
     QStringList tables = context.database().tables(QSql::AllTables);
     QString versionTableName = context.migrationConfig().migrationVersionTableName;
     if(!tables.contains(versionTableName)) {
-        QString query = QString("CREATE TABLE %1 (version varchar(255) NOT NULL, PRIMARY KEY (version))")
+        const QString query =
+                QString("CREATE TABLE %1 (version varchar(255) NOT NULL, PRIMARY KEY (version))")
                 .arg(context.helperRepository().quoteService().quoteTableName(versionTableName));
         ::qDebug() << "creating migrationVersion table! query looks like:";
         ::qDebug() << query;

@@ -25,6 +25,9 @@
 ****************************************************************************/
 #include "BaseSqlMigrator/CommandExecution/BaseSqlCreateTableService.h"
 
+#include "Helper/ColumnService.h"
+#include "Helper/QuoteService.h"
+
 #include "Commands/CreateTable.h"
 #include "Commands/DropTable.h"
 
@@ -42,17 +45,25 @@ const QString &BaseSqlCreateTableService::commandType() const
     return Commands::CreateTable::typeName();
 }
 
+bool BaseSqlCreateTableService::execute(const Commands::CreateTable &createTable, const CommandExecutionContext &context)
+{
+    const QString columnDefinition = context.helperRepository().columnService().generateColumnsDefinitionSql(createTable.table().columns());
+    const QString createQuery =
+            QString("CREATE TABLE %1 (%2)")
+            .arg(context.helperRepository().quoteService().quoteTableName(createTable.table().name()))
+            .arg(columnDefinition);
+
+    return CommandExecution::BaseCommandExecutionService::executeQuery(createQuery, context);
+}
+
 bool BaseSqlCreateTableService::execute(const Commands::ConstCommandPtr &command
                                    , CommandExecution::CommandExecutionContext &context
                                    ) const
 {
     QSharedPointer<const Commands::CreateTable> createTable(command.staticCast<const Commands::CreateTable>());
+    Q_ASSERT(createTable);
 
-    QString columnDefinition = context.helperRepository().columnService().generateColumnsDefinitionSql(createTable->table().columns());
-    QString createQuery = QString("CREATE TABLE %1 (%2)")
-            .arg(context.helperRepository().quoteService().quoteTableName(createTable->table().name()), columnDefinition);
-
-    bool success = CommandExecution::BaseCommandExecutionService::executeQuery(createQuery, context);
+    bool success = execute(*createTable, context);
 
     if (success && context.isUndoUsed()) {
         context.setUndoCommand(createTable->reverse());

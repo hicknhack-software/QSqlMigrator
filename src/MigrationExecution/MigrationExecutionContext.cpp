@@ -24,73 +24,38 @@
 **
 ****************************************************************************/
 #include "MigrationExecutionContext.h"
-#include "Migrations/Migration.h"
-#include "MigrationTracker/BaseMigrationTrackerService.h"
-#include "CommandExecution/CommandExecutionServiceRepository.h"
 
-#include <QSqlDatabase>
+#include "Migrations/Migration.h"
+#include "MigrationTracker/MigrationTrackerService.h"
 
 namespace MigrationExecution {
 
-MigrationExecutionContext::MigrationExecutionContext(const NameMigrationMap &migrations, const MigrationExecutionConfig &migrationConfig)
+
+MigrationExecutionContextPtr MigrationExecutionContext::Builder::build(const CommandServiceRepositoryPtr &commandServiceRepository,
+                                                                       const Helper::HelperRepository &helperRepository,
+                                                                       const MigrationTableServicePtr &migrationTableService) const
+{
+    return MigrationExecutionContextPtr(new MigrationExecutionContext(m_migrations,
+                                                                      m_migrationConfig,
+                                                                      m_database,
+                                                                      commandServiceRepository,
+                                                                      helperRepository,
+                                                                      migrationTableService));
+}
+
+MigrationExecutionContext::MigrationExecutionContext(const MigrationExecutionContext::NameMigrationMap &migrations,
+                                                     const MigrationExecutionConfig &migrationConfig,
+                                                     const QSqlDatabase &database,
+                                                     const CommandServiceRepositoryPtr &commandServiceRepository,
+                                                     const Helper::HelperRepository &helperRepository,
+                                                     const MigrationTableServicePtr &migrationTableService)
     : m_migrations(migrations)
     , m_migrationConfig(migrationConfig)
+    , m_database(database)
+    , m_commandServiceRepository(commandServiceRepository)
+    , m_helperRepository(helperRepository)
+    , m_migrationTableService(migrationTableService)
 {
-}
-
-MigrationExecutionContext::MigrationExecutionContext(const MigrationExecutionContext::NameMigrationMap &migrations)
-    : m_migrations(migrations)
-{
-}
-
-QSqlDatabase MigrationExecutionContext::database() const
-{
-    return m_database;
-}
-
-const MigrationExecutionConfig &MigrationExecutionContext::migrationConfig() const
-{
-    return m_migrationConfig;
-}
-
-const MigrationExecutionContext::NameMigrationMap &MigrationExecutionContext::migrationMap() const
-{
-    return m_migrations;
-}
-
-CommandServiceRepositoryPtr MigrationExecutionContext::commandServiceRepository() const
-{
-    return m_commandServiceRepository;
-}
-
-const Helper::HelperRepository &MigrationExecutionContext::helperRepository() const
-{
-    return m_helperRepository;
-}
-
-MigrationTableServicePtr MigrationExecutionContext::baseMigrationTableService() const
-{
-    return m_migrationTableService;
-}
-
-void MigrationExecutionContext::setDatabase(QSqlDatabase database)
-{
-    m_database = database;
-}
-
-void MigrationExecutionContext::setCommandServiceRepository(CommandServiceRepositoryPtr commandServiceRepository)
-{
-    m_commandServiceRepository = commandServiceRepository;
-}
-
-void MigrationExecutionContext::setHelperRepository(const Helper::HelperRepository &helperRepository)
-{
-    m_helperRepository = helperRepository;
-}
-
-void MigrationExecutionContext::setBaseMigrationTableService(MigrationTableServicePtr baseMigrationTableService)
-{
-    m_migrationTableService = baseMigrationTableService;
 }
 
 } // namespace MigrationExecution

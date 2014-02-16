@@ -31,7 +31,7 @@
 #include "CommandExecution/CommandExecutionContext.h"
 #include "CommandExecution/CommandExecutionServiceRepository.h"
 #include "Migrations/Migration.h"
-#include "MigrationTracker/BaseMigrationTrackerService.h"
+#include "MigrationTracker/MigrationTrackerService.h"
 #include "QSqlMigrator/QSqlMigratorConfig.h"
 
 #include <QDebug>

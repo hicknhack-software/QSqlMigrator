@@ -3,23 +3,22 @@
 
 #include "config.h"
 
-#include <Structure/SqlType.h>
+#include "Structure/Type.h"
 
 #include <QString>
 #include <QHash>
 
 namespace Helper {
 
+/*!
+ * \brief interface for a mapping basic types to proper sql types
+ */
 class QSQLMIGRATOR_DLL_EXPORT TypeMapperService
 {
-protected:
-    QHash<QVariant::Type, QString> typeMap;
-
 public:
-    TypeMapperService();
-    virtual ~TypeMapperService();
+    virtual ~TypeMapperService() {}
 
-    virtual QString map(const SqlType& type) const = 0;
+    virtual QString map(const Structure::Type& type) const = 0;
 };
 
 } // namespace Helper

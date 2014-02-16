@@ -26,10 +26,9 @@
 #ifndef SQLITEMIGRATOR_H
 #define SQLITEMIGRATOR_H
 
-#include "CommandExecution/CommandExecutionServiceRepository.h"
-#include <Qt>
-#include <QSqlDatabase>
+#include "MigrationExecution/MigrationExecutionContext.h"
 
+#include <Qt>
 
 #ifndef SQLITEMIGRATOR_DLL_EXPORT
 #   ifdef Q_OS_WIN
@@ -43,29 +42,26 @@
 #   endif // Q_OS_WIN
 #endif // SQLITEMIGRATOR_DLL_EXPORT
 
-
-namespace MigrationExecution {
-class MigrationExecutionContext;
-}
-
 namespace SqliteMigrator {
 
 /*!
- * \brief   Use this function to setup your excution context for sqlite migrations.
+ * \brief Use this function to setup your execution context for sqlite migrations.
  *
  * Example:
  *
- * context c;
+ * MigrationExecutionContext::Builder builder(...);
  *
  * QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
  * db.setDatabaseName("sample_db.sqlite3");
+ * builder.setDatabase(db);
  *
- * if(SqliteMigrator::buildContext(c, db)) {
+ * MigrationExecutionContextPtr context( SqliteMigrator::buildContext(builder) );
+ * if (context) {
  *      // do something
  * }
  *
  */
-bool SQLITEMIGRATOR_DLL_EXPORT buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDatabase database);
+MigrationExecution::MigrationExecutionContextPtr SQLITEMIGRATOR_DLL_EXPORT buildContext(MigrationExecution::MigrationExecutionContext::Builder &contextBuilder);
 
 } // namespace SqliteMigrator
 

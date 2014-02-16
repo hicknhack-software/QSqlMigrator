@@ -48,7 +48,7 @@ bool LocalSchemeDropTableService::execute(const Commands::ConstCommandPtr &comma
 {
     QSharedPointer<const Commands::DropTable> dropTable(command.staticCast<const Commands::DropTable>());
 
-    context.localScheme()->tables().remove(dropTable->tableName());
+    context.localScheme()->dropTable(dropTable->tableName());
 
     return true;
 }

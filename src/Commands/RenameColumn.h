@@ -28,24 +28,47 @@
 
 #include "Commands/BaseCommand.h"
 
+#include <QString>
+
 namespace Commands {
 
+/*!
+ * \brief value object representing the command to rename a column of a table
+ */
 class QSQLMIGRATOR_DLL_EXPORT RenameColumn : public BaseCommand
 {
 public:
     explicit RenameColumn(const QString &name, const QString &newName, const QString &tableName);
+    ~RenameColumn() QSQL_OVERRIDE_D {}
+
+    static const QString &typeName();
 
     const QString &name() const;
     const QString &newName() const;
     const QString &tableName() const;
-    static const QString &typeName();
-    CommandPtr reverse() const;
+
+    CommandPtr reverse() const Q_DECL_OVERRIDE;
 
 private:
     const QString m_name;
     const QString m_newName;
     const QString m_tableName;
 };
+
+inline const QString &RenameColumn::name() const
+{
+    return m_name;
+}
+
+inline const QString &RenameColumn::newName() const
+{
+    return m_newName;
+}
+
+inline const QString &RenameColumn::tableName() const
+{
+    return m_tableName;
+}
 
 } // namespace Commands
 

@@ -32,10 +32,10 @@ M20132201_180943_CreateCars::M20132201_180943_CreateCars()
     using namespace Structure;
     using namespace Commands;
 
-    Table table("cars");
-    table << Column( "name", "varchar(50)" );
-    table << Column( "manufacturer", "varchar(50)" );
-    table << Column( "horse_power", "int" );
+    Table::Builder table("cars");
+    table << Column( "name", Type(Type::VarChar, 50) );
+    table << Column( "manufacturer", Type(Type::VarChar, 50) );
+    table << Column( "horse_power", Type::Integer );
 
     this->add(new CreateTable(table));
 

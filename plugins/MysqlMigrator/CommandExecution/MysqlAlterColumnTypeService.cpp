@@ -25,6 +25,12 @@
 ****************************************************************************/
 #include "MysqlAlterColumnTypeService.h"
 
+#include "Helper/QuoteService.h"
+#include "Helper/ColumnService.h"
+#include "Helper/SqlStructureService.h"
+
+#include "MigrationTracker/MigrationTrackerService.h"
+
 #include "Commands/AlterColumnType.h"
 
 #include "Structure/Table.h"
@@ -38,45 +44,41 @@ MysqlAlterColumnTypeService::MysqlAlterColumnTypeService()
 {
 }
 
+bool MysqlAlterColumnTypeService::execute(const Commands::AlterColumnType &alterColumnType, const Structure::Column &originalColumn, const CommandExecutionContext &context)
+{
+    Structure::Column modifiedColumn(originalColumn.name(), alterColumnType.newType(), originalColumn.defaultValue(), originalColumn.attributes());
+
+    const QString alterQuery =
+            QString("ALTER TABLE %1 MODIFY COLUMN %2")
+            .arg(context.helperRepository().quoteService().quoteTableName(alterColumnType.tableName()))
+            .arg(context.helperRepository().columnService().generateColumnDefinitionSql(modifiedColumn));
+
+    return CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
+}
+
 bool MysqlAlterColumnTypeService::execute(const Commands::ConstCommandPtr &command
                                        , CommandExecution::CommandExecutionContext &context
                                        ) const
 {
     QSharedPointer<const Commands::AlterColumnType> alterColumnType(command.staticCast<const Commands::AlterColumnType>());
+    Q_ASSERT( alterColumnType );
 
-    Structure::Column originalColumn;
+    const Structure::Table originalTable(context.helperRepository().sqlStructureService()
+                                         .getTableDefinition(alterColumnType->tableName(), context.database()));
     bool success;
-    originalColumn = context.helperRepository()
-            .dbReaderService().getTableDefinition(alterColumnType->tableName(), context.database())
-            .fetchColumnByName(alterColumnType->columnName(), success);
-
-    if (!success)
-        return success; // failed, column doesn't exist
-
-    QString newType;
-    if (alterColumnType->hasSqlTypeString())
-        newType = alterColumnType->newTypeString();
-    else
-        newType = context.helperRepository().typeMapperService().map(alterColumnType->newType());
-
-    Structure::Column modifiedColumn(originalColumn.name(), newType, originalColumn.defaultValue(), originalColumn.attributes());
-
-    QString columnDefinition = context.helperRepository().columnService().generateColumnDefinitionSql(modifiedColumn);
-
-    QString alterQuery = QString("ALTER TABLE %1 MODIFY COLUMN %2")
-            .arg(context.helperRepository().quoteService().quoteTableName(alterColumnType->tableName())
-                 , columnDefinition);
-
-    success = CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
-
-    if (success && context.isUndoUsed()) {
-        Commands::CommandPtr undoCommand(new Commands::AlterColumnType(alterColumnType->columnName()
-                                                                       , alterColumnType->tableName()
-                                                                       , originalColumn.sqlTypeString()
-                                                                       , newType));
-        context.setUndoCommand(undoCommand);
+    const Structure::Column originalColumn( originalTable.fetchColumnByName( alterColumnType->columnName(), success ) );
+    if (!success) {
+        ::qWarning() << "could not find column" << alterColumnType->tableName() << alterColumnType->columnName();
+        return false;
     }
 
+    success = execute(*alterColumnType, originalColumn, context);
+
+    if (success && context.isUndoUsed()) {
+        Commands::CommandPtr undoCommand(new Commands::AlterColumnType(alterColumnType->columnName(), alterColumnType->tableName(),
+                                                                       originalColumn.type(), alterColumnType->newType()));
+        context.setUndoCommand(undoCommand);
+    }
     return success;
 }
 

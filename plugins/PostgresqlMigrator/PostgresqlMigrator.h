@@ -26,10 +26,9 @@
 #ifndef POSTGRESQLMIGRATOR_H
 #define POSTGRESQLMIGRATOR_H
 
-#include "CommandExecution/CommandExecutionServiceRepository.h"
+#include "MigrationExecution/MigrationExecutionContext.h"
 
-#include <QSqlDatabase>
-
+#include <Qt>
 
 #ifndef POSTGRESQLMIGRATOR_DLL_EXPORT
 #   ifdef Q_OS_WIN
@@ -43,14 +42,14 @@
 #   endif // Q_OS_WIN
 #endif // QX_DLL_EXPORT_HELPER
 
-
-namespace MigrationExecution {
-class MigrationExecutionContext;
-}
-
 namespace PostgresqlMigrator {
 
-bool POSTGRESQLMIGRATOR_DLL_EXPORT buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDatabase database);
+/*!
+ * \brief Use this function to build your execution context for Postgresql migrations.
+ *
+ * See Sqlite for an usage example
+ */
+MigrationExecution::MigrationExecutionContextPtr POSTGRESQLMIGRATOR_DLL_EXPORT buildContext(MigrationExecution::MigrationExecutionContext::Builder &contextBuilder);
 
 } // namespace PostgresqlMigrator
 

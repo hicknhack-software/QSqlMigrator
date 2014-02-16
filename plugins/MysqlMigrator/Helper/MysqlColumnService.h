@@ -38,13 +38,15 @@
 
 namespace Helper {
 
+class MysqlTypeMapperService;
+
 class MYSQLMIGRATOR_DLL_EXPORT MysqlColumnService : public BaseSqlColumnService
 {
 public:
-    MysqlColumnService();
-    virtual ~MysqlColumnService() {};
+    MysqlColumnService(const MysqlTypeMapperService& mysqlTypeMapperService);
+    ~MysqlColumnService() QSQL_OVERRIDE_D {}
 
-    QString generateColumnDefinitionSql(const Structure::Column &column) const Q_DECL_OVERRIDE;
+    QStringList buildColumnOptionsSql(const Structure::Column &column) const Q_DECL_OVERRIDE;
 };
 
 } // namespace Helper

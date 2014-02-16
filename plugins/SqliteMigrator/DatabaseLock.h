@@ -27,6 +27,7 @@
 #define DATABASELOCK_H
 
 #include "CommandExecution/CommandExecutionServiceRepository.h"
+#include "MigrationTracker/MigrationTrackerService.h"
 
 #include <QObject>
 #include "SqliteMigrator.h"

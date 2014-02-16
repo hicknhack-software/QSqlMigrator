@@ -30,14 +30,21 @@
 
 #include "BaseSqlMigrator/CommandExecution/BaseSqlAlterColumnTypeService.h"
 
+namespace Structure {
+class Column;
+} // namespace Structure
+
 namespace CommandExecution {
 
 class MYSQLMIGRATOR_DLL_EXPORT MysqlAlterColumnTypeService : public BaseSqlAlterColumnTypeService
 {
 public:
     MysqlAlterColumnTypeService();
+    ~MysqlAlterColumnTypeService() QSQL_OVERRIDE_D {}
 
-    bool execute(const Commands::ConstCommandPtr &command, CommandExecution::CommandExecutionContext &context) const;
+    static bool execute(const Commands::AlterColumnType &alterColumnType, const Structure::Column &originalColumn, const CommandExecution::CommandExecutionContext &context);
+
+    bool execute(const Commands::ConstCommandPtr &command, CommandExecution::CommandExecutionContext &context) const Q_DECL_OVERRIDE;
 };
 
 } // namespace CommandExecution

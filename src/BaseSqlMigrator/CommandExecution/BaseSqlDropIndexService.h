@@ -28,6 +28,10 @@
 
 #include "CommandExecution/BaseCommandExecutionService.h"
 
+namespace Commands {
+class DropIndex;
+} // namespace Commands
+
 namespace CommandExecution {
 
 class QSQLMIGRATOR_DLL_EXPORT BaseSqlDropIndexService : public BaseCommandExecutionService
@@ -36,6 +40,8 @@ public:
     BaseSqlDropIndexService();
 
     const QString &commandType() const;
+
+    static bool execute(const Commands::DropIndex& dropIndex, const CommandExecution::CommandExecutionContext &context);
 
     bool execute(const Commands::ConstCommandPtr &command, CommandExecution::CommandExecutionContext &context) const;
     bool isValid(const Commands::ConstCommandPtr &command, const CommandExecution::CommandExecutionContext &context) const;

@@ -38,17 +38,17 @@ else:unix:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$LIB_PATH/libQSqlMigr
 
 SOURCES += \
          PostgresqlMigrator.cpp \
-         Helper\PostgresqlQuoteService.cpp \
-         Helper\PostgresqlDbReaderService.cpp \
-         Helper\PostgresqlColumnService.cpp \
-         Helper\PostgresqlTypeMapperService.cpp
+         Helper/PostgresqlQuoteService.cpp \
+         Helper/PostgresqlStructureService.cpp \
+         Helper/PostgresqlColumnService.cpp \
+         Helper/PostgresqlTypeMapperService.cpp
 
 HEADERS += \
          PostgresqlMigrator.h \
-         Helper\PostgresqlQuoteService.h \
-         Helper\PostgresqlDbReaderService.h \
-         Helper\PostgresqlColumnService.h \
-         Helper\PostgresqlTypeMapperService.h
+         Helper/PostgresqlQuoteService.h \
+         Helper/PostgresqlStructureService.h \
+         Helper/PostgresqlColumnService.h \
+         Helper/PostgresqlTypeMapperService.h
 
 unix:!symbian {
 	 maemo5 {

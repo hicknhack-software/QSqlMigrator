@@ -38,12 +38,12 @@
 #include "Helper/HelperRepository.h"
 
 #include "PostgresqlMigrator/Helper/PostgresqlQuoteService.h"
-#include "PostgresqlMigrator/Helper/PostgresqlDbReaderService.h"
+#include "PostgresqlMigrator/Helper/PostgresqlStructureService.h"
 #include "PostgresqlMigrator/Helper/PostgresqlColumnService.h"
 #include "PostgresqlMigrator/Helper/PostgresqlTypeMapperService.h"
 
 #include "CommandExecution/CustomCommandService.h"
-#include "BaseSqlMigrator/MigrationTracker/MigrationTableService.h"
+#include "BaseSqlMigrator/MigrationTracker/BaseMigrationTableService.h"
 #include "MigrationExecution/MigrationExecutionContext.h"
 
 #include <QSqlDatabase>
@@ -52,7 +52,7 @@
 
 namespace PostgresqlMigrator {
 
-QSharedPointer<CommandExecution::CommandExecutionServiceRepository> createCommandServiceRepository()
+QSharedPointer<CommandExecution::CommandExecutionServiceRepository> createCommandRepository()
 {
     using namespace CommandExecution;
 
@@ -71,39 +71,36 @@ QSharedPointer<CommandExecution::CommandExecutionServiceRepository> createComman
     return commandRepository;
 }
 
-void createHelperRepository(Helper::HelperRepository &helperRepository)
+Helper::HelperRepository &createHelperRepository()
 {
     ::qDebug() << "creating PostgreSQL helper aggregate";
 
     using namespace Helper;
-
-    helperRepository.setColumnService(new PostgresqlColumnService);
-    helperRepository.setDbReaderService(new PostgresqlDbReaderService);
-    helperRepository.setQuoteService(new PostgresqlQuoteService);
-    helperRepository.setTypeMapperService(new PostgresqlTypeMapperService);
+    static PostgresqlQuoteService quoteService;
+    static PostgresqlTypeMapperService typeMapperService;
+    static PostgresqlColumnService columnService(typeMapperService);
+    static PostgresqlStructureService structureService;
+    static HelperRepository repository(quoteService, typeMapperService, columnService, structureService);
+    return repository;
 }
 
-bool buildContext(MigrationExecution::MigrationExecutionContext &context, QSqlDatabase database)
+MigrationExecution::MigrationExecutionContextPtr buildContext(MigrationExecution::MigrationExecutionContext::Builder &contextBuilder)
 {
     using namespace MigrationExecution;
 
-    CommandServiceRepositoryPtr commandRepository = createCommandServiceRepository();
-    Helper::HelperRepository helperRepository;
-    createHelperRepository(helperRepository);
+    MigrationTableServicePtr migrationTableService(new MigrationTracker::BaseMigrationTableService);
 
-    MigrationTableServicePtr migrationTableService =
-            MigrationTableServicePtr(new MigrationTracker::MigrationTableService);
+    MigrationExecution::MigrationExecutionContextPtr context( contextBuilder.build(createCommandRepository(), createHelperRepository(), migrationTableService) );
 
-    context.setCommandServiceRepository(commandRepository);
-    context.setHelperRepository(helperRepository);
-    context.setBaseMigrationTableService(migrationTableService);
-    context.setDatabase(database);
-
+    QSqlDatabase database(context->database());
     bool success = false;
-    if( context.database().open() ) {
-        success = migrationTableService->ensureVersionTable(context);
+    if (database.open()) {
+        success = migrationTableService->prepare(*context);
     }
-    return success;
+    if (!success )
+        context.clear();
+
+    return context;
 }
 
 } // namespace PostgresqlMigrator

@@ -13,19 +13,18 @@ namespace LocalSchemeMigrator {
 class QSQLMIGRATOR_DLL_EXPORT LocalSchemeComparisonContext
 {
 public:
-    LocalSchemeComparisonContext();
+    LocalSchemeComparisonContext(const LocalSchemePtr &localScheme,
+                                 const Helper::HelperRepository &helperRepository,
+                                 const QSqlDatabase &database);
 
-    void setLocalScheme(const LocalSchemePtr &localScheme);
-    void setHelperRepository(const Helper::HelperRepository &helperRepository);
-    void setDatabase(const QSqlDatabase &database);
     const LocalSchemePtr &localScheme() const;
     const Helper::HelperRepository &helperRepository() const;
     const QSqlDatabase &database() const;
 
 private:
-    LocalSchemePtr m_localScheme;
-    Helper::HelperRepository m_helperRepository;
-    QSqlDatabase m_database;
+    const LocalSchemePtr m_localScheme;
+    const Helper::HelperRepository m_helperRepository;
+    const QSqlDatabase m_database;
 };
 
 }

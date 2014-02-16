@@ -48,7 +48,7 @@ bool LocalSchemeCreateTableService::execute(const Commands::ConstCommandPtr &com
 {
     QSharedPointer<const Commands::CreateTable> createTable(command.staticCast<const Commands::CreateTable>());
 
-    context.localScheme()->tables().insert(createTable->table().name(), createTable->table());
+    context.localScheme()->createTable(createTable->table());
 
     return true;
 }

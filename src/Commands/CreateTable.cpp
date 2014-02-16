@@ -24,8 +24,9 @@
 **
 ****************************************************************************/
 #include "Commands/CreateTable.h"
-
 #include "Commands/DropTable.h"
+
+#include <QDebug>
 
 namespace Commands {
 
@@ -33,6 +34,9 @@ CreateTable::CreateTable(const Structure::Table &table)
     : BaseCommand(CreateTable::typeName())
     , m_table(table)
 {
+    if (!m_table.isValid()) {
+        ::qWarning() << LOG_PREFIX << CreateTable::typeName() << "command with invalid table!";
+    }
 }
 
 const QString &CreateTable::typeName()
@@ -44,11 +48,6 @@ const QString &CreateTable::typeName()
 CommandPtr CreateTable::reverse() const
 {
     return CommandPtr(new DropTable(table()));
-}
-
-const Structure::Table &CreateTable::table() const
-{
-    return m_table;
 }
 
 } // namespace Commands

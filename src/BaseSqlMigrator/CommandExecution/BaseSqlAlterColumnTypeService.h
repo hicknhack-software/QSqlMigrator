@@ -28,6 +28,10 @@
 
 #include "CommandExecution/BaseCommandExecutionService.h"
 
+namespace Commands {
+class AlterColumnType;
+} // namespace Commands
+
 namespace CommandExecution {
 
 class QSQLMIGRATOR_DLL_EXPORT BaseSqlAlterColumnTypeService : public BaseCommandExecutionService
@@ -37,8 +41,13 @@ public:
 
     const QString &commandType() const;
 
-    bool execute(const Commands::ConstCommandPtr &command, CommandExecution::CommandExecutionContext &context) const;
-    bool isValid(const Commands::ConstCommandPtr &command, const CommandExecution::CommandExecutionContext &context) const;
+    static bool execute(const Commands::AlterColumnType &alterColumnType, const CommandExecution::CommandExecutionContext &context);
+
+    bool execute(const Commands::ConstCommandPtr &command,
+                 CommandExecution::CommandExecutionContext &context) const;
+
+    bool isValid(const Commands::ConstCommandPtr &command,
+                 const CommandExecution::CommandExecutionContext &context) const;
 };
 
 } // namespace CommandExecution

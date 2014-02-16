@@ -30,14 +30,21 @@
 
 #include "BaseSqlMigrator/CommandExecution/BaseSqlRenameColumnService.h"
 
+namespace Structure {
+class Column;
+} // namespace Structure
+
 namespace CommandExecution {
 
 class MYSQLMIGRATOR_DLL_EXPORT MysqlRenameColumnService : public BaseSqlRenameColumnService
 {
 public:
     MysqlRenameColumnService();
+    ~MysqlRenameColumnService() QSQL_OVERRIDE_D {}
 
-    bool execute(const Commands::ConstCommandPtr &command, CommandExecution::CommandExecutionContext &context) const;
+    static bool execute(const Commands::RenameColumn &renameColumn, const Structure::Column &originalColumn, const CommandExecution::CommandExecutionContext &context);
+
+    bool execute(const Commands::ConstCommandPtr &command, CommandExecution::CommandExecutionContext &context) const Q_DECL_OVERRIDE;
 };
 
 } // namespace CommandExecution

@@ -33,15 +33,12 @@ namespace Commands {
 
 DropColumn::DropColumn(const QString &columnName, const QString &tableName)
     : BaseCommand(DropColumn::typeName())
-    , m_column(Structure::Column())
-    , m_columnName(columnName)
-    , m_hasColumn(false)
+    , m_column(Structure::Column(columnName, Structure::Type::invalid()))
     , m_tableName(tableName)
 {
     if(columnName.isEmpty()) {
         ::qWarning() << LOG_PREFIX << DropColumn::typeName() << "command with empty columnName!";
     }
-
     if(tableName.isEmpty()) {
         ::qWarning() << LOG_PREFIX << DropColumn::typeName() << "command" << columnName << "with empty tableName!";
     }
@@ -50,17 +47,14 @@ DropColumn::DropColumn(const QString &columnName, const QString &tableName)
 DropColumn::DropColumn(const Structure::Column &column, const QString &tableName)
     : BaseCommand(DropColumn::typeName())
     , m_column(column)
-    , m_hasColumn(true)
     , m_tableName(tableName)
 {
+    if(! column.isValid()) {
+        ::qWarning() << LOG_PREFIX << DropColumn::typeName() << "command with invalid column!";
+    }
     if(tableName.isEmpty()) {
         ::qWarning() << LOG_PREFIX << DropColumn::typeName() << "command" << column.name() << "with empty tableName!";
     }
-}
-
-const Structure::Column &DropColumn::column() const
-{
-    return m_column;
 }
 
 const QString &DropColumn::typeName()
@@ -71,28 +65,9 @@ const QString &DropColumn::typeName()
 
 CommandPtr DropColumn::reverse() const
 {
-    if (!hasColumn())
+    if (!m_column.isValid())
         return CommandPtr();
     return CommandPtr(new AddColumn(column(), tableName()));
-}
-
-const QString &DropColumn::tableName() const
-{
-    return m_tableName;
-}
-
-const QString &DropColumn::columnName() const
-{
-    if (this->hasColumn()) {
-        return m_column.name();
-    } else {
-        return m_columnName;
-    }
-}
-
-bool DropColumn::hasColumn() const
-{
-    return m_hasColumn;
 }
 
 } // namespace Commands

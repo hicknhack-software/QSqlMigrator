@@ -1,32 +1,45 @@
 
-This test runs only with a valid qt MySQL driver in place.
+This test runs only with a valid Qt MySQL driver in place.
 
-Requirements to build
----------------------
+The psql driver should be prebuilt for qt binary installations (Post Qt 5.x)
+
+You need the "libmysql.dll"/.so in your path  (See Step 7)
+
+
+Requirements to build for Windows
+---------------------------------
 
 A. Download the latest MySQL Connector C noinstall version and extract it to %MYSQL%
 B. Make sure you have the qt sources available/installed in %QTDIR%
-C. Visual Studio 2008 or 2010 (matching your qt version)
+C. Visual Studio >= 2008 (matching your qt version)
 
 Steps to build
 --------------
 
 1. Launch a compile command prompt
 
-2. Execute the qtvars.bat
+2. Setup Qt Path
+2a) Execute the qtvars.bat (Qt 4.x only)
 %QTDIR%\bin\qtvars.bat
+
+2b) Add Qt bin path and fix QTDIR to src\qtbase (Qt 5.x)
+%QTDIR%\bin\qtenv2.bat
+set %QTDIR%=%QTDIR%\..\Src\qtbase
 
 3. Change directory to the build path
 cd %TEMP%
-mkdir qmysql
-cd qmysql
+mkdir build-qmysql
+cd build-qmysql
 
-3.a) Patch for Visual Studio 2012
-You will get conflict with winsock linkage. 
+X. Patches to fix linkage
+You will get conflict with winsock linkage.
 To prevent that do the following patches:
-* qsql_mysql_p.h - move >>#include "qt_windows.h"<< before qt
-* main.cpp - move >>#include ".../qsql_mysql_p.h" before qt
-* qsql_mysql.cpp - add >>#undef min<< & >>#undef max<< after >>#include "qsql_mysql_p.h"<<
+* %QTDIR%\src\sql\drivers\mysql\qsql_mysql_p.h - move >>#include "qt_windows.h"<< to be first include
+* %QTDIR%\src\sql\drivers\mysql\qsql_mysql.cpp - add >>#undef min<< & >>#undef max<< after >>#include "qsql_mysql_p.h"<<
+* %QTDIR%\src\plugins\sqldrivers\mysql\main.cpp - move >>#include "...qsql_mysql_p.h" to be first include
+
+Y. Add .qmake.conf to the project (Qt 5.x only)
+copy %QTDIR%\.qmake.conf %QTDIR%\src\plugins\sqldrivers\mysql
 
 4. Create the makefiles with qmake
 qmake "INCLUDEPATH+=%MYSQL%/include" "LIBS+=%MYSQL%/lib/libmysql.lib" %QTDIR%\src\plugins\sqldrivers\mysql\mysql.pro
@@ -37,11 +50,11 @@ nmake release
 
 6. Make the created .dlls available
 6a) for the qt installation
-copy debug\*.dll %QTDIR%\plugins\sqldrivers
+copy **\*.dll %QTDIR%\plugins\sqldrivers
 
 6b) for QSqlMigrator only
 mkdir %QSQLMIGRATOR%\bin\sqldrivers
-copy debug\*.dll %QSQLMIGRATOR%\bin\sqldrivers
+copy **\*.dll %QSQLMIGRATOR%\bin\sqldrivers
 
 7. Make the libmysql.dll available
 7a) for the qt installation

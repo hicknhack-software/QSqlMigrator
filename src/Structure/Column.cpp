@@ -29,88 +29,55 @@
 
 namespace Structure {
 
-Column::Column(const QString &name, const QString &sqlTypeString, const QString &defaultValue, Attributes attributes)
+Column::Column(const QString &name, const Type &type, const QString &defaultValue, Attributes attributes)
     : m_name(name)
-    , m_sqlTypeString(sqlTypeString)
+    , m_type(type)
     , m_defaultValue(defaultValue)
     , m_attributes(attributes)
-    , m_hasSqlTypeString(true)
 {
     if(name.isEmpty()) {
         ::qWarning() << LOG_PREFIX << "Column with empty name!";
     }
-
-    if(sqlTypeString.isEmpty()) {
-        ::qWarning() << LOG_PREFIX << "Column" << m_name << "with empty type!";
-    }
 }
 
-Column::Column(const QString &name, const SqlType &sqltype, const QString &defaultValue, Attributes attributes)
+Column::Column(const QString &name, const Type &type, Attributes attributes)
     : m_name(name)
-    , m_sqlType(sqltype)
-    , m_defaultValue(defaultValue)
+    , m_type(type)
     , m_attributes(attributes)
-    , m_hasSqlTypeString(false)
 {
     if(name.isEmpty()) {
         ::qWarning() << LOG_PREFIX << "Column with empty name!";
     }
 }
-
-Column::Column(const QString &name, const QString &sqlTypeString, Attributes attributes)
-    : m_name(name)
-    , m_sqlTypeString(sqlTypeString)
-    , m_defaultValue("")
-    , m_attributes(attributes)
-    , m_hasSqlTypeString(true)
-{
-    if(name.isEmpty()) {
-        ::qWarning() << LOG_PREFIX << "Column with empty name!";
-    }
-
-    if(sqlTypeString.isEmpty()) {
-        ::qWarning() << LOG_PREFIX << "Column" << m_name << "with empty type!";
-    }
-}
-
-Column::Column(const QString &name, const SqlType &sqltype, Attributes attributes)
-    : m_name(name)
-    , m_sqlType(sqltype)
-    , m_defaultValue("")
-    , m_attributes(attributes)
-    , m_hasSqlTypeString(false)
-{
-    if(name.isEmpty()) {
-        ::qWarning() << LOG_PREFIX << "Column with empty name!";
-    }
-}
-
-Column::Column()
-    : m_name("")
-    , m_sqlTypeString("")
-    , m_defaultValue("")
-    , m_attributes(None)
-    , m_hasSqlTypeString(false)
-{}
 
 const QString &Column::name() const
 {
     return m_name;
 }
 
-const QString &Column::sqlTypeString() const
+const Type &Column::type() const
 {
-    return m_sqlTypeString;
+    return m_type;
 }
 
-const SqlType &Column::sqlType() const
+const QString &Column::defaultValue() const
 {
-    return m_sqlType;
+    return m_defaultValue;
 }
 
 const Column::Attributes &Column::attributes() const
 {
     return m_attributes;
+}
+
+bool Column::isValid() const
+{
+    return (!m_name.isEmpty()) && m_type.isValid();
+}
+
+bool Column::hasDefaultValue() const
+{
+    return (!m_defaultValue.isEmpty());
 }
 
 bool Column::isNullable() const
@@ -126,21 +93,6 @@ bool Column::isPrimary() const
 bool Column::isUnique() const
 {
     return m_attributes.testFlag(Unique);
-}
-
-const QString &Column::defaultValue() const
-{
-    return (m_defaultValue);
-}
-
-bool Column::hasDefaultValue() const
-{
-    return (!m_defaultValue.isEmpty());
-}
-
-bool Column::hasSqlTypeString() const
-{
-   return m_hasSqlTypeString;
 }
 
 bool Column::isAutoIncremented() const

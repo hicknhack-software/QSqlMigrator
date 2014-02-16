@@ -33,41 +33,35 @@
 #include "Commands/CreateTable.h"
 #include "Commands/RenameTable.h"
 
+#include <QStringList>
 #include <QDebug>
 #include <QSqlError>
 #include <QSqlQuery>
 
 namespace CommandExecution {
 
-SqliteAlterColumnService::SqliteAlterColumnService()
-{
-}
-
-bool SqliteAlterColumnService::execute(const Structure::Table &origTable
-                                       , const Structure::Table &newTable
-                                       , CommandExecution::CommandExecutionContext &context) const
+bool SqliteAlterColumnService::execute(const Structure::Table &origTable,
+                                       const Structure::Table &newTable,
+                                       CommandExecution::CommandExecutionContext &context)
 {
     QString tempTableName = QString("%1%2").arg(context.migrationConfig().temporaryTablePrefix
                                                 , origTable.name());
 
-    bool success;
-    Commands::CommandPtr renameTable = Commands::CommandPtr(
-                new Commands::RenameTable(origTable.name(), tempTableName));
-    BaseSqlRenameTableService renameTableService;
-    success = renameTableService.execute(renameTable, context);
+    bool success = BaseSqlRenameTableService::execute(Commands::RenameTable(origTable.name(), tempTableName), context);
     if (!success)
         return false;
 
-    Commands::CommandPtr createTable = Commands::CommandPtr(new Commands::CreateTable(newTable));
-    BaseSqlCreateTableService createTableService;
-    success = createTableService.execute(createTable, context);
+    success = BaseSqlCreateTableService::execute(Commands::CreateTable(newTable), context);
     if (!success)
         return false;
 
     //TODO check is "SELECT colX as colY" statement is necessary!
-    QString copyQuery = QString("INSERT INTO %1 SELECT %2 FROM %3").arg(newTable.name()
-                                                                         , origTable.joinedColumnNames()
-                                                                         , tempTableName);
+    const QString copyQuery =
+            QString("INSERT INTO %1 SELECT %2 FROM %3")
+            .arg(newTable.name())
+            .arg(origTable.columnNames().join(","))
+            .arg(tempTableName);
+
     ::qDebug() << "complete query-string looks like:";
     ::qDebug() << copyQuery;
     QSqlQuery query = context.database().exec(copyQuery);
@@ -77,9 +71,7 @@ bool SqliteAlterColumnService::execute(const Structure::Table &origTable
         return false;
     }
 
-    Commands::CommandPtr dropTable = Commands::CommandPtr(new Commands::DropTable(tempTableName));
-    BaseSqlDropTableService dropTableService;
-    success = dropTableService.execute(dropTable, context);
+    success = BaseSqlDropTableService::execute(Commands::DropTable(tempTableName), context);
 
     return success;
 }
