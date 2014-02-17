@@ -46,9 +46,9 @@ public:
     MysqlTest();
 };
 
-MysqlTest::MysqlTest() : BasicTest(MYSQL_DRIVERNAME, MYSQLTEST_DATABASE_NAME
-                            , &MysqlMigrator::buildContext, MYSQL_STRUCTURE_DATABASE
-                            , MYSQL_HOSTNAME, MYSQL_HOSTPORT, MYSQL_USERNAME, MYSQL_PASSWORD)
+MysqlTest::MysqlTest()
+    : BasicTest(MYSQL_DRIVERNAME, MYSQLTEST_DATABASE_NAME, &MysqlMigrator::buildContext, MYSQL_STRUCTURE_DATABASE,
+                MYSQL_HOSTNAME, MYSQL_HOSTPORT, MYSQL_USERNAME, MYSQL_PASSWORD)
 {
 }
 

@@ -45,9 +45,8 @@ const QString &LocalSchemeAlterColumnTypeService::commandType() const
     return Commands::AlterColumnType::typeName();
 }
 
-bool LocalSchemeAlterColumnTypeService::execute(const Commands::ConstCommandPtr &command
-                                       , CommandExecution::LocalSchemeCommandExecutionContext &context
-                                       ) const
+bool LocalSchemeAlterColumnTypeService::execute(const Commands::ConstCommandPtr &command,
+                                                CommandExecution::LocalSchemeCommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::AlterColumnType> alterColumnType(command.staticCast<const Commands::AlterColumnType>());
 
@@ -77,8 +76,8 @@ bool LocalSchemeAlterColumnTypeService::execute(const Commands::ConstCommandPtr 
     return true;
 }
 
-bool LocalSchemeAlterColumnTypeService::isValid(const Commands::ConstCommandPtr &command
-                                             , const CommandExecution::LocalSchemeCommandExecutionContext &context) const
+bool LocalSchemeAlterColumnTypeService::isValid(const Commands::ConstCommandPtr &command,
+                                                const CommandExecution::LocalSchemeCommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::AlterColumnType> alterColumnType(command.staticCast<const Commands::AlterColumnType>());
 

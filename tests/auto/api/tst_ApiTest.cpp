@@ -147,31 +147,39 @@ void ApiTest::testRegistrationMacro()
     QMap<QString, const Migration*> migrationList;
     migrationList = MigrationRepository::migrations();
     ::qDebug() << migrationList.keys();
-    QVERIFY2(migrationList.contains("M20131501_191807_CreateUsers")
-             , "migrationList should contain CreateUsers migration");
-    QVERIFY2(migrationList.contains("M20132201_180943_CreateCars")
-             , "migrationList should contain CreateCars migration");
-    QVERIFY2(migrationList.contains("M20133001_164323_AddUsers")
-             , "migrationList should contain AddUsers migration");
-    QVERIFY2(migrationList.contains("M20132201_175827_CreateAddresses")
-             , "migrationList should contain CreateAddresses migration");
+
+    QVERIFY2(migrationList.contains("M20131501_191807_CreateUsers"),
+             "migrationList should contain CreateUsers migration");
+
+    QVERIFY2(migrationList.contains("M20132201_180943_CreateCars"),
+             "migrationList should contain CreateCars migration");
+
+    QVERIFY2(migrationList.contains("M20133001_164323_AddUsers"),
+             "migrationList should contain AddUsers migration");
+
+    QVERIFY2(migrationList.contains("M20132201_175827_CreateAddresses"),
+             "migrationList should contain CreateAddresses migration");
 }
 
 void ApiTest::testDefinedMigrations()
 {
     QSqlMigrator::QSqlMigratorService manager;
     QStringList migrations = manager.definedMigrations(*m_context);
-    QVERIFY2(migrations.contains("M20131501_191807_CreateUsers")
-             , "migrationList should contain CreateUsers migration");
+
+    QVERIFY2(migrations.contains("M20131501_191807_CreateUsers"),
+             "migrationList should contain CreateUsers migration");
     //test if the list was sorted
-    QVERIFY2(migrations.at(0) == "M20131501_191807_CreateUsers"
-             , "createUsers must be the first due to its timestamp!");
-    QVERIFY2(migrations.at(1) == "M20132201_175827_CreateAddresses"
-             , "createAddresses must be the second due to its timestamp!");
-    QVERIFY2(migrations.at(2) == "M20132201_180943_CreateCars"
-             , "createCars must be the third due to its timestamp!");
-    QVERIFY2(migrations.at(3) == "M20133001_164323_AddUsers"
-             , "addUsers must be the fourth due to its timestamp!");
+    QVERIFY2(migrations.at(0) == "M20131501_191807_CreateUsers",
+             "createUsers must be the first due to its timestamp!");
+
+    QVERIFY2(migrations.at(1) == "M20132201_175827_CreateAddresses",
+             "createAddresses must be the second due to its timestamp!");
+
+    QVERIFY2(migrations.at(2) == "M20132201_180943_CreateCars",
+             "createCars must be the third due to its timestamp!");
+
+    QVERIFY2(migrations.at(3) == "M20133001_164323_AddUsers",
+             "addUsers must be the fourth due to its timestamp!");
 }
 
 void ApiTest::testAppliedMigrations()
@@ -186,8 +194,9 @@ void ApiTest::testAppliedMigrations()
     tableService.addMigration(definedMigrations.at(0), serviceContext);
     appliedMigrations = manager.appliedMigrations(*m_context);
     QVERIFY2(appliedMigrations.size() == 1, "one migration should be shown as applied");
-    QVERIFY2(appliedMigrations.contains(definedMigrations.at(0))
-             , "appliedMigrations should contain first of the defined migrations");
+
+    QVERIFY2(appliedMigrations.contains(definedMigrations.at(0)),
+             "appliedMigrations should contain first of the defined migrations");
 }
 
 void ApiTest::testLastAppliedMigration()
@@ -242,8 +251,10 @@ void ApiTest::testMigrateTo()
     success = manager.migrateTo("M20132201_180943_CreateCars", *m_context);
     QVERIFY2(success, "migrateTo should return true");
     tables = m_context->database().tables(QSql::Tables);
-    QVERIFY2(tables.size() == 4
-             , "two tables should be added during second migrateTo(), makes three (+ migrationTable) tables overall");
+
+    QVERIFY2(tables.size() == 4,
+             "two tables should be added during second migrateTo(), makes three (+ migrationTable) tables overall");
+
     QVERIFY2(tables.contains("addresses"), "table 'addresses' should be created during migration");
     QVERIFY2(tables.contains("cars"), "table 'cars' should be created during migration");
 }
@@ -256,14 +267,18 @@ void ApiTest::testMissingMigrations()
     tableService.addMigration("M20132301_103512_MissingMigration", serviceContext);
     QStringList definedMigrations = manager.definedMigrations(*m_context);
     QStringList appliedMigrations = manager.appliedMigrations(*m_context);
-    QVERIFY2(appliedMigrations.contains("M20132301_103512_MissingMigration")
-             , "M20132301_103512_MissingMigration should be part of the appliedMigrationsList");
-    QVERIFY2(!definedMigrations.contains("M20132301_103512_MissingMigration")
-             , "M20132301_103512_MissingMigration should NOT be part of the definedMigrationsList");
+
+    QVERIFY2(appliedMigrations.contains("M20132301_103512_MissingMigration"),
+             "M20132301_103512_MissingMigration should be part of the appliedMigrationsList");
+
+    QVERIFY2(!definedMigrations.contains("M20132301_103512_MissingMigration"),
+             "M20132301_103512_MissingMigration should NOT be part of the definedMigrationsList");
+
     QStringList missingMigrations = manager.missingMigrations(*m_context);
     QVERIFY2(missingMigrations.size() == 1, "one missing migration");
-    QVERIFY2(missingMigrations.contains("M20132301_103512_MissingMigration")
-             , "M20132301_103512_MissingMigration should be part of the missingMigrationsList");
+
+    QVERIFY2(missingMigrations.contains("M20132301_103512_MissingMigration"),
+             "M20132301_103512_MissingMigration should be part of the missingMigrationsList");
 }
 
 void ApiTest::testRevertMigration()
@@ -292,8 +307,9 @@ void ApiTest::testUnappliedMigrations()
 
     QStringList unappliedMigrations = manager.unappliedMigrations(*m_context);
     QVERIFY2(unappliedMigrations.size() == 1, "one unapplied migration!");
-    QVERIFY2(unappliedMigrations.contains(definedMigrations.at(1))
-             , "unappliedMigrations should contain second of the defined migrations");
+
+    QVERIFY2(unappliedMigrations.contains(definedMigrations.at(1)),
+             "unappliedMigrations should contain second of the defined migrations");
 }
 
 QTEST_APPLESS_MAIN(ApiTest)

@@ -54,9 +54,8 @@ bool BaseSqlAddColumnService::execute(const Commands::AddColumn &addColumn, cons
     return CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
 }
 
-bool BaseSqlAddColumnService::execute(const Commands::ConstCommandPtr &command
-                                 , CommandExecution::CommandExecutionContext &context
-                                 ) const
+bool BaseSqlAddColumnService::execute(const Commands::ConstCommandPtr &command,
+                                      CommandExecution::CommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::AddColumn> addColumn(command.staticCast<const Commands::AddColumn>());
     Q_ASSERT(addColumn);
@@ -70,8 +69,8 @@ bool BaseSqlAddColumnService::execute(const Commands::ConstCommandPtr &command
     return success;
 }
 
-bool BaseSqlAddColumnService::isValid(const Commands::ConstCommandPtr &command
-                                       , const CommandExecution::CommandExecutionContext &context) const
+bool BaseSqlAddColumnService::isValid(const Commands::ConstCommandPtr &command,
+                                      const CommandExecution::CommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::AddColumn> addColumn(command.staticCast<const Commands::AddColumn>());
 

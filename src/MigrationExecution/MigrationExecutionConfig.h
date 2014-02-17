@@ -34,9 +34,10 @@ namespace MigrationExecution {
 
 struct QSQLMIGRATOR_DLL_EXPORT MigrationExecutionConfig
 {
-     MigrationExecutionConfig(const QString &migrationVersionTableName = "qt_migrator_version_table"
-                , const QString &temporaryTablePrefix = "temp_"
-                , const QString &migrationTablePrefix = "");
+     MigrationExecutionConfig(const QString &migrationVersionTableName = "qt_migrator_version_table",
+                              const QString &temporaryTablePrefix = "temp_",
+                              const QString &migrationTablePrefix = "");
+
      QString migrationVersionTableName;
      QString migrationTablePrefix;
      QString temporaryTablePrefix;

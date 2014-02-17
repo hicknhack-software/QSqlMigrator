@@ -30,10 +30,14 @@
 
 #include "MigrationTracker/MigrationTrackerService.h"
 
+namespace Helper {
+class QuoteService;
+} // namespace Helper
+
 namespace MigrationTracker {
 
 /*!
- * \brief Implementation of the successfully executed migration tracking through a databse table
+ * \brief Implementation of the successfully executed migration tracking through an sql databse table
  */
 class QSQLMIGRATOR_DLL_EXPORT BaseMigrationTableService : public MigrationTracker::MigrationTrackerService
 {

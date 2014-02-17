@@ -40,8 +40,8 @@ bool BaseMigrationTableService::canRevertStrucuturalChangesUsingTransactions() c
     return false;
 }
 
-bool BaseMigrationTableService::wasMigrationExecuted(const QString &migrationName
-                                                      , const CommandExecution::CommandExecutionContext &context) const
+bool BaseMigrationTableService::wasMigrationExecuted(const QString &migrationName,
+                                                     const CommandExecution::CommandExecutionContext &context) const
 {
     return this->migrationList(context).contains(migrationName);
 }
@@ -64,8 +64,8 @@ QStringList BaseMigrationTableService::migrationList(const CommandExecution::Com
     return migrationList;
 }
 
-bool BaseMigrationTableService::addMigration(const QString &migrationName
-                                              , const CommandExecution::CommandExecutionContext &context) const
+bool BaseMigrationTableService::addMigration(const QString &migrationName,
+                                             const CommandExecution::CommandExecutionContext &context) const
 {
     const QString versionTableName = context.migrationConfig().migrationVersionTableName;
     const QString query =
@@ -83,8 +83,8 @@ bool BaseMigrationTableService::addMigration(const QString &migrationName
     return true;
 }
 
-bool BaseMigrationTableService::removeMigration(const QString &migrationName
-                                                 , const CommandExecution::CommandExecutionContext &context) const
+bool BaseMigrationTableService::removeMigration(const QString &migrationName,
+                                                const CommandExecution::CommandExecutionContext &context) const
 {
     const QString versionTableName = context.migrationConfig().migrationVersionTableName;
     const QString query =
@@ -107,7 +107,7 @@ bool BaseMigrationTableService::prepare(const MigrationExecution::MigrationExecu
     QString versionTableName = context.migrationConfig().migrationVersionTableName;
     if(!tables.contains(versionTableName)) {
         const QString query =
-                QString("CREATE TABLE %1 (version varchar(255) NOT NULL, PRIMARY KEY (version))")
+                QString("CREATE TABLE %1 (version VARCHAR(255) NOT NULL, PRIMARY KEY (version))")
                 .arg(context.helperRepository().quoteService().quoteTableName(versionTableName));
         ::qDebug() << "creating migrationVersion table! query looks like:";
         ::qDebug() << query;

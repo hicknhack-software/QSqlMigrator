@@ -43,8 +43,8 @@ LocalSchemeMigrationExecutionService::~LocalSchemeMigrationExecutionService()
 {
 }
 
-bool LocalSchemeMigrationExecutionService::execute(const QString &migrationName
-                                        , LocalSchemeMigrationExecutionContext &migrationContext) const
+bool LocalSchemeMigrationExecutionService::execute(const QString &migrationName,
+                                                   LocalSchemeMigrationExecutionContext &migrationContext) const
 {
     LocalSchemePtr localScheme = migrationContext.localScheme();
 
@@ -68,8 +68,8 @@ bool LocalSchemeMigrationExecutionService::execute(const QString &migrationName
     return isSuccess;
 }
 
-bool LocalSchemeMigrationExecutionService::executeBatch(const QStringList &migrationList
-                                             , LocalSchemeMigrationExecutionContext &migrationContext) const
+bool LocalSchemeMigrationExecutionService::executeBatch(const QStringList &migrationList,
+                                                        LocalSchemeMigrationExecutionContext &migrationContext) const
 {
     if (migrationList.empty()) {
         return true; // No migrations present, no need to do anything

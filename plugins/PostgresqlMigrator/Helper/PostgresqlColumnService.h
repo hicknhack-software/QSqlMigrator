@@ -46,7 +46,8 @@ public:
     PostgresqlColumnService(const PostgresqlTypeMapperService& postgresqlTypeMapperService);
     ~PostgresqlColumnService() QSQL_OVERRIDE_D {}
 
-    QString generateColumnDefinitionSql(const Structure::Column &column) const Q_DECL_OVERRIDE;
+    QString buildColumnTypeSql(const Structure::Column &column) const Q_DECL_OVERRIDE;
+    QStringList buildColumnOptionsSql(const Structure::Column &column) const Q_DECL_OVERRIDE;
 };
 
 } // namespace Helper

@@ -46,7 +46,6 @@ using namespace Structure;
 using namespace Migrations;
 using namespace MigrationExecution;
 
-
 BasicTest::BasicTest(const QString &driverName, const QString &testDatabaseName,
                      MigrationExecutionContextPtr (*buildContext)(MigrationExecutionContext::Builder &),
                      const QString &structureDatabase, const QString &hostName, const int hostPort, const QString &userName, const QString &password)
@@ -192,8 +191,7 @@ void BasicTest::testDropTable()
 void BasicTest::testTransaction()
 {
     if (!m_context->baseMigrationTableService()->canRevertStrucuturalChangesUsingTransactions()) {
-        QSKIP("database driver does not support transactions for structural changes, SKIPPING TEST!"
-              , SkipSingle);
+        QSKIP("database driver does not support transactions for structural changes, SKIPPING TEST!");
     }
 
     Migration m;
@@ -233,17 +231,14 @@ void BasicTest::testTransaction()
     success = migrator.execute("Migration No2", *migrationContext);
     QVERIFY2(!success, "migration should fail!");
     QStringList tables = m_context->database().tables(QSql::Tables);
-    QVERIFY2(tables.contains("testtable1")
-             , "testtable should be created during migrtaion No 1!");
-    QVERIFY2(!tables.contains("testtable2")
-             , "testtable should be deleted during rollback!");
+    QVERIFY2(tables.contains("testtable1"), "testtable should be created during migrtaion No 1!");
+    QVERIFY2(!tables.contains("testtable2"), "testtable should be deleted during rollback!");
 }
 
 void BasicTest::testUndoCreateTable()
 {
     if (m_context->baseMigrationTableService()->canRevertStrucuturalChangesUsingTransactions()) {
-        QSKIP("database driver should support transactions for structural changes, SKIPPING TEST!"
-              , SkipSingle);
+        QSKIP("database driver should support transactions for structural changes, SKIPPING TEST!");
     }
 
     Migration m;
@@ -284,17 +279,14 @@ void BasicTest::testUndoCreateTable()
     success = migrator.execute("Migration No2", *migrationContext);
     QVERIFY2(!success, "migration should fail!");
     QStringList tables = m_context->database().tables(QSql::Tables);
-    QVERIFY2(tables.contains("testtable1")
-             , "testtable should be created during migrtaion No 1!");
-    QVERIFY2(!tables.contains("testtable2")
-             , "testtable should be deleted during rollback!");
+    QVERIFY2(tables.contains("testtable1"), "testtable should be created during migrtaion No 1!");
+    QVERIFY2(!tables.contains("testtable2"), "testtable should be deleted during rollback!");
 }
 
 void BasicTest::testUndoDropTable()
 {
     if (m_context->baseMigrationTableService()->canRevertStrucuturalChangesUsingTransactions()) {
-        QSKIP("database driver should support transactions for structural changes, SKIPPING TEST!"
-              , SkipSingle);
+        QSKIP("database driver should support transactions for structural changes, SKIPPING TEST!");
     }
 
     //TODO run dropTable with tableName only to test TableRecovery in DropTable-Command
@@ -341,10 +333,8 @@ void BasicTest::testUndoDropTable()
     success = migrator.execute("Migration No2", *migrationContext);
     QVERIFY2(!success, "migration should fail!");
     QStringList tables = m_context->database().tables(QSql::Tables);
-    QVERIFY2(tables.contains("testtable1")
-             , "testtable should be re-created during undo!");
-    QVERIFY2(!tables.contains("testtable2")
-             , "testtable should be deleted during rollback!");
+    QVERIFY2(tables.contains("testtable1"), "testtable should be re-created during undo!");
+    QVERIFY2(!tables.contains("testtable2"), "testtable should be deleted during rollback!");
 }
 
 void BasicTest::testMigrationDirections()

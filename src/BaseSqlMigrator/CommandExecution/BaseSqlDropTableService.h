@@ -44,7 +44,9 @@ public:
     static bool execute(const Commands::DropTable &dropTable, const CommandExecution::CommandExecutionContext &context);
 
     bool execute(const Commands::ConstCommandPtr &command, CommandExecution::CommandExecutionContext &context) const;
-    bool isValid(const Commands::ConstCommandPtr &command, const CommandExecution::CommandExecutionContext &context) const;
+
+    bool isValid(const Commands::ConstCommandPtr &command,
+                 const CommandExecution::CommandExecutionContext &context) const;
 };
 
 } // namespace CommandExecution

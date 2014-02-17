@@ -45,8 +45,7 @@ MysqlStructureService::MysqlStructureService()
 {
 }
 
-Table MysqlStructureService::getTableDefinition(const QString &tableName
-                                          , QSqlDatabase database) const
+Table MysqlStructureService::getTableDefinition(const QString &tableName, QSqlDatabase database) const
 {
     ColumnList columns;
     QString queryString = QString("DESCRIBE %1").arg(tableName);
@@ -86,7 +85,9 @@ Table MysqlStructureService::getTableDefinition(const QString &tableName
     return Table(tableName, columns);
 }
 
-Index MysqlStructureService::getIndexDefinition(const QString &indexName, const QString &tableName, QSqlDatabase database) const
+Index MysqlStructureService::getIndexDefinition(const QString &indexName,
+                                                const QString &tableName,
+                                                QSqlDatabase database) const
 {
     Structure::Index::ColumnList columns;
     QString queryText = QString("SHOW INDEXES FROM %1 WHERE Key_name = \"%2\"").arg(tableName, indexName);

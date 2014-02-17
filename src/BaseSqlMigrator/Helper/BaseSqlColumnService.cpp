@@ -36,6 +36,11 @@ BaseSqlColumnService::BaseSqlColumnService(const TypeMapperService &typeMapperSe
 {
 }
 
+QString BaseSqlColumnService::buildColumnTypeSql(const Column &column) const
+{
+    return m_typeMapperService.map(column.type());
+}
+
 QStringList BaseSqlColumnService::buildColumnOptionsSql(const Column &column) const
 {
     QStringList sqlColumnOptions;
@@ -56,10 +61,10 @@ QStringList BaseSqlColumnService::buildColumnOptionsSql(const Column &column) co
 
 QString BaseSqlColumnService::generateColumnDefinitionSql(const Column &column) const
 {
-    const QStringList sqlColumnOptions = buildColumnOptionsSql(column);
-    const QString sqlTypeString = m_typeMapperService.map(column.type());
-
-    return QString("%1 %2 %3").arg(column.name(), sqlTypeString, sqlColumnOptions.join(" "));
+    QStringList columnParts = buildColumnOptionsSql(column);
+    columnParts.push_front(buildColumnTypeSql(column));
+    columnParts.push_front(column.name());
+    return columnParts.join(" ");
 }
 
 QString BaseSqlColumnService::generateColumnsDefinitionSql(const QList<Column> &columnList) const

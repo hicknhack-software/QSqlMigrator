@@ -134,7 +134,7 @@ bool DatabaseLock::tryReleaseOutOfDateLock() const
     ::qDebug() << ownProcessInfo() << "current lock last update" << lastModified;
     if(lastModified.addSecs(otherLockIsOutOfDateAfter) < QDateTime::currentDateTime()) {
         ::qWarning() << ownProcessInfo() << "the lock is out of date";
-        ::qWarning() << "NOTE: anywhere is may be a unfinished or broken job!" << m_lockFileName;
+        ::qWarning() << "NOTE: The last job has NOT finished correctly!" << m_lockFileName;
         return tryReleaseAnyLock();
     }
 

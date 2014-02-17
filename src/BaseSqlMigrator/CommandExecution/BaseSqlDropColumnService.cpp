@@ -56,9 +56,8 @@ bool BaseSqlDropColumnService::execute(const Commands::DropColumn &dropColumn, c
     return CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
 }
 
-bool BaseSqlDropColumnService::execute(const Commands::ConstCommandPtr &command
-                                  , CommandExecution::CommandExecutionContext &context
-                                  ) const
+bool BaseSqlDropColumnService::execute(const Commands::ConstCommandPtr &command,
+                                       CommandExecution::CommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::DropColumn> dropColumn(command.staticCast<const Commands::DropColumn>());
     Q_ASSERT(dropColumn);
@@ -78,8 +77,8 @@ bool BaseSqlDropColumnService::execute(const Commands::ConstCommandPtr &command
     return success;
 }
 
-bool BaseSqlDropColumnService::isValid(const Commands::ConstCommandPtr &command
-                                        , const CommandExecution::CommandExecutionContext &context) const
+bool BaseSqlDropColumnService::isValid(const Commands::ConstCommandPtr &command,
+                                       const CommandExecution::CommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::DropColumn> dropColumn(command.staticCast<const Commands::DropColumn>());
 

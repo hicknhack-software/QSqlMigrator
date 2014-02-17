@@ -37,11 +37,11 @@ public:
     LocalSchemeMigrationExecutionService();
     ~LocalSchemeMigrationExecutionService();
 
-    bool execute(const QString &migrationName
-                 , LocalSchemeMigrationExecutionContext &migrationContext) const;
+    bool execute(const QString &migrationName,
+                 LocalSchemeMigrationExecutionContext &migrationContext) const;
 
-    bool executeBatch(const QStringList &migrationList
-                      , LocalSchemeMigrationExecutionContext &migrationContext) const;
+    bool executeBatch(const QStringList &migrationList,
+                      LocalSchemeMigrationExecutionContext &migrationContext) const;
 
 private:
     CommandExecution::LocalSchemeCommandExecutionService m_execution;

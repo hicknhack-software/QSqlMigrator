@@ -38,10 +38,13 @@ namespace Commands {
 class QSQLMIGRATOR_DLL_EXPORT AlterColumnType : public BaseCommand
 {
 public:
-    explicit AlterColumnType(const QString &columnName, const QString &tableName,
-                             const Structure::Type &newType, const Structure::Type &oldType);
+    explicit AlterColumnType(const QString &columnName,
+                             const QString &tableName,
+                             const Structure::Type &newType,
+                             const Structure::Type &oldType);
 
-    explicit AlterColumnType(const QString &columnName, const QString &tableName,
+    explicit AlterColumnType(const QString &columnName,
+                             const QString &tableName,
                              const Structure::Type &newType);
 
     ~AlterColumnType() QSQL_OVERRIDE_D {}

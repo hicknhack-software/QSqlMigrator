@@ -54,9 +54,8 @@ bool BaseSqlDropTableService::execute(const Commands::DropTable &dropTable, cons
     return CommandExecution::BaseCommandExecutionService::executeQuery(dropQuery, context);
 }
 
-bool BaseSqlDropTableService::execute(const Commands::ConstCommandPtr &command
-                                 , CommandExecution::CommandExecutionContext &context
-                                 ) const
+bool BaseSqlDropTableService::execute(const Commands::ConstCommandPtr &command,
+                                      CommandExecution::CommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::DropTable> dropTable(command.staticCast<const Commands::DropTable>());
     Q_ASSERT(dropTable);
@@ -71,7 +70,8 @@ bool BaseSqlDropTableService::execute(const Commands::ConstCommandPtr &command
     return success;
 }
 
-bool BaseSqlDropTableService::isValid(const Commands::ConstCommandPtr &command, const CommandExecution::CommandExecutionContext &context) const
+bool BaseSqlDropTableService::isValid(const Commands::ConstCommandPtr &command,
+                                      const CommandExecution::CommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::DropTable> dropTable(command.staticCast<const Commands::DropTable>());
 

@@ -44,9 +44,8 @@ const QString &LocalSchemeAddColumnService::commandType() const
     return Commands::AddColumn::typeName();
 }
 
-bool LocalSchemeAddColumnService::execute(const Commands::ConstCommandPtr &command
-                                 , CommandExecution::LocalSchemeCommandExecutionContext &context
-                                 ) const
+bool LocalSchemeAddColumnService::execute(const Commands::ConstCommandPtr &command,
+                                          CommandExecution::LocalSchemeCommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::AddColumn> addColumn(command.staticCast<const Commands::AddColumn>());
 
@@ -63,8 +62,8 @@ bool LocalSchemeAddColumnService::execute(const Commands::ConstCommandPtr &comma
     return true;
 }
 
-bool LocalSchemeAddColumnService::isValid(const Commands::ConstCommandPtr &command
-                                       , const CommandExecution::LocalSchemeCommandExecutionContext &context) const
+bool LocalSchemeAddColumnService::isValid(const Commands::ConstCommandPtr &command,
+                                          const CommandExecution::LocalSchemeCommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::AddColumn> addColumn(command.staticCast<const Commands::AddColumn>());
 

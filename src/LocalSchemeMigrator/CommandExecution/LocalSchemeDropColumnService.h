@@ -37,8 +37,11 @@ public:
 
     const QString &commandType() const;
 
-    bool execute(const Commands::ConstCommandPtr &command, CommandExecution::LocalSchemeCommandExecutionContext &context) const;
-    bool isValid(const Commands::ConstCommandPtr &command, const CommandExecution::LocalSchemeCommandExecutionContext &context) const;
+    bool execute(const Commands::ConstCommandPtr &command,
+                 CommandExecution::LocalSchemeCommandExecutionContext &context) const;
+
+    bool isValid(const Commands::ConstCommandPtr &command,
+                 const CommandExecution::LocalSchemeCommandExecutionContext &context) const;
 };
 
 } // namespace CommandExecution

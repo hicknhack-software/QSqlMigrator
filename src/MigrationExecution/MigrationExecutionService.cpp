@@ -69,9 +69,9 @@ CommandPtrList reverseCommands(const CommandPtrList &commands)
     return reversedCommands;
 }
 
-bool MigrationExecutionService::execute(const QString &migrationName
-                                        , const MigrationExecutionContext &migrationContext
-                                        , Direction direction) const
+bool MigrationExecutionService::execute(const QString &migrationName,
+                                        const MigrationExecutionContext &migrationContext,
+                                        Direction direction) const
 {
     if (this->isMigrationRemembered(migrationName, migrationContext, direction)) {
         return true; // everything ok
@@ -141,9 +141,9 @@ bool MigrationExecutionService::execute(const QString &migrationName
     return false;
 }
 
-bool MigrationExecutionService::executeBatch(const QStringList &migrationList
-                                             , const MigrationExecutionContext &context
-                                             , Direction direction) const
+bool MigrationExecutionService::executeBatch(const QStringList &migrationList,
+                                             const MigrationExecutionContext &context,
+                                             Direction direction) const
 {
     if (migrationList.empty()) {
         return true; // No migrations present, no need to do anything
@@ -159,9 +159,9 @@ bool MigrationExecutionService::executeBatch(const QStringList &migrationList
     return success;
 }
 
-bool MigrationExecutionService::isMigrationRemembered(const QString &migrationName
-                                                      , const MigrationExecutionContext &context
-                                                      , Direction direction) const
+bool MigrationExecutionService::isMigrationRemembered(const QString &migrationName,
+                                                      const MigrationExecutionContext &context,
+                                                      Direction direction) const
 {
     CommandExecution::CommandExecutionContext serviceContext(context.database(), context.migrationConfig(), context.helperRepository());
     MigrationTableServicePtr tableService = context.baseMigrationTableService();
@@ -179,9 +179,9 @@ bool MigrationExecutionService::isMigrationRemembered(const QString &migrationNa
     }
 }
 
-bool MigrationExecutionService::rememberMigration(const QString &migrationName
-                                                  , const MigrationExecutionContext &context
-                                                  , Direction direction) const
+bool MigrationExecutionService::rememberMigration(const QString &migrationName,
+                                                  const MigrationExecutionContext &context,
+                                                  Direction direction) const
 {
     CommandExecution::CommandExecutionContext serviceContext(context.database(), context.migrationConfig(), context.helperRepository());
     MigrationTableServicePtr tableService = context.baseMigrationTableService();

@@ -39,7 +39,8 @@ class CommandExecutionContext;
 class SqliteAlterColumnService
 {
 public:
-    static bool execute(const Structure::Table &origTable, const Structure::Table &newTable,
+    static bool execute(const Structure::Table &origTable,
+                        const Structure::Table &newTable,
                         CommandExecution::CommandExecutionContext &context);
 };
 

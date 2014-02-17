@@ -33,8 +33,8 @@ namespace Commands {
 
 DropColumn::DropColumn(const QString &columnName, const QString &tableName)
     : BaseCommand(DropColumn::typeName())
-    , m_column(Structure::Column(columnName, Structure::Type::invalid()))
     , m_tableName(tableName)
+    , m_column(Structure::Column(columnName, Structure::Type::invalid()))
 {
     if(columnName.isEmpty()) {
         ::qWarning() << LOG_PREFIX << DropColumn::typeName() << "command with empty columnName!";
@@ -46,8 +46,8 @@ DropColumn::DropColumn(const QString &columnName, const QString &tableName)
 
 DropColumn::DropColumn(const Structure::Column &column, const QString &tableName)
     : BaseCommand(DropColumn::typeName())
-    , m_column(column)
     , m_tableName(tableName)
+    , m_column(column)
 {
     if(! column.isValid()) {
         ::qWarning() << LOG_PREFIX << DropColumn::typeName() << "command with invalid column!";

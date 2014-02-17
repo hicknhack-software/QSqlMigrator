@@ -41,22 +41,22 @@ public:
 
     MigrationExecutionService();
 
-    bool execute(const QString &migrationName
-                 , const MigrationExecutionContext &migrationContext
-                 , Direction direction = Up) const;
+    bool execute(const QString &migrationName,
+                 const MigrationExecutionContext &migrationContext,
+                 Direction direction = Up) const;
 
-    bool executeBatch(const QStringList &migrationList
-                      , const MigrationExecutionContext &context
-                      , Direction direction = Up) const;
+    bool executeBatch(const QStringList &migrationList,
+                      const MigrationExecutionContext &context,
+                      Direction direction = Up) const;
 
 private:
-    bool isMigrationRemembered(const QString &migrationName
-                               , const MigrationExecutionContext &context
-                               , Direction direction) const;
+    bool isMigrationRemembered(const QString &migrationName,
+                               const MigrationExecutionContext &context,
+                               Direction direction) const;
 
-    bool rememberMigration(const QString &migrationName
-                           , const MigrationExecutionContext &context
-                           , Direction direction) const;
+    bool rememberMigration(const QString &migrationName,
+                           const MigrationExecutionContext &context,
+                           Direction direction) const;
 
 private:
     CommandExecution::CommandExecutionService m_execution;

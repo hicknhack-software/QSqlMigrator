@@ -50,9 +50,8 @@ bool BaseSqlDropIndexService::execute(const Commands::DropIndex &dropIndex, cons
     return CommandExecution::BaseCommandExecutionService::executeQuery(sqlQuery, context);
 }
 
-bool BaseSqlDropIndexService::execute(const Commands::ConstCommandPtr &command
-                                 , CommandExecution::CommandExecutionContext &context
-                                 ) const
+bool BaseSqlDropIndexService::execute(const Commands::ConstCommandPtr &command,
+                                      CommandExecution::CommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::DropIndex> dropIndex(command.staticCast<const Commands::DropIndex>());
     Q_ASSERT(dropIndex);
@@ -68,7 +67,8 @@ bool BaseSqlDropIndexService::execute(const Commands::ConstCommandPtr &command
     return success;
 }
 
-bool BaseSqlDropIndexService::isValid(const Commands::ConstCommandPtr &command, const CommandExecution::CommandExecutionContext &context) const
+bool BaseSqlDropIndexService::isValid(const Commands::ConstCommandPtr &command,
+                                      const CommandExecution::CommandExecutionContext &context) const
 {
     Q_UNUSED(command);
     Q_UNUSED(context);

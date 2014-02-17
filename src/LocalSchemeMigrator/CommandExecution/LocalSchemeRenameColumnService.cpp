@@ -77,8 +77,8 @@ bool LocalSchemeRenameColumnService::execute(const Commands::ConstCommandPtr &co
     return true;
 }
 
-bool LocalSchemeRenameColumnService::isValid(const Commands::ConstCommandPtr &command
-                                          , const CommandExecution::LocalSchemeCommandExecutionContext &context) const
+bool LocalSchemeRenameColumnService::isValid(const Commands::ConstCommandPtr &command,
+                                             const CommandExecution::LocalSchemeCommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::RenameColumn> renameColumn(command.staticCast<const Commands::RenameColumn>());
 

@@ -36,7 +36,8 @@ public:
     SqliteRenameColumnService();
     ~SqliteRenameColumnService() QSQL_OVERRIDE_D {}
 
-    bool execute(const Commands::ConstCommandPtr &command, CommandExecution::CommandExecutionContext &context) const Q_DECL_OVERRIDE;
+    bool execute(const Commands::ConstCommandPtr &command,
+                 CommandExecution::CommandExecutionContext &context) const Q_DECL_OVERRIDE;
 };
 
 } // namespace CommandExecution

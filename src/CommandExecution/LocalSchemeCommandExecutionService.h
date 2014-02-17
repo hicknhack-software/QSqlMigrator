@@ -35,15 +35,13 @@ namespace CommandExecution {
 class QSQLMIGRATOR_DLL_EXPORT LocalSchemeCommandExecutionService
 {
 public:
-    bool execute(const Commands::CommandPtr command
-                 , LocalSchemeCommandServiceRepositoryPtr serviceRepository
-                 , LocalSchemeCommandExecutionContext &context
-                 ) const;
+    bool execute(const Commands::CommandPtr command,
+                 LocalSchemeCommandServiceRepositoryPtr serviceRepository,
+                 LocalSchemeCommandExecutionContext &context) const;
 
-    bool batch(const Commands::CommandPtrList &commandList
-               , LocalSchemeCommandServiceRepositoryPtr serviceRepository
-               , LocalSchemeCommandExecutionContext &context
-               ) const;
+    bool batch(const Commands::CommandPtrList &commandList,
+               LocalSchemeCommandServiceRepositoryPtr serviceRepository,
+               LocalSchemeCommandExecutionContext &context) const;
 };
 
 } // namespace CommandExecution

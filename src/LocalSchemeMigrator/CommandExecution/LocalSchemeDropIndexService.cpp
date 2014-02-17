@@ -41,9 +41,8 @@ const QString &LocalSchemeDropIndexService::commandType() const
     return Commands::DropIndex::typeName();
 }
 
-bool LocalSchemeDropIndexService::execute(const Commands::ConstCommandPtr &command
-                                 , CommandExecution::LocalSchemeCommandExecutionContext &context
-                                 ) const
+bool LocalSchemeDropIndexService::execute(const Commands::ConstCommandPtr &command,
+                                          CommandExecution::LocalSchemeCommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::DropIndex> dropIndex(command.staticCast<const Commands::DropIndex>());
 
@@ -52,8 +51,8 @@ bool LocalSchemeDropIndexService::execute(const Commands::ConstCommandPtr &comma
     return true;
 }
 
-bool LocalSchemeDropIndexService::isValid(const Commands::ConstCommandPtr &command
-                                          , const CommandExecution::LocalSchemeCommandExecutionContext &context) const
+bool LocalSchemeDropIndexService::isValid(const Commands::ConstCommandPtr &command,
+                                          const CommandExecution::LocalSchemeCommandExecutionContext &context) const
 {
     Q_UNUSED(command);
     Q_UNUSED(context);

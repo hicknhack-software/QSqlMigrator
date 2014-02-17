@@ -40,6 +40,8 @@
 #include <QDebug>
 #include <QStringList>
 
+#include <memory>
+
 namespace CommandExecution {
 
 SqliteDropColumnService::SqliteDropColumnService()
@@ -52,7 +54,7 @@ bool SqliteDropColumnService::execute(const Commands::ConstCommandPtr &command,
 
     Structure::Table table( context.helperRepository().sqlStructureService().getTableDefinition(dropColumn->tableName(), context.database()) );
     Structure::Table::Builder alteredTable(dropColumn->tableName());
-    const Structure::Column* originalColumn = nullptr;
+    const Structure::Column* originalColumn = Q_NULLPTR;
     foreach (const Structure::Column &column, table.columns()) {
         if (column.name() == dropColumn->columnName()) {
             originalColumn = &column;

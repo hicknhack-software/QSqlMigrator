@@ -46,9 +46,10 @@ public:
     PostgresqlTest();
 };
 
-PostgresqlTest::PostgresqlTest() : BasicTest(POSTGRESQL_DRIVERNAME, POSTGRESQLTEST_DATABASE_NAME
-                            , &PostgresqlMigrator::buildContext, POSTGRESQL_STRUCTURE_DATABASE
-                            , POSTGRESQL_HOSTNAME, POSTGRESQL_HOSTPORT, POSTGRESQL_USERNAME, POSTGRESQL_PASSWORD)
+PostgresqlTest::PostgresqlTest()
+    : BasicTest(POSTGRESQL_DRIVERNAME, POSTGRESQLTEST_DATABASE_NAME, &PostgresqlMigrator::buildContext,
+                POSTGRESQL_STRUCTURE_DATABASE,
+                POSTGRESQL_HOSTNAME, POSTGRESQL_HOSTPORT, POSTGRESQL_USERNAME, POSTGRESQL_PASSWORD)
 {
 }
 

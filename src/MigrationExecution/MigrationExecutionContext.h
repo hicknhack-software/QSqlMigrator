@@ -99,9 +99,9 @@ public:
 private:
     const NameMigrationMap m_migrations;
     const MigrationExecutionConfig m_migrationConfig;
+    const QSqlDatabase m_database;
     const CommandServiceRepositoryPtr m_commandServiceRepository;
     const Helper::HelperRepository m_helperRepository;
-    const QSqlDatabase m_database;
     const MigrationTableServicePtr m_migrationTableService;
 };
 

@@ -41,9 +41,8 @@ const QString &LocalSchemeCreateIndexService::commandType() const
     return Commands::CreateIndex::typeName();
 }
 
-bool LocalSchemeCreateIndexService::execute(const Commands::ConstCommandPtr &command
-                                   , CommandExecution::LocalSchemeCommandExecutionContext &context
-                                   ) const
+bool LocalSchemeCreateIndexService::execute(const Commands::ConstCommandPtr &command,
+                                            CommandExecution::LocalSchemeCommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::CreateIndex> createIndex(command.staticCast<const Commands::CreateIndex>());
 
@@ -52,8 +51,8 @@ bool LocalSchemeCreateIndexService::execute(const Commands::ConstCommandPtr &com
     return true;
 }
 
-bool LocalSchemeCreateIndexService::isValid(const Commands::ConstCommandPtr &command
-                                         , const CommandExecution::LocalSchemeCommandExecutionContext &context) const
+bool LocalSchemeCreateIndexService::isValid(const Commands::ConstCommandPtr &command,
+                                            const CommandExecution::LocalSchemeCommandExecutionContext &context) const
 {
     Q_UNUSED(context);
     QSharedPointer<const Commands::CreateIndex> createIndex(command.staticCast<const Commands::CreateIndex>());

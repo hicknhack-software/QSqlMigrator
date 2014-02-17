@@ -42,9 +42,8 @@ const QString &LocalSchemeCreateTableService::commandType() const
     return Commands::CreateTable::typeName();
 }
 
-bool LocalSchemeCreateTableService::execute(const Commands::ConstCommandPtr &command
-                                   , CommandExecution::LocalSchemeCommandExecutionContext &context
-                                   ) const
+bool LocalSchemeCreateTableService::execute(const Commands::ConstCommandPtr &command,
+                                            CommandExecution::LocalSchemeCommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::CreateTable> createTable(command.staticCast<const Commands::CreateTable>());
 
@@ -54,8 +53,8 @@ bool LocalSchemeCreateTableService::execute(const Commands::ConstCommandPtr &com
 }
 
 
-bool LocalSchemeCreateTableService::isValid(const Commands::ConstCommandPtr &command
-                                         , const CommandExecution::LocalSchemeCommandExecutionContext &context) const
+bool LocalSchemeCreateTableService::isValid(const Commands::ConstCommandPtr &command,
+                                            const CommandExecution::LocalSchemeCommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::CreateTable> createTable(command.staticCast<const Commands::CreateTable>());
 

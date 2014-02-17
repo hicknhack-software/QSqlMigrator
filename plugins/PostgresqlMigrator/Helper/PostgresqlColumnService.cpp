@@ -42,34 +42,38 @@ PostgresqlColumnService::PostgresqlColumnService(const PostgresqlTypeMapperServi
 {
 }
 
-QString PostgresqlColumnService::generateColumnDefinitionSql(const Column &column) const
+QString PostgresqlColumnService::buildColumnTypeSql(const Column &column) const
 {
-    QString sqlTypeString;
     if (column.type().isString()) {
-        sqlTypeString = column.type().string();
-
         static const QStringList serialTypes = QStringList() << "SMALLSERIAL" << "SERIAL" << "BIGSERIAL";
-        if (column.isAutoIncremented() && serialTypes.contains( sqlTypeString, Qt::CaseInsensitive ) ) {
+        if (column.isAutoIncremented() && serialTypes.contains( column.type().string(), Qt::CaseInsensitive ) ) {
             qWarning() << "column" << column.name() << "has auto increment specified but is not a serial type";
         }
     }
-    else {
-        if (column.isAutoIncremented()) {
-            // PostgreSQL has no auto increment, instead there are serials (as types)
-            // QVariant has no Short
-            if (column.type().base() == Type::Integer)
-                sqlTypeString = "SERIAL";
-            else if (column.type().base() == Type::BigInt)
-                sqlTypeString = "BIGSERIAL";
-            else {
-                qWarning() << "column" << column.name() << "has auto increment specified but is not of integer type";
-                sqlTypeString = "SERIAL";
-            }
-        } else {
-            sqlTypeString = m_typeMapperService.map(column.type());
+    else if (column.isAutoIncremented()) {
+        // PostgreSQL has no auto increment, instead there are serials (as types)
+        // QVariant has no Short
+        switch(column.type().base())
+        {
+        case Type::SmallInt:
+            return "SMALLSERIAL";
+
+        case Type::Integer:
+            return "SERIAL";
+
+        case Type::BigInt:
+            return "BIGSERIAL";
+
+        default:
+            qWarning() << "column" << column.name() << "has auto increment specified but is not of integer type";
+            return "SERIAL";
         }
     }
+    return BaseSqlColumnService::buildColumnTypeSql(column);
+}
 
+QStringList PostgresqlColumnService::buildColumnOptionsSql(const Column &column) const
+{
     QStringList sqlColumnOptions;
     if (column.isPrimary()) {
         sqlColumnOptions << "PRIMARY KEY";
@@ -83,8 +87,7 @@ QString PostgresqlColumnService::generateColumnDefinitionSql(const Column &colum
     if (column.hasDefaultValue()) {
         sqlColumnOptions << QString("DEFAULT (%1)").arg(column.defaultValue());
     }
-
-    return QString("%1 %2 %3").arg(column.name(), sqlTypeString, sqlColumnOptions.join(" "));
+    return sqlColumnOptions;
 }
 
 } // namespace Helper

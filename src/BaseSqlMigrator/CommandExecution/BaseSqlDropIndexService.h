@@ -43,8 +43,11 @@ public:
 
     static bool execute(const Commands::DropIndex& dropIndex, const CommandExecution::CommandExecutionContext &context);
 
-    bool execute(const Commands::ConstCommandPtr &command, CommandExecution::CommandExecutionContext &context) const;
-    bool isValid(const Commands::ConstCommandPtr &command, const CommandExecution::CommandExecutionContext &context) const;
+    bool execute(const Commands::ConstCommandPtr &command,
+                 CommandExecution::CommandExecutionContext &context) const;
+
+    bool isValid(const Commands::ConstCommandPtr &command,
+                 const CommandExecution::CommandExecutionContext &context) const;
 };
 
 } // namespace CommandExecution

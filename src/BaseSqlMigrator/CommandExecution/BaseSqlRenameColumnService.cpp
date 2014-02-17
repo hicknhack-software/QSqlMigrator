@@ -48,7 +48,8 @@ const QString &BaseSqlRenameColumnService::commandType() const
     return Commands::RenameColumn::typeName();
 }
 
-bool BaseSqlRenameColumnService::execute(const Commands::RenameColumn &renameColumn, const CommandExecutionContext &context)
+bool BaseSqlRenameColumnService::execute(const Commands::RenameColumn &renameColumn,
+                                         const CommandExecutionContext &context)
 {
     const QString alterQuery =
             QString("ALTER TABLE %1 RENAME COLUMN %2 TO %3")
@@ -59,9 +60,8 @@ bool BaseSqlRenameColumnService::execute(const Commands::RenameColumn &renameCol
     return CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
 }
 
-bool BaseSqlRenameColumnService::execute(const Commands::ConstCommandPtr &command
-                                   , CommandExecution::CommandExecutionContext &context
-                                    ) const
+bool BaseSqlRenameColumnService::execute(const Commands::ConstCommandPtr &command,
+                                         CommandExecution::CommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::RenameColumn> renameColumn(command.staticCast<const Commands::RenameColumn>());
     Q_ASSERT(renameColumn);
@@ -74,8 +74,8 @@ bool BaseSqlRenameColumnService::execute(const Commands::ConstCommandPtr &comman
     return success;
 }
 
-bool BaseSqlRenameColumnService::isValid(const Commands::ConstCommandPtr &command
-                                          , const CommandExecution::CommandExecutionContext &context) const
+bool BaseSqlRenameColumnService::isValid(const Commands::ConstCommandPtr &command,
+                                         const CommandExecution::CommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::RenameColumn> renameColumn(command.staticCast<const Commands::RenameColumn>());
 

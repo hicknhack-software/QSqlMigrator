@@ -44,8 +44,10 @@ bool SqliteAlterColumnService::execute(const Structure::Table &origTable,
                                        const Structure::Table &newTable,
                                        CommandExecution::CommandExecutionContext &context)
 {
-    QString tempTableName = QString("%1%2").arg(context.migrationConfig().temporaryTablePrefix
-                                                , origTable.name());
+    QString tempTableName =
+            QString("%1%2")
+            .arg(context.migrationConfig().temporaryTablePrefix)
+            .arg(origTable.name());
 
     bool success = BaseSqlRenameTableService::execute(Commands::RenameTable(origTable.name(), tempTableName), context);
     if (!success)

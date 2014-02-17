@@ -44,8 +44,8 @@ SqliteRenameColumnService::SqliteRenameColumnService()
 {
 }
 
-bool SqliteRenameColumnService::execute(const Commands::ConstCommandPtr &command
-                                   , CommandExecution::CommandExecutionContext &context) const
+bool SqliteRenameColumnService::execute(const Commands::ConstCommandPtr &command,
+                                        CommandExecution::CommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::RenameColumn> renameColumn(command.staticCast<const Commands::RenameColumn>());
 

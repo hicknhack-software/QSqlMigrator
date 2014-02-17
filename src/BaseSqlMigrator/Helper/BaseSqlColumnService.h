@@ -43,6 +43,7 @@ public:
     BaseSqlColumnService(const TypeMapperService& typeMapperService);
     ~BaseSqlColumnService() QSQL_OVERRIDE_D {}
 
+    virtual QString buildColumnTypeSql(const Structure::Column &column) const;
     virtual QStringList buildColumnOptionsSql(const Structure::Column &column) const;
 
     QString generateColumnDefinitionSql(const Structure::Column &column) const Q_DECL_OVERRIDE;

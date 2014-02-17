@@ -73,8 +73,8 @@ bool LocalSchemeDropColumnService::execute(const Commands::ConstCommandPtr &comm
     return true;
 }
 
-bool LocalSchemeDropColumnService::isValid(const Commands::ConstCommandPtr &command
-                                        , const CommandExecution::LocalSchemeCommandExecutionContext &context) const
+bool LocalSchemeDropColumnService::isValid(const Commands::ConstCommandPtr &command,
+                                           const CommandExecution::LocalSchemeCommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::DropColumn> dropColumn(command.staticCast<const Commands::DropColumn>());
 

@@ -94,7 +94,7 @@ MigrationExecution::MigrationExecutionContextPtr buildContext(MigrationExecution
     CommandServiceRepositoryPtr commandRepository(createCommandServiceRepository());
     MigrationTableServicePtr migrationTableService(new MigrationTracker::SqliteMigrationTableService);
 
-    auto context = contextBuilder.build(commandRepository, createHelperRepository(), migrationTableService);
+    MigrationExecutionContextPtr context = contextBuilder.build(commandRepository, createHelperRepository(), migrationTableService);
 
     QSqlDatabase database(context->database());
     bool success = false;

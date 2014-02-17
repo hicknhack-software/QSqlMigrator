@@ -56,9 +56,8 @@ bool MysqlAlterColumnTypeService::execute(const Commands::AlterColumnType &alter
     return CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
 }
 
-bool MysqlAlterColumnTypeService::execute(const Commands::ConstCommandPtr &command
-                                       , CommandExecution::CommandExecutionContext &context
-                                       ) const
+bool MysqlAlterColumnTypeService::execute(const Commands::ConstCommandPtr &command,
+                                          CommandExecution::CommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::AlterColumnType> alterColumnType(command.staticCast<const Commands::AlterColumnType>());
     Q_ASSERT( alterColumnType );

@@ -41,8 +41,8 @@ const QString &LocalSchemeRenameTableService::commandType() const
     return Commands::RenameTable::typeName();
 }
 
-bool LocalSchemeRenameTableService::execute(const Commands::ConstCommandPtr &command
-                                            , CommandExecution::LocalSchemeCommandExecutionContext &context) const
+bool LocalSchemeRenameTableService::execute(const Commands::ConstCommandPtr &command,
+                                            CommandExecution::LocalSchemeCommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::RenameTable> renameTable(command.staticCast<const Commands::RenameTable>());
 
@@ -60,8 +60,8 @@ bool LocalSchemeRenameTableService::execute(const Commands::ConstCommandPtr &com
     return true;
 }
 
-bool LocalSchemeRenameTableService::isValid(const Commands::ConstCommandPtr &command
-                                            , const CommandExecution::LocalSchemeCommandExecutionContext &context) const
+bool LocalSchemeRenameTableService::isValid(const Commands::ConstCommandPtr &command,
+                                            const CommandExecution::LocalSchemeCommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::RenameTable> renameTable(command.staticCast<const Commands::RenameTable>());
 

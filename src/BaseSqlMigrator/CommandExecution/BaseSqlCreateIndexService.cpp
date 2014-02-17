@@ -71,8 +71,8 @@ bool BaseSqlCreateIndexService::execute(const Commands::ConstCommandPtr &command
     return success;
 }
 
-bool BaseSqlCreateIndexService::isValid(const Commands::ConstCommandPtr &command
-                                         , const CommandExecution::CommandExecutionContext &context) const
+bool BaseSqlCreateIndexService::isValid(const Commands::ConstCommandPtr &command,
+                                        const CommandExecution::CommandExecutionContext &context) const
 {
     Q_UNUSED(context);
     QSharedPointer<const Commands::CreateIndex> createIndex(command.staticCast<const Commands::CreateIndex>());

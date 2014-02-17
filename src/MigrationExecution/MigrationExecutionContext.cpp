@@ -30,7 +30,6 @@
 
 namespace MigrationExecution {
 
-
 MigrationExecutionContextPtr MigrationExecutionContext::Builder::build(const CommandServiceRepositoryPtr &commandServiceRepository,
                                                                        const Helper::HelperRepository &helperRepository,
                                                                        const MigrationTableServicePtr &migrationTableService) const

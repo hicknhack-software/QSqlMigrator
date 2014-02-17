@@ -29,9 +29,9 @@
 
 namespace CommandExecution {
 
-bool CommandExecutionService::execute(const Commands::CommandPtr command
-                                      , CommandServiceRepositoryPtr serviceRepository
-                                      , CommandExecutionContext &context) const
+bool CommandExecutionService::execute(const Commands::CommandPtr command,
+                                      CommandServiceRepositoryPtr serviceRepository,
+                                      CommandExecutionContext &context) const
 {
     if(!command) {
         ::qDebug() << LOG_PREFIX << Q_FUNC_INFO << "command is 0!";
@@ -56,10 +56,10 @@ bool CommandExecutionService::execute(const Commands::CommandPtr command
     return false;
 }
 
-bool CommandExecutionService::batch(const Commands::CommandPtrList &commandList
-                                    , Commands::CommandPtrList &undoCommands
-                                    , CommandServiceRepositoryPtr serviceRepository
-                                    , CommandExecutionContext &context) const
+bool CommandExecutionService::batch(const Commands::CommandPtrList &commandList,
+                                    Commands::CommandPtrList &undoCommands,
+                                    CommandServiceRepositoryPtr serviceRepository,
+                                    CommandExecutionContext &context) const
 {
     foreach (Commands::CommandPtr command, commandList) {
         if(!command) {

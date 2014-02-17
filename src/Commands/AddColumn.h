@@ -48,8 +48,8 @@ public:
     CommandPtr reverse() const Q_DECL_OVERRIDE;
 
 private:
-    const Structure::Column m_column;
     const QString m_tableName;
+    const Structure::Column m_column;
 };
 
 inline const Structure::Column &AddColumn::column() const

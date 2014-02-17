@@ -75,26 +75,24 @@ private Q_SLOTS:
     void testCreateIndex();
 
 protected:
-    MigrationExecution::MigrationExecutionContext::Builder m_contextBuilder;
-    MigrationExecution::MigrationExecutionContextPtr m_context;
-
     BasicTest(const QString &driverName, const QString &testDatabaseName,
               MigrationExecution::MigrationExecutionContextPtr (*buildContext)(MigrationExecution::MigrationExecutionContext::Builder &),
               const QString &structureDatabase = "", const QString &hostName = "", const int hostPort = 0, const QString &userName = "", const QString &password = "");
 
-    QSqlDatabase m_structure_database;
+    const QString m_driverName;
+    const QString m_testDatabaseName;
+    MigrationExecution::MigrationExecutionContextPtr (*m_buildContext)(MigrationExecution::MigrationExecutionContext::Builder &);
 
     const QString m_structureDatabase;
-    const QString m_testDatabaseName;
-
-    const QString m_driverName;
 
     const QString m_hostName;
     const int m_hostPort;
     const QString m_userName;
     const QString m_password;
 
-    MigrationExecution::MigrationExecutionContextPtr (*m_buildContext)(MigrationExecution::MigrationExecutionContext::Builder &);
+    MigrationExecution::MigrationExecutionContext::Builder m_contextBuilder;
+    MigrationExecution::MigrationExecutionContextPtr m_context;
+    QSqlDatabase m_structure_database;
 };
 
 #endif // BASICTEST_H

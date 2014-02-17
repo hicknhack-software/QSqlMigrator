@@ -29,8 +29,8 @@
 
 namespace Commands {
 
-AlterColumnType::AlterColumnType(const QString &columnName, const QString &tableName
-                                 , const Structure::Type &newType, const Structure::Type &oldType)
+AlterColumnType::AlterColumnType(const QString &columnName, const QString &tableName,
+                                 const Structure::Type &newType, const Structure::Type &oldType)
     : BaseCommand(AlterColumnType::typeName())
     , m_tableName(tableName)
     , m_columnName(columnName)

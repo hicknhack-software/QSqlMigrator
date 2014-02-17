@@ -8,7 +8,7 @@ QT       += core sql
 QT       -= gui
 
 TEMPLATE = lib
-CONFIG += dll debug_and_release
+CONFIG += dll debug_and_release c++11
 DEFINES += _BUILDING_QSQLMIGRATOR_DLL
 DEFINES += LOG_PREFIX=\\\"[QSqlMigrator]\\\"
 

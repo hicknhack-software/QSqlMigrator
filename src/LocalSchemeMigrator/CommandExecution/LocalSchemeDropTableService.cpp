@@ -42,9 +42,8 @@ const QString &LocalSchemeDropTableService::commandType() const
     return Commands::DropTable::typeName();
 }
 
-bool LocalSchemeDropTableService::execute(const Commands::ConstCommandPtr &command
-                                 , CommandExecution::LocalSchemeCommandExecutionContext &context
-                                 ) const
+bool LocalSchemeDropTableService::execute(const Commands::ConstCommandPtr &command,
+                                          CommandExecution::LocalSchemeCommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::DropTable> dropTable(command.staticCast<const Commands::DropTable>());
 
@@ -53,8 +52,8 @@ bool LocalSchemeDropTableService::execute(const Commands::ConstCommandPtr &comma
     return true;
 }
 
-bool LocalSchemeDropTableService::isValid(const Commands::ConstCommandPtr &command
-                                          , const CommandExecution::LocalSchemeCommandExecutionContext &context) const
+bool LocalSchemeDropTableService::isValid(const Commands::ConstCommandPtr &command,
+                                          const CommandExecution::LocalSchemeCommandExecutionContext &context) const
 {
     QSharedPointer<const Commands::DropTable> dropTable(command.staticCast<const Commands::DropTable>());
 

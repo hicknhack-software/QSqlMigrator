@@ -41,10 +41,14 @@ public:
 
     const QString &commandType() const;
 
-    static bool execute(const Commands::CreateTable& createTable, const CommandExecution::CommandExecutionContext &context);
+    static bool execute(const Commands::CreateTable& createTable,
+                        const CommandExecution::CommandExecutionContext &context);
 
-    bool execute(const Commands::ConstCommandPtr &command, CommandExecution::CommandExecutionContext &context) const;
-    bool isValid(const Commands::ConstCommandPtr &command, const CommandExecution::CommandExecutionContext &context) const;
+    bool execute(const Commands::ConstCommandPtr &command,
+                 CommandExecution::CommandExecutionContext &context) const;
+
+    bool isValid(const Commands::ConstCommandPtr &command,
+                 const CommandExecution::CommandExecutionContext &context) const;
 };
 
 } // namespace BaseSqlCommandService
