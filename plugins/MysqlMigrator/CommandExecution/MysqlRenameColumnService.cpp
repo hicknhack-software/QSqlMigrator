@@ -54,7 +54,7 @@ bool MysqlRenameColumnService::execute(const Commands::RenameColumn &renameColum
     const QString alterQuery =
             QString("ALTER TABLE %1 CHANGE COLUMN %2 %3")
             .arg(context.helperRepository().quoteService().quoteTableName(renameColumn.tableName()))
-            .arg(renameColumn.name())
+            .arg(renameColumn.oldName())
             .arg(context.helperRepository().columnService().generateColumnDefinitionSql(modifiedColumn));
 
     return CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);
@@ -66,16 +66,15 @@ bool MysqlRenameColumnService::execute(const Commands::ConstCommandPtr &command,
     QSharedPointer<const Commands::RenameColumn> renameColumn(command.staticCast<const Commands::RenameColumn>());
     Q_ASSERT(renameColumn);
 
-    const Structure::Table originalTable(context.helperRepository().sqlStructureService()
-                                         .getTableDefinition(renameColumn->tableName(), context.database()));
-    bool success;
-    const Structure::Column originalColumn( originalTable.fetchColumnByName( renameColumn->name(), success ) );
-    if (!success) {
-        ::qWarning() << "could not find column" << renameColumn->tableName() << renameColumn->name();
+    const Structure::Column originalColumn( context.helperRepository().sqlStructureService()
+                                            .getTableDefinition(renameColumn->tableName(), context.database())
+                                            .fetchColumnByName(renameColumn->oldName()) );
+    if (!originalColumn.isValid()) {
+        ::qWarning() << "could not find column" << renameColumn->tableName() << renameColumn->oldName();
         return false;
     }
 
-    success = execute(*renameColumn, originalColumn, context);
+    bool success = execute(*renameColumn, originalColumn, context);
 
     if (success && context.isUndoUsed()) {
         context.setUndoCommand(renameColumn->reverse());

@@ -72,22 +72,21 @@ QString PostgresqlColumnService::buildColumnTypeSql(const Column &column) const
     return BaseSqlColumnService::buildColumnTypeSql(column);
 }
 
-QStringList PostgresqlColumnService::buildColumnOptionsSql(const Column &column) const
+void PostgresqlColumnService::buildColumnOptionsSql(const Column &column,
+                                                    const BaseSqlColumnService::StringOutputFunction &addOption) const
 {
-    QStringList sqlColumnOptions;
     if (column.isPrimary()) {
-        sqlColumnOptions << "PRIMARY KEY";
+        addOption("PRIMARY KEY");
     }
     else if (!column.isAutoIncremented() && !column.isNullable()) {
-        sqlColumnOptions << "NOT NULL";
+        addOption("NOT NULL");
     }
     if (column.isUnique()) {
-        sqlColumnOptions << "UNIQUE";
+        addOption("UNIQUE");
     }
     if (column.hasDefaultValue()) {
-        sqlColumnOptions << QString("DEFAULT (%1)").arg(column.defaultValue());
+        addOption(QString("DEFAULT (%1)").arg(column.defaultValue()));
     }
-    return sqlColumnOptions;
 }
 
 } // namespace Helper

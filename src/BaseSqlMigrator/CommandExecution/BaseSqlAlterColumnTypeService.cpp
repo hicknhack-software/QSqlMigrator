@@ -66,18 +66,21 @@ bool BaseSqlAlterColumnTypeService::execute(const Commands::ConstCommandPtr &com
     QSharedPointer<const Commands::AlterColumnType> alterColumnType(command.staticCast<const Commands::AlterColumnType>());
     Q_ASSERT(alterColumnType);
 
-    Structure::Table originalTable(context.helperRepository().sqlStructureService().getTableDefinition(alterColumnType->tableName(), context.database()));
+    const Structure::Column originalColumn( context.helperRepository().sqlStructureService()
+                                            .getTableDefinition(alterColumnType->tableName(), context.database())
+                                            .fetchColumnByName(alterColumnType->columnName()) );
+    if (!originalColumn.isValid()) {
+        ::qWarning() << "could not find column" << alterColumnType->tableName() << alterColumnType->columnName();
+        return false;
+    }
 
     bool success = execute(*alterColumnType, context);
 
     if (success && context.isUndoUsed()) {
         Commands::CommandPtr undoCommand(new Commands::AlterColumnType(alterColumnType->columnName(),
                                                                        alterColumnType->tableName(),
-                                                                       originalTable.fetchColumnByName(alterColumnType->columnName(), success).type(), alterColumnType->newType()));
-        if( success )
-            context.setUndoCommand(undoCommand);
-
-        return true;
+                                                                       originalColumn.type(), alterColumnType->newType()));
+        context.setUndoCommand(undoCommand);
     }
 
     return success;

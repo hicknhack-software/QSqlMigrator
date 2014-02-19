@@ -439,10 +439,9 @@ void BasicTest::testAlterColumnType()
     execution.execute(command2, m_context->commandServiceRepository(), serviceContext);
 
     //check if old column was removed and new column included successfully
-    bool success;
     Structure::Table table1 = m_context->helperRepository().sqlStructureService().getTableDefinition("testtable1", m_context->database());
-    Structure::Column col1( table1.fetchColumnByName("col1", success) );
-    QVERIFY2(success, "column col1 should exist");
+    Structure::Column col1( table1.fetchColumnByName("col1") );
+    QVERIFY2(col1.isValid(), "column col1 should exist");
     QVERIFY2(0 == QString::compare(col1.type().string(), m_context->helperRepository().typeMapperService().map(Type(Type::String, 42)), Qt::CaseInsensitive), "column col1 should be retyped to varchar(42) during migration");
 
     Commands::CommandPtr command3(new Commands::AlterColumnType("col1", "testtable1", Type(Type::String, 43)));
@@ -450,8 +449,8 @@ void BasicTest::testAlterColumnType()
 
     //check if old column was removed and new column included successfully
     Structure::Table table2 = m_context->helperRepository().sqlStructureService().getTableDefinition("testtable1", m_context->database());
-    Structure::Column col2( table2.fetchColumnByName("col1", success) );
-    QVERIFY2(success, "column col1 should exist");
+    Structure::Column col2( table2.fetchColumnByName("col1") );
+    QVERIFY2(col2.isValid(), "column col1 should exist");
     QVERIFY2(0 == QString::compare(col2.type().string(), m_context->helperRepository().typeMapperService().map(Type(Type::String, 43)), Qt::CaseInsensitive), "column col1 should be retyped to varchar(43) during migration");
 
     //TODO check if test data was copied correctly
@@ -485,9 +484,8 @@ void BasicTest::testColumnType()
     Structure::Table table = m_context->helperRepository().sqlStructureService().getTableDefinition(testtable.name(), m_context->database());
 
     foreach(Structure::Column column, testtable.columns()) {
-        bool success;
-        Structure::Column col = table.fetchColumnByName(column.name(), success);
-        QVERIFY2(success, "column should exist");
+        Structure::Column col = table.fetchColumnByName(column.name());
+        QVERIFY2(col.isValid(), "column should exist");
         if (0 != QString::compare(col.type().string(), m_context->helperRepository().typeMapperService().map(column.type()), Qt::CaseInsensitive)) {
             QCOMPARE(col.type().string(), m_context->helperRepository().typeMapperService().map(column.type()));
         }
@@ -557,9 +555,8 @@ void BasicTest::testDropColumn()
     execution.execute(command2, m_context->commandServiceRepository(), serviceContext);
 
     //check if column was dropped successfully
-    bool columnRemoved;
-    m_context->helperRepository().sqlStructureService().getTableDefinition("testtable1", m_context->database()).fetchColumnByName("col1", columnRemoved);
-    QVERIFY2(!columnRemoved, "col1 should be removed during migration");
+    Structure::Column col = m_context->helperRepository().sqlStructureService().getTableDefinition("testtable1", m_context->database()).fetchColumnByName("col1");
+    QVERIFY2(!col.isValid(), "col1 should be removed during migration");
 }
 
 void BasicTest::testRenameColumn()
@@ -588,11 +585,10 @@ void BasicTest::testRenameColumn()
 
     //check if old column was removed and new column included successfully
     Structure::Table table( m_context->helperRepository().sqlStructureService().getTableDefinition("testtable1", m_context->database()) );
-    bool columnRenamed;
-    Structure::Column column1( table.fetchColumnByName("col1", columnRenamed));
-    QVERIFY2(!columnRenamed, "col1 should be removed during migration");
-    Structure::Column column2( table.fetchColumnByName("new_column1", columnRenamed));
-    QVERIFY2(columnRenamed, "col1 should be renamed to new_colum1 during migration");
+    Structure::Column column1( table.fetchColumnByName("col1"));
+    QVERIFY2(!column1.isValid(), "col1 should be removed during migration");
+    Structure::Column column2( table.fetchColumnByName("new_column1"));
+    QVERIFY2(column2.isValid(), "col1 should be renamed to new_colum1 during migration");
 
     //TODO check if test data was copied correctly
 }

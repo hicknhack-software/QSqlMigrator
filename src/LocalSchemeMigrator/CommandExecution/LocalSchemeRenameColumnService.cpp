@@ -60,7 +60,7 @@ bool LocalSchemeRenameColumnService::execute(const Commands::ConstCommandPtr &co
     Structure::Table::Builder alteredTable(table->name(), table->columns());
     bool found = false;
     foreach (const Structure::Column &column, table->columns()) {
-        if (column.name() == renameColumn->name()) {
+        if (column.name() == renameColumn->oldName()) {
             alteredTable << Structure::Column( renameColumn->newName(), column.type(), column.defaultValue(), column.attributes() );
             found = true;
         }
@@ -69,7 +69,7 @@ bool LocalSchemeRenameColumnService::execute(const Commands::ConstCommandPtr &co
         }
     }
     if (!found) {
-        ::qWarning() << "column not found" << renameColumn->tableName() << renameColumn->name();
+        ::qWarning() << "column not found" << renameColumn->tableName() << renameColumn->oldName();
         return false;
     }
     context.localScheme()->alterTable( alteredTable );

@@ -54,7 +54,7 @@ bool BaseSqlRenameColumnService::execute(const Commands::RenameColumn &renameCol
     const QString alterQuery =
             QString("ALTER TABLE %1 RENAME COLUMN %2 TO %3")
             .arg(context.helperRepository().quoteService().quoteTableName(renameColumn.tableName()))
-            .arg(context.helperRepository().quoteService().quoteColumnName(renameColumn.name()))
+            .arg(context.helperRepository().quoteService().quoteColumnName(renameColumn.oldName()))
             .arg(context.helperRepository().quoteService().quoteColumnName(renameColumn.newName()));
 
     return CommandExecution::BaseCommandExecutionService::executeQuery(alterQuery, context);

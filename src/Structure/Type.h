@@ -46,7 +46,7 @@ public:
 
     /*!
      * \brief Construct the type from
-     * \param sqlType the string representation of an sql type
+     * \param string the string representation of an sql type
      */
     Type(const QString& string);
 
@@ -76,7 +76,7 @@ public:
     //! \return the scale of the type (only used for numeric values)
     int scale() const;
 
-    //! \return the invalid SqlType
+    //! \return the invalid Type
     static const Type& invalid();
 
     //! \return true if this type is not invalid

@@ -53,7 +53,7 @@ bool SqliteRenameColumnService::execute(const Commands::ConstCommandPtr &command
     Table::Builder alteredTable(renameColumn->tableName());
     bool found = false;
     foreach (const Column &column, table.columns()) {
-        if (column.name() == renameColumn->name()) {
+        if (column.name() == renameColumn->oldName()) {
             alteredTable << Column(renameColumn->newName(), column.type(), column.attributes());
             found = true;
         } else {
@@ -61,7 +61,7 @@ bool SqliteRenameColumnService::execute(const Commands::ConstCommandPtr &command
         }
     }
     if (!found) {
-        ::qWarning() << "Column not found" << renameColumn->name();
+        ::qWarning() << "Column not found" << renameColumn->oldName();
         return false;
     }
 

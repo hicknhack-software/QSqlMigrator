@@ -1,22 +1,10 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2013-01-25T11:54:21
-#
-#-------------------------------------------------
-
-QT       += core sql
-QT       -= gui
 
 TEMPLATE = lib
-CONFIG += dll debug_and_release c++11
+CONFIG += dll
+include(../common.pri)
+
 DEFINES += _BUILDING_QSQLMIGRATOR_DLL
 DEFINES += LOG_PREFIX=\\\"[QSqlMigrator]\\\"
-
-QSQLMIGRATOR_ROOT = $$quote($$PWD)/../
-LIB_PATH = $$QSQLMIGRATOR_ROOT/bin
-DESTDIR = $$LIB_PATH
-
-INCLUDEPATH += $$QSQLMIGRATOR_ROOT/src
 
 CONFIG(release, debug|release): TARGET = QSqlMigrator
 else:CONFIG(debug, debug|release): TARGET = QSqlMigratord

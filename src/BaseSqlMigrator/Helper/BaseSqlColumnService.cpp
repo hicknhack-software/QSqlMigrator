@@ -26,6 +26,7 @@
 #include "BaseSqlMigrator/Helper/BaseSqlColumnService.h"
 
 #include <QStringList>
+#include <QTextStream>
 
 using namespace Structure;
 
@@ -41,29 +42,30 @@ QString BaseSqlColumnService::buildColumnTypeSql(const Column &column) const
     return m_typeMapperService.map(column.type());
 }
 
-QStringList BaseSqlColumnService::buildColumnOptionsSql(const Column &column) const
+void BaseSqlColumnService::buildColumnOptionsSql(const Column &column,
+                                                 const BaseSqlColumnService::StringOutputFunction &addOption) const
 {
-    QStringList sqlColumnOptions;
     if (column.isPrimary()) {
-        sqlColumnOptions << "PRIMARY KEY";
+        addOption("PRIMARY KEY");
     }
     else if (!column.isNullable()) {
-        sqlColumnOptions << "NOT NULL";
+        addOption("NOT NULL");
     }
     if (column.isUnique()) {
-        sqlColumnOptions << "UNIQUE";
+        addOption("UNIQUE");
     }
     if (column.hasDefaultValue()) {
-        sqlColumnOptions << QString("DEFAULT (%1)").arg(column.defaultValue());
+        addOption(QString("DEFAULT (%1)").arg(column.defaultValue()));
     }
-    return sqlColumnOptions;
 }
 
 QString BaseSqlColumnService::generateColumnDefinitionSql(const Column &column) const
 {
-    QStringList columnParts = buildColumnOptionsSql(column);
-    columnParts.push_front(buildColumnTypeSql(column));
-    columnParts.push_front(column.name());
+    QStringList columnParts;
+    columnParts << column.name() << buildColumnTypeSql(column);
+    buildColumnOptionsSql(column, [&columnParts](const QString& option) {
+        columnParts << option;
+    });
     return columnParts.join(" ");
 }
 

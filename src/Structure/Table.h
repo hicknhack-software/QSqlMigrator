@@ -28,8 +28,8 @@
 
 #include "Structure/Column.h"
 
-#include <QList>
 #include <QString>
+#include <QList>
 
 namespace Structure {
 
@@ -44,7 +44,8 @@ public:
     class QSQLMIGRATOR_DLL_EXPORT Builder
     {
     public:
-        explicit Builder(const QString &name, const ColumnList& columns = ColumnList());
+        explicit Builder(const QString &name, const ColumnList& columns);
+        explicit Builder(const QString &name);
         Builder& operator <<(const Column& column);
         operator Table();
 
@@ -69,7 +70,7 @@ public:
     Table cloneWithoutColumn(const QString &columnName) const;
 
     //! \return the column with the given name
-    Column fetchColumnByName(const QString &name, bool &success) const;
+    Column fetchColumnByName(const QString &name) const;
 
 private:
     const QString m_name;
@@ -79,6 +80,10 @@ private:
 inline Table::Builder::Builder(const QString &name, const ColumnList &columns)
     : m_name(name)
     , m_columns(columns)
+{}
+
+inline Table::Builder::Builder(const QString &name)
+    : m_name(name)
 {}
 
 inline Table::Builder::operator Table()
@@ -98,7 +103,7 @@ inline const ColumnList &Table::columns() const
 
 inline bool Table::isValid() const
 {
-    return (!m_name.isEmpty()) && (!m_columns.isEmpty());
+    return (!m_name.isEmpty()) && (!m_columns.empty());
 }
 
 } //namespace Structure

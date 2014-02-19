@@ -62,19 +62,17 @@ bool MysqlAlterColumnTypeService::execute(const Commands::ConstCommandPtr &comma
     QSharedPointer<const Commands::AlterColumnType> alterColumnType(command.staticCast<const Commands::AlterColumnType>());
     Q_ASSERT( alterColumnType );
 
-    const Structure::Table originalTable(context.helperRepository().sqlStructureService()
-                                         .getTableDefinition(alterColumnType->tableName(), context.database()));
-    bool success;
-    const Structure::Column originalColumn( originalTable.fetchColumnByName( alterColumnType->columnName(), success ) );
-    if (!success) {
+    const Structure::Column originalColumn( context.helperRepository().sqlStructureService()
+                                            .getTableDefinition(alterColumnType->tableName(), context.database())
+                                            .fetchColumnByName(alterColumnType->columnName()) );
+    if (!originalColumn.isValid()) {
         ::qWarning() << "could not find column" << alterColumnType->tableName() << alterColumnType->columnName();
         return false;
     }
-
-    success = execute(*alterColumnType, originalColumn, context);
-
+    bool success = execute(*alterColumnType, originalColumn, context);
     if (success && context.isUndoUsed()) {
-        Commands::CommandPtr undoCommand(new Commands::AlterColumnType(alterColumnType->columnName(), alterColumnType->tableName(),
+        Commands::CommandPtr undoCommand(new Commands::AlterColumnType(alterColumnType->columnName(),
+                                                                       alterColumnType->tableName(),
                                                                        originalColumn.type(), alterColumnType->newType()));
         context.setUndoCommand(undoCommand);
     }

@@ -47,7 +47,9 @@ public:
     ~PostgresqlColumnService() QSQL_OVERRIDE_D {}
 
     QString buildColumnTypeSql(const Structure::Column &column) const Q_DECL_OVERRIDE;
-    QStringList buildColumnOptionsSql(const Structure::Column &column) const Q_DECL_OVERRIDE;
+
+    void buildColumnOptionsSql(const Structure::Column &column,
+                               const StringOutputFunction &addOption) const Q_DECL_OVERRIDE;
 };
 
 } // namespace Helper

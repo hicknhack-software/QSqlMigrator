@@ -62,15 +62,15 @@ bool BaseSqlDropColumnService::execute(const Commands::ConstCommandPtr &command,
     QSharedPointer<const Commands::DropColumn> dropColumn(command.staticCast<const Commands::DropColumn>());
     Q_ASSERT(dropColumn);
 
-    Structure::Table originalTable(context.helperRepository().sqlStructureService().getTableDefinition(dropColumn->tableName(), context.database()));
+    const Structure::Column originalColumn( context.helperRepository().sqlStructureService()
+                                            .getTableDefinition(dropColumn->tableName(), context.database())
+                                            .fetchColumnByName(dropColumn->columnName()) );
 
     bool success = execute(*dropColumn, context);
 
     if (success && context.isUndoUsed()) {
-        Commands::CommandPtr undoCommand(new Commands::AddColumn(originalTable.fetchColumnByName(dropColumn->columnName(), success), dropColumn->tableName()));
-
-        if( success )
-            context.setUndoCommand(undoCommand);
+        Commands::CommandPtr undoCommand(new Commands::AddColumn(originalColumn, dropColumn->tableName()));
+        context.setUndoCommand(undoCommand);
         return true;
     }
 

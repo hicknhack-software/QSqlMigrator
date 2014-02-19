@@ -31,7 +31,7 @@ namespace Commands {
 
 RenameColumn::RenameColumn(const QString &name, const QString &newName, const QString &tableName)
     : BaseCommand(RenameColumn::typeName())
-    , m_name(name)
+    , m_oldName(name)
     , m_newName(newName)
     , m_tableName(tableName)
 {
@@ -56,7 +56,7 @@ const QString &RenameColumn::typeName()
 
 CommandPtr RenameColumn::reverse() const
 {
-    return CommandPtr(new RenameColumn(newName(), name(), tableName()));
+    return CommandPtr(new RenameColumn(newName(), oldName(), tableName()));
 }
 
 } // namespace Commands

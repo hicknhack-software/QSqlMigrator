@@ -34,17 +34,20 @@
 
 #include <QString>
 #include <QHash>
+#include <functional>
 
 namespace Helper {
 
 class QSQLMIGRATOR_DLL_EXPORT BaseSqlColumnService : public ColumnService
 {
 public:
+    typedef std::function< void(const QString &type) > StringOutputFunction;
+
     BaseSqlColumnService(const TypeMapperService& typeMapperService);
     ~BaseSqlColumnService() QSQL_OVERRIDE_D {}
 
     virtual QString buildColumnTypeSql(const Structure::Column &column) const;
-    virtual QStringList buildColumnOptionsSql(const Structure::Column &column) const;
+    virtual void buildColumnOptionsSql(const Structure::Column &column, const StringOutputFunction &addOption) const;
 
     QString generateColumnDefinitionSql(const Structure::Column &column) const Q_DECL_OVERRIDE;
     QString generateColumnsDefinitionSql(const QList<Structure::Column> &columnList) const Q_DECL_OVERRIDE;

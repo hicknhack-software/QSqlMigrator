@@ -62,7 +62,7 @@ bool Table::hasColumn(const QString &columnName) const
 QStringList Table::columnNames() const
 {
     QStringList columnNames;
-    foreach (const Column &column, m_columns) {
+    foreach (auto&& column, m_columns) {
         columnNames << column.name();
     }
     return columnNames;
@@ -70,26 +70,24 @@ QStringList Table::columnNames() const
 
 Table Table::cloneWithoutColumn(const QString &columnName) const
 {
-    QList<Column> newColumnList;
-    newColumnList.reserve( ::qMax( 0, columns().size() - 1 ));
-    foreach (const Column &column, columns()) {
+    ColumnList newColumnList;
+    newColumnList.reserve( qMax( 0, (int)columns().size() - 1 ));
+    for(auto&& column : columns()) {
         if (column.name() != columnName) {
             newColumnList << column;
         }
     }
     return Table(name(), newColumnList);
-
 }
 
-Column Table::fetchColumnByName(const QString &name, bool &success) const
+Column Table::fetchColumnByName(const QString &name) const
 {
-    foreach (Structure::Column column, m_columns) {
-        if (column.name() == name) {
-            success = true;
-            return column;
-        }
+    auto it = std::find_if(m_columns.cbegin(), m_columns.cend(), [&name](const Column& column){
+        return column.name() == name;
+    });
+    if(it != m_columns.cend()) {
+        return *it;
     }
-    success = false;
     return Column(name, Type::invalid());
 }
 
