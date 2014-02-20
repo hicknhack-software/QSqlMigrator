@@ -72,7 +72,7 @@ Table Table::cloneWithoutColumn(const QString &columnName) const
 {
     ColumnList newColumnList;
     newColumnList.reserve( qMax( 0, (int)columns().size() - 1 ));
-    for(auto&& column : columns()) {
+    foreach (auto&& column, columns()) {
         if (column.name() != columnName) {
             newColumnList << column;
         }
@@ -82,10 +82,10 @@ Table Table::cloneWithoutColumn(const QString &columnName) const
 
 Column Table::fetchColumnByName(const QString &name) const
 {
-    auto it = std::find_if(m_columns.cbegin(), m_columns.cend(), [&name](const Column& column){
+    auto it = std::find_if(m_columns.begin(), m_columns.end(), [&name](const Column& column){
         return column.name() == name;
     });
-    if(it != m_columns.cend()) {
+    if(it != m_columns.end()) {
         return *it;
     }
     return Column(name, Type::invalid());

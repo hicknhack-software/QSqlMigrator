@@ -51,4 +51,8 @@
 #   define QSQL_OVERRIDE_D
 #endif
 
+#ifndef Q_NULLPTR
+#   define Q_NULLPTR 0
+#endif
+
 #endif // QSQLMIGRATOR_CONFIG_H

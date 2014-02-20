@@ -191,7 +191,7 @@ void BasicTest::testDropTable()
 void BasicTest::testTransaction()
 {
     if (!m_context->baseMigrationTableService()->canRevertStrucuturalChangesUsingTransactions()) {
-        QSKIP("database driver does not support transactions for structural changes, SKIPPING TEST!");
+        QSKIP("database driver does not support transactions for structural changes, SKIPPING TEST!", SkipSingle);
     }
 
     Migration m;
@@ -238,7 +238,7 @@ void BasicTest::testTransaction()
 void BasicTest::testUndoCreateTable()
 {
     if (m_context->baseMigrationTableService()->canRevertStrucuturalChangesUsingTransactions()) {
-        QSKIP("database driver should support transactions for structural changes, SKIPPING TEST!");
+        QSKIP("database driver should support transactions for structural changes, SKIPPING TEST!", SkipSingle);
     }
 
     Migration m;
@@ -286,7 +286,7 @@ void BasicTest::testUndoCreateTable()
 void BasicTest::testUndoDropTable()
 {
     if (m_context->baseMigrationTableService()->canRevertStrucuturalChangesUsingTransactions()) {
-        QSKIP("database driver should support transactions for structural changes, SKIPPING TEST!");
+        QSKIP("database driver should support transactions for structural changes, SKIPPING TEST!", SkipSingle);
     }
 
     //TODO run dropTable with tableName only to test TableRecovery in DropTable-Command
