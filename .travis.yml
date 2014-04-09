@@ -13,16 +13,16 @@ addons:
 
 before_install:
 - if [ "$CXX" = "g++" ]; then sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y; fi
-- if [ "$QT_BASE" = "5" ]; then sudo add-apt-repository ppa:ubuntu-sdk-team/ppa -y; fi
+- sudo add-apt-repository ppa:ubuntu-sdk-team/ppa -y
 - sudo apt-get update -qq
 
 install:
 - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; export CXX="g++-4.8" CC="gcc-4.8"; fi
-- if [ "$QT_BASE" = "4" ]; then sudo apt-get install -qq qtchooser libqt4-dev qt4-qmake qt4-dev-tools libqt4-sql-mysql libqt4-sql-psql libqt4-sql-sqlite; fi
-- if [ "$QT_BASE" = "5" ]; then sudo apt-get install -qq qtchooser qtbase5-dev qt5-qmake qtbase5-dev-tools libqt5sql5-mysql libqt5sql5-psql libqt5sql5-sqlite; fi
+- if [ "$QT_BASE" = "4" ]; then sudo apt-get install -qq qt4-default qt4-qmake qt4-dev-tools libqt4-sql-mysql libqt4-sql-psql libqt4-sql-sqlite; fi
+- if [ "$QT_BASE" = "5" ]; then sudo apt-get install -qq qt5-default qt5-qmake qtbase5-dev-tools libqt5sql5-mysql libqt5sql5-psql libqt5sql5-sqlite; fi
 
 before_script:
-- qtchooser -run-tool=qmake -qt=qt$QT_BASE -r "QMAKE_CXX=$CXX" "QMAKE_CC=$CC"
+- qmake -r "QMAKE_CXX=$CXX" "QMAKE_CC=$CC"
 - mv tests/auto/mysql/MysqlConfig.h.travis tests/auto/mysql/MysqlConfig.h
 - mv tests/auto/postgresql/PostgresqlConfig.h.travis tests/auto/mysql/PostgresqlConfig.h
 
