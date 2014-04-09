@@ -4,23 +4,22 @@ compiler:
 - clang
 - gcc
 
-#env:
-  #matrix:
-    #- QT_VERSION=4
-    #- QT_VERSION=5
+env:
+  matrix:
+    - QT_BASE=4
+    - QT_BASE=5
 
-#before_install:
-#- sudo add-apt-repository --yes ppa:ubuntu-sdk-team/ppa
-#- sudo apt-get update -qq
-
-#install:
-#bash ./travis/install.sh
+before_install:
+- if [ "$QT_BASE" = "5" ]; sudo add-apt-repository ppa:ubuntu-sdk-team/ppa -y
+- sudo apt-get update -qq
 
 install:
-- sudo apt-get install -y qt4-qmake qt4-dev-tools
+- if [ "$QT_BASE" = "4" ]; then sudo apt-get install -qq qt4-qmake qt4-dev-tools; fi
+- if [ "$QT_BASE" = "5" ]; then sudo apt-get install -qq ubuntu-sdk qtquick1-5-dev; fi
 
 before_script:
-- qmake QSqlMigrator
+- if [ "$QT_BASE" = "4" ]; then qmake; fi
+- if [ "$QT_BASE" = "5" ]; then /usr/lib/x86_64-linux-gnu/qt5/bin/qmake; fi
 
 script:
 - make
