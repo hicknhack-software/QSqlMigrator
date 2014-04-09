@@ -10,7 +10,7 @@ env:
     - QT_BASE=5
 
 before_install:
-- if [ "$QT_BASE" = "5" ]; sudo add-apt-repository ppa:ubuntu-sdk-team/ppa -y
+- if [ "$QT_BASE" = "5" ]; sudo add-apt-repository ppa:ubuntu-sdk-team/ppa -y; fi
 - sudo apt-get update -qq
 
 install:
