@@ -19,7 +19,7 @@ before_install:
 install:
 - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; fi
 - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
-- if [ "$QT_BASE" = "4" ]; then sudo apt-get install -qq qt4-qmake qt4-dev-tools; fi
+- if [ "$QT_BASE" = "4" ]; then sudo apt-get install -qq qt4-qmake qt4-dev-tools libqt4-dev libqt4-sql-mysql libqt4-sql-psql libqt4-sql-sqlite; fi
 - if [ "$QT_BASE" = "5" ]; then sudo apt-get install -qq ubuntu-sdk qtquick1-5-dev; fi
 
 before_script:

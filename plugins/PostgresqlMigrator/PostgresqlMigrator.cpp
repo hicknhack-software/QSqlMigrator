@@ -32,7 +32,7 @@
 #include "BaseSqlMigrator/CommandExecution/BaseSqlDropIndexService.h"
 #include "BaseSqlMigrator/CommandExecution/BaseSqlDropTableService.h"
 #include "BaseSqlMigrator/CommandExecution/BaseSqlRenameTableService.h"
-#include "BaseSqlMigrator/CommandExecution/baseSqlRenameColumnService.h"
+#include "BaseSqlMigrator/CommandExecution/BaseSqlRenameColumnService.h"
 #include "BaseSqlMigrator/CommandExecution/BaseSqlAlterColumnTypeService.h"
 
 #include "Helper/HelperRepository.h"
