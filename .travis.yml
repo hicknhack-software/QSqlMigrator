@@ -5,21 +5,28 @@ compiler:
 - gcc
 
 env:
-  matrix:
-    - QT_BASE=4
-    - QT_BASE=5
+- QT_BASE=4
+- QT_BASE=5
+
+addons:
+  postgresql: "9.3"
 
 before_install:
+- if [ "$CXX" = "g++" ]; then sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y; fi
 - if [ "$QT_BASE" = "5" ]; then sudo add-apt-repository ppa:ubuntu-sdk-team/ppa -y; fi
 - sudo apt-get update -qq
 
 install:
+- if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; fi
+- if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 - if [ "$QT_BASE" = "4" ]; then sudo apt-get install -qq qt4-qmake qt4-dev-tools; fi
 - if [ "$QT_BASE" = "5" ]; then sudo apt-get install -qq ubuntu-sdk qtquick1-5-dev; fi
 
 before_script:
 - if [ "$QT_BASE" = "4" ]; then qmake; fi
 - if [ "$QT_BASE" = "5" ]; then /usr/lib/x86_64-linux-gnu/qt5/bin/qmake; fi
+- mv tests/auto/mysql/MysqlConfig.h.travis tests/auto/mysql/MysqlConfig.h
+- mv tests/auto/postgresql/PostgresqlConfig.h.travis tests/auto/mysql/PostgresqlConfig.h
 
 script:
 - make

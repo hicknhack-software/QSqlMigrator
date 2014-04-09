@@ -36,7 +36,7 @@
 #include "MysqlMigrator/CommandExecution/MysqlAlterColumnTypeService.h"
 #include "MysqlMigrator/CommandExecution/MysqlRenameColumnService.h"
 
-#include "Helper/helperRepository.h"
+#include "Helper/HelperRepository.h"
 
 #include "MysqlMigrator/Helper/MysqlColumnService.h"
 #include "MysqlMigrator/Helper/MysqlStructureService.h"
