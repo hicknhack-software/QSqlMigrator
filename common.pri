@@ -4,8 +4,8 @@ QT       -= gui
 
 CONFIG += debug_and_release c++11
 
-linux-g++ {
-    equals(QT_VERSION, 4): QMAKE_CXXFLAGS += -std=c++0x
+!win32 {
+    equals(QT_MAJOR_VERSION, 4): QMAKE_CXXFLAGS += -std=c++0x
 }
 
 QSQLMIGRATOR_ROOT = $$quote($$PWD)
