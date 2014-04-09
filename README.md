@@ -1,3 +1,5 @@
+[![Coverity Scan Build Status](https://scan.coverity.com/projects/898/badge.svg)](https://scan.coverity.com/projects/898)
+
 HicknHack QSqlMigrator Library
 ==============================
 
