@@ -18,8 +18,8 @@ before_install:
 
 install:
 - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; export CXX="g++-4.8" CC="gcc-4.8"; fi
-- if [ "$QT_BASE" = "4" ]; then sudo apt-get install -qq libqt4-dev qt4-qmake qt4-dev-tools libqt4-sql-mysql libqt4-sql-psql libqt4-sql-sqlite; fi
-- if [ "$QT_BASE" = "5" ]; then sudo apt-get install -qq qtbase5-dev qt5-qmake qtbase5-dev-tools libqt5sql5-mysql libqt5sql5-psql libqt5sql5-sqlite; fi
+- if [ "$QT_BASE" = "4" ]; then sudo apt-get install -qq qtchooser libqt4-dev qt4-qmake qt4-dev-tools libqt4-sql-mysql libqt4-sql-psql libqt4-sql-sqlite; fi
+- if [ "$QT_BASE" = "5" ]; then sudo apt-get install -qq qtchooser qtbase5-dev qt5-qmake qtbase5-dev-tools libqt5sql5-mysql libqt5sql5-psql libqt5sql5-sqlite; fi
 
 before_script:
 - qtchooser -run-tool=qmake -qt=qt$QT_BASE -r "QMAKE_CXX=$CXX" "QMAKE_CC=$CC"
