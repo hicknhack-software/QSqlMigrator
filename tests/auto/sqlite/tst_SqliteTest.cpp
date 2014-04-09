@@ -42,53 +42,40 @@ class SqliteTest : public BasicTest
 public:
     SqliteTest();
 
-private Q_SLOTS:
-    void initTestCase();
-    void cleanupTestCase();
-    void init();
-    void cleanup();
+private:
+    void defineStructureDatabase();
+    void createStructureDatabase();
+    void cleanStructureDatabase();
+    void defineTestDatabase();
 };
 
 SqliteTest::SqliteTest() : BasicTest(SQLITE_DRIVERNAME, SQLITE_DATABASE_FILE, &SqliteMigrator::buildContext)
 {
 }
 
-void SqliteTest::initTestCase()
+void SqliteTest::defineStructureDatabase()
 {
-    ::qDebug() << "running test for SQLite";
+    // empty
 }
 
-void SqliteTest::cleanupTestCase()
+void SqliteTest::createStructureDatabase()
 {
-    if (m_context->database().isOpen()) {
-        QSqlDatabase(m_context->database()).close();
-    }
+    // empty
+}
+
+void SqliteTest::cleanStructureDatabase()
+{
     if (QFile::exists(m_testDatabaseName)) {
         QFile::remove(m_testDatabaseName);
     }
 }
 
-void SqliteTest::init()
+void SqliteTest::defineTestDatabase()
 {
-    QSqlDatabase database;
-    if (!QSqlDatabase::contains(/*default-connection*/)) {
-        database = QSqlDatabase::addDatabase(m_driverName);
-        database.setDatabaseName(m_testDatabaseName);
-        m_contextBuilder.setDatabase(database);
-    }
-
-    m_context = SqliteMigrator::buildContext(m_contextBuilder);
-    QVERIFY2(m_context, "context should be builded correctly!");
+    QSqlDatabase database = QSqlDatabase::addDatabase(m_driverName, TEST_CONNECTION_NAME);
+    database.setDatabaseName(m_testDatabaseName);
 }
 
-void SqliteTest::cleanup()
-{
-    if (m_context->database().isOpen()) {
-        QSqlDatabase(m_context->database()).close();
-    }
-    QFile::remove(m_testDatabaseName);
-}
-
-QTEST_APPLESS_MAIN(SqliteTest)
+QTEST_MAIN(SqliteTest)
 
 #include "tst_SqliteTest.moc"

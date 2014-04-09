@@ -39,7 +39,6 @@
 using namespace Migrations;
 using namespace MigrationExecution;
 
-
 class ApiTest : public QObject
 {
     Q_OBJECT
@@ -312,6 +311,6 @@ void ApiTest::testUnappliedMigrations()
              "unappliedMigrations should contain second of the defined migrations");
 }
 
-QTEST_APPLESS_MAIN(ApiTest)
+QTEST_MAIN(ApiTest)
 
 #include "tst_ApiTest.moc"

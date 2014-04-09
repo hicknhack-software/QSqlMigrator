@@ -49,6 +49,12 @@
 
 #include <QSqlDatabase>
 
+#define TEST_CONNECTION_NAME "test"
+
+#ifndef QTEST_GUILESS_MAIN
+#define QTEST_GUILESS_MAIN QTEST_MAIN
+#endif
+
 class BasicTest : public QObject
 {
     Q_OBJECT
@@ -71,6 +77,7 @@ private Q_SLOTS:
     void testDropColumn();
     void testRenameColumn();
     void testColumnType();
+    void closeTestDatabase();
     void testLocalSchemeMigration();
     void testCreateIndex();
 
@@ -78,6 +85,13 @@ protected:
     BasicTest(const QString &driverName, const QString &testDatabaseName,
               MigrationExecution::MigrationExecutionContextPtr (*buildContext)(MigrationExecution::MigrationExecutionContext::Builder &),
               const QString &structureDatabase = "", const QString &hostName = "", const int hostPort = 0, const QString &userName = "", const QString &password = "");
+
+protected:
+    void initLibraryPath();
+    virtual void defineStructureDatabase();
+    virtual void createStructureDatabase();
+    virtual void cleanStructureDatabase();
+    virtual void defineTestDatabase();
 
     const QString m_driverName;
     const QString m_testDatabaseName;
@@ -92,7 +106,6 @@ protected:
 
     MigrationExecution::MigrationExecutionContext::Builder m_contextBuilder;
     MigrationExecution::MigrationExecutionContextPtr m_context;
-    QSqlDatabase m_structure_database;
 };
 
 #endif // BASICTEST_H
