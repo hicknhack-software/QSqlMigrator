@@ -1,0 +1,36 @@
+language: cpp
+
+compiler:
+- clang
+- gcc
+
+#env:
+  #matrix:
+    #- QT_VERSION=4
+    #- QT_VERSION=5
+
+#before_install:
+#- sudo add-apt-repository --yes ppa:ubuntu-sdk-team/ppa
+#- sudo apt-get update -qq
+
+#install:
+#bash ./travis/install.sh
+
+install:
+- sudo apt-get install -y qt4-qmake qt4-dev-tools
+
+before_script:
+- qmake QSqlMigrator
+
+script:
+- make
+
+branches:
+  only:
+    - master
+
+#notifications:
+  #email:
+    #recipients:
+    #on_failure: always
+    #on_success: change
