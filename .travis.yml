@@ -1,8 +1,8 @@
 language: cpp
 
-compiler:
-- clang
-- gcc
+#compiler:
+#- clang
+#- gcc
 
 env:
   matrix:
@@ -44,9 +44,9 @@ before_script:
 script:
 - make
 
-branches:
-  only:
-    - master
+#branches:
+  #only:
+    #- master
 
 #notifications:
   #email:
