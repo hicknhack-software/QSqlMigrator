@@ -48,12 +48,14 @@ MysqlStructureService::MysqlStructureService()
 Table MysqlStructureService::getTableDefinition(const QString &tableName, QSqlDatabase database) const
 {
     ColumnList columns;
-    QString queryString = QString("DESCRIBE %1").arg(tableName);
-    QSqlQuery query = database.exec(queryString);
-    QSqlError error = query.lastError();
-    if (error.isValid()) {
-        ::qDebug() << Q_FUNC_INFO << error.text();
-    } else {
+    do {
+        QString queryString = QString("DESCRIBE %1").arg(tableName);
+        QSqlQuery query = database.exec(queryString);
+        QSqlError error = query.lastError();
+        if (error.isValid()) {
+            ::qDebug() << Q_FUNC_INFO << error.text();
+            break;
+        }
         while (query.next()) {
             QString name = query.value(0).toString();
             QString type = query.value(1).toString();
@@ -81,7 +83,7 @@ Table MysqlStructureService::getTableDefinition(const QString &tableName, QSqlDa
             }
             columns << Column(name, type, defaultValue, attr);
         }
-    }
+    } while (false);
     return Table(tableName, columns);
 }
 
@@ -90,17 +92,19 @@ Index MysqlStructureService::getIndexDefinition(const QString &indexName,
                                                 QSqlDatabase database) const
 {
     Structure::Index::ColumnList columns;
-    QString queryText = QString("SHOW INDEXES FROM %1 WHERE Key_name = \"%2\"").arg(tableName, indexName);
-    ::qDebug() << "query looks like: " << queryText;
-    QSqlQuery query = database.exec(queryText);
-    QSqlError error = query.lastError();
-    if (error.isValid()) {
-        ::qDebug() << Q_FUNC_INFO << error.text();
-    } else {
+    do {
+        QString queryText = QString("SHOW INDEXES FROM %1 WHERE Key_name = \"%2\"").arg(tableName, indexName);
+        ::qDebug() << "query looks like: " << queryText;
+        QSqlQuery query = database.exec(queryText);
+        QSqlError error = query.lastError();
+        if (error.isValid()) {
+            ::qDebug() << Q_FUNC_INFO << error.text();
+            break;
+        }
         while (query.next()) {
             columns << query.value(4).toString();
         }
-    }
+    } while (false);
     return Structure::Index(indexName, tableName, columns);
 }
 

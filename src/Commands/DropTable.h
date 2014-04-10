@@ -50,7 +50,6 @@ public:
 
 private:
     Structure::Table m_table;
-    bool m_hasTable;
 };
 
 inline const Structure::Table &DropTable::table() const
