@@ -1,13 +1,13 @@
 language: cpp
 
-#compiler:
+compiler:
 #- clang
-#- gcc
+- gcc
 
 env:
   matrix:
     - QT_BASE=4
-    - QT_BASE=5
+    #- QT_BASE=5
   global:
     - secure: "e8eXDLDwIcxquS0DmV66WgoHGhxVkUpz7u0duyZnaVOFG4oKHUQENX3dJQnGVB0FB2MeRbNVVQDD0GgrVbqY3524aGuLf7gDiBEr6dORTW6GQFVNco+uq94/qATXhfyslKrGwqEIvTCWsma6e/CD1ZMfXFqpWPPVcbydhI3iT6E="
 
@@ -15,20 +15,21 @@ addons:
   postgresql: "9.3"
 
 before_install:
-- if [ "$CXX" = "g++" ]; then sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y; fi
+#- if [ "$CXX" = "g++" ]; then sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y; fi
 - sudo add-apt-repository ppa:ubuntu-sdk-team/ppa -y
 - sudo apt-get update -qq
 
 install:
-- if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; export CXX="g++-4.8" CC="gcc-4.8"; fi
+#- if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; export CXX="g++-4.8" CC="gcc-4.8"; fi
 - if [ "$QT_BASE" = "4" ]; then sudo apt-get install -qq qt4-default qt4-qmake qt4-dev-tools libqt4-sql-mysql libqt4-sql-psql libqt4-sql-sqlite; fi
 - if [ "$QT_BASE" = "5" ]; then sudo apt-get install -qq qt5-default qt5-qmake qtbase5-dev-tools libqt5sql5-mysql libqt5sql5-psql libqt5sql5-sqlite; fi
 
 before_script:
 - echo "include(../test.pri)" > tests/auto/auto.pri
-- qmake -r "QMAKE_CXX=$CXX" "QMAKE_CC=$CC"
-- mv tests/auto/mysql/MysqlConfig.h.travis tests/auto/mysql/MysqlConfig.h
-- mv tests/auto/postgresql/PostgresqlConfig.h.travis tests/auto/postgresql/PostgresqlConfig.h
+- qmake -r
+#"QMAKE_CXX=$CXX" "QMAKE_CC=$CC"
+#- mv tests/auto/mysql/MysqlConfig.h.travis tests/auto/mysql/MysqlConfig.h
+#- mv tests/auto/postgresql/PostgresqlConfig.h.travis tests/auto/postgresql/PostgresqlConfig.h
 
 addons:
   coverity_scan:
@@ -36,6 +37,7 @@ addons:
       name: "hicknhack-software/QSqlMigrator"
       description: "Your project description here"
     notification_email: arbmind@hicknhack.com
+    #build_command_prepend:
     build_command: make
     branch_pattern: coverity_scan
 
