@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/hicknhack-software/QSqlMigrator.svg?branch=master)](https://travis-ci.org/hicknhack-software/QSqlMigrator)
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/898/badge.svg)](https://scan.coverity.com/projects/898)
 
 HicknHack QSqlMigrator Library

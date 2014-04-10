@@ -41,52 +41,42 @@ namespace Helper {
 SqliteSqlStructureService::SqliteSqlStructureService()
 {}
 
-Table SqliteSqlStructureService::getTableDefinition(const QString &tableName,
-                                                    QSqlDatabase database) const
+namespace {
+QSet<QString> extractUniqueColumns(QSqlQuery &indexListQuery, QSqlDatabase database)
 {
-    ColumnList columns;
-    QString queryString = QString("PRAGMA table_info(%1)").arg(tableName);
-    QSqlQuery columnsQuery = database.exec(queryString);
-    QSqlError error = columnsQuery.lastError();
-    if (error.isValid()) {
-        ::qDebug() << Q_FUNC_INFO << error.text();
-        return Table(tableName, columns);
-    }
-
-    queryString = QString("PRAGMA index_list(%1)").arg(tableName);
-    QSqlQuery queryIndexList = database.exec(queryString);
-    error = queryIndexList.lastError();
-    if (error.isValid()) {
-        ::qDebug() << Q_FUNC_INFO << error.text();
-        return Table(tableName, columns);
-    }
     QSet<QString> uniqueColumns;
-    while (queryIndexList.next()) {
-        bool unique = queryIndexList.value(2).toBool();
+    while (indexListQuery.next()) {
+        bool unique = indexListQuery.value(2).toBool();
         if (!unique)
             continue;
 
-        QString indexName = queryIndexList.value(1).toString();
+        QString indexName = indexListQuery.value(1).toString();
 
-        queryString = QString("PRAGMA index_info(%1)").arg(indexName);
-        QSqlQuery queryIndexInfo = database.exec(queryString);
-        error = queryIndexInfo.lastError();
+        QString queryString = QString("PRAGMA index_info(%1)").arg(indexName);
+        QSqlQuery indexInfoQuery = database.exec(queryString);
+        QSqlError error = indexInfoQuery.lastError();
         if (error.isValid()) {
             ::qDebug() << Q_FUNC_INFO << error.text();
             continue;
         }
-        while (queryIndexInfo.next()) {
-            QString column(queryIndexInfo.value(2).toString());
+        while (indexInfoQuery.next()) {
+            QString column(indexInfoQuery.value(2).toString());
             uniqueColumns.insert( column );
         }
     }
+    return uniqueColumns;
+}
 
-    while (columnsQuery.next()) {
-        QString name = columnsQuery.value(1).toString();
-        QString type = columnsQuery.value(2).toString();
-        bool notNull = columnsQuery.value(3).toBool();
-        QString defaultValue = columnsQuery.value(4).toString();
-        bool primaryKey = columnsQuery.value(5).toBool();
+ColumnList columnsFromTableInfo(QSqlQuery &tableInfoQuery, const QSet<QString> &uniqueColumns)
+{
+    ColumnList columns;
+    columns.reserve(tableInfoQuery.size());
+    while (tableInfoQuery.next()) {
+        QString name = tableInfoQuery.value(1).toString();
+        QString type = tableInfoQuery.value(2).toString();
+        bool notNull = tableInfoQuery.value(3).toBool();
+        QString defaultValue = tableInfoQuery.value(4).toString();
+        bool primaryKey = tableInfoQuery.value(5).toBool();
 
         Column::Attributes attr = Column::None;
         if (notNull) {
@@ -102,31 +92,16 @@ Table SqliteSqlStructureService::getTableDefinition(const QString &tableName,
 
         columns << Column(name, type, defaultValue, attr);
     }
-    return Table(tableName, columns);
+    return columns;
 }
 
-Structure::Index SqliteSqlStructureService::getIndexDefinition(const QString &indexName,
-                                                               const QString &tableName,
-                                                               QSqlDatabase database) const
+Structure::Index::ColumnList indexColumnsFromCreateIndexSql(const QString &sqlText)
 {
-    Structure::Index::ColumnList columns;
-    QString sqlText;
-    QString queryString = QString("SELECT sql FROM sqlite_master WHERE name = '%1'").arg(indexName);
-    qDebug() << "complete query looks like: " << queryString;
-    QSqlQuery query = database.exec(queryString);
-    QSqlError error = query.lastError();
-    if (error.isValid()) {
-        ::qDebug() << Q_FUNC_INFO << error.text();
-    } else {
-        // should return one row with one column
-        query.next();
-        sqlText = query.value(0).toString();
-    }
-
     // hacky - parse the SQL statement for creating the index, look for ASC or DESC keyword
     int openParen = sqlText.indexOf("(");
     int closeParen = sqlText.lastIndexOf(")");
     QStringList columnTextList = sqlText.mid(openParen+1, closeParen-openParen-1).split(",");
+    Structure::Index::ColumnList columns;
     foreach (const QString &columnText, columnTextList) {
         if (columnText.contains("ASC", Qt::CaseInsensitive))
             columns << Structure::Index::Column(columnText.simplified().split(" ")[0], Index::Ascending);
@@ -135,6 +110,62 @@ Structure::Index SqliteSqlStructureService::getIndexDefinition(const QString &in
         else
             columns << columnText.split(" ")[0];
     }
+    return columns;
+}
+
+} // local namespace
+
+Table SqliteSqlStructureService::getTableDefinition(const QString &tableName,
+                                                    QSqlDatabase database) const
+{
+    ColumnList columns;
+    do {
+        QString queryString = QString("PRAGMA table_info(%1)").arg(tableName);
+        QSqlQuery tableInfoQuery = database.exec(queryString);
+        QSqlError error = tableInfoQuery.lastError();
+        if (error.isValid()) {
+            ::qDebug() << Q_FUNC_INFO << error.text();
+            break;
+        }
+
+        queryString = QString("PRAGMA index_list(%1)").arg(tableName);
+        QSqlQuery indexListQuery = database.exec(queryString);
+        error = indexListQuery.lastError();
+        if (error.isValid()) {
+            ::qDebug() << Q_FUNC_INFO << error.text();
+            break;
+        }
+
+        QSet<QString> uniqueColumns = extractUniqueColumns(indexListQuery, database);
+        columns = columnsFromTableInfo(tableInfoQuery, uniqueColumns);
+    }
+    while(false);
+    return Table(tableName, columns);
+}
+
+Structure::Index SqliteSqlStructureService::getIndexDefinition(const QString &indexName,
+                                                               const QString &tableName,
+                                                               QSqlDatabase database) const
+{
+    Structure::Index::ColumnList columns;
+    do {
+        QString queryString = QString("SELECT sql FROM sqlite_master WHERE name = '%1'").arg(indexName);
+        qDebug() << "complete query looks like: " << queryString;
+        QSqlQuery query = database.exec(queryString);
+        QSqlError error = query.lastError();
+        if (error.isValid()) {
+            ::qDebug() << Q_FUNC_INFO << error.text();
+            break;
+        }
+        bool success = query.next();
+        if (!success) {
+            ::qDebug() << Q_FUNC_INFO << "no results";
+            break;
+        }
+        QString sqlText = query.value(0).toString();
+
+        columns = indexColumnsFromCreateIndexSql(sqlText);
+    } while(false);
 
     //    QString queryString = QString("PRAGMA index_info(%1)").arg(indexName);
     //    QSqlQuery query = database.exec(queryString);
