@@ -1,5 +1,6 @@
 
 TEMPLATE = app
+QT       += testlib
 CONFIG   += testcase
 CONFIG   -= app_bundle
 
