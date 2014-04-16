@@ -1,7 +1,7 @@
 
 TEMPLATE = app
 QT       += testlib
-CONFIG   += console
+CONFIG   += console testcase
 CONFIG   -= app_bundle
 
 include(../common.pri)

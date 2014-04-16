@@ -1,6 +1,6 @@
 
 TEST_NAME=Postgresql
-include(../auto.pri)
+include(../test.pri)
 
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
@@ -22,8 +22,10 @@ else:unix:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$LIB_PATH/libPostgres
 # }
 
 SOURCES += tst_PostgresqlTest.cpp \
-	 ../BasicTest/BasicTest.cpp
+         ../BasicTest/BasicTest.cpp
 
 HEADERS += \
-	 ../BasicTest/BasicTest.h \
-         PostgresqlConfig.h
+         ../BasicTest/BasicTest.h \
+         PostgresqlConfig.h \
+    PostgresqlConfig.h.example \
+    PostgresqlConfig.h.travis

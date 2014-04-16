@@ -1,11 +1,11 @@
 
-TEST_NAME=Sqlite
-include(../auto.pri)
+TEST_NAME=Api
+include(../test.pri)
 
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
-!exists(SqliteConfig.h) {
-  system($$QMAKE_COPY SqliteConfig.h.example SqliteConfig.h)
+!exists(ApiConfig.h) {
+  system($$QMAKE_COPY ApiConfig.h.example ApiConfig.h)
 }
 
 # depends SqliteMigrator.lib {
@@ -21,9 +21,18 @@ else:unix:CONFIG(release, debug|release): PRE_TARGETDEPS += $$LIB_PATH/libSqlite
 else:unix:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$LIB_PATH/libSqliteMigratord.so
 # }
 
-SOURCES += tst_SqliteTest.cpp \
-	 ../BasicTest/BasicTest.cpp
+SOURCES += tst_ApiTest.cpp \
+         M20132201_180943_CreateCars.cpp \
+         M20132201_175827_CreateAddresses.cpp \
+         M20131501_191807_CreateUsers.cpp \
+         M20133001_164323_AddUsers.cpp \
+         SqliteAddUser.cpp
 
 HEADERS += \
-	 ../BasicTest/BasicTest.h \
-	 SqliteConfig.h
+         M20132201_180943_CreateCars.h \
+         M20132201_175827_CreateAddresses.h \
+         M20131501_191807_CreateUsers.h \
+         M20133001_164323_AddUsers.h \
+         SqliteAddUser.h \
+         ApiConfig.h \
+         ApiConfig.h.example

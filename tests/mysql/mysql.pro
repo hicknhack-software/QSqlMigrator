@@ -1,6 +1,6 @@
 
 TEST_NAME=Mysql
-include(../auto.pri)
+include(../test.pri)
 
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
@@ -22,11 +22,12 @@ else:unix:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$LIB_PATH/libMysqlMig
 # }
 
 SOURCES += tst_MysqlTest.cpp \
-	 ../BasicTest/BasicTest.cpp
+         ../BasicTest/BasicTest.cpp
 
 HEADERS += \
-	 ../BasicTest/BasicTest.h \
-	 MysqlConfig.h
+         ../BasicTest/BasicTest.h \
+         MysqlConfig.h \
+    MysqlConfig.h.example
 
 OTHER_FILES += \
-	 MysqlDriver.txt
+         MysqlDriver.txt
