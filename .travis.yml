@@ -23,8 +23,8 @@ install:
 
 before_script:
 - qmake -r "QMAKE_CXX=$CXX" "QMAKE_CC=$CC"
-- mv tests/auto/mysql/MysqlConfig.h.travis tests/auto/mysql/MysqlConfig.h
-- mv tests/auto/postgresql/PostgresqlConfig.h.travis tests/auto/postgresql/PostgresqlConfig.h
+- mv tests/mysql/MysqlConfig.h.travis tests/mysql/MysqlConfig.h
+- mv tests/postgresql/PostgresqlConfig.h.travis tests/postgresql/PostgresqlConfig.h
 
 script:
 - make
