@@ -1,10 +1,10 @@
-TEMPLATE = subdirs
-CONFIG += debug_and_release
 
 SUBDIRS += \
         src \
         plugins \
         tests
+
+include(_subdir.pri)
 
 plugins.depends = src
 tests.depends = src plugins
@@ -14,4 +14,5 @@ OTHER_FILES += \
         CHANGES \
         LICENSE.GPL3 \
         LICENSE.LGPL \
-        .travis.yml
+        .travis.yml \
+        common.pri

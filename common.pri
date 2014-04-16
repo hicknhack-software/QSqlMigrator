@@ -14,3 +14,8 @@ LIB_PATH = $$QSQLMIGRATOR_ROOT/bin
 DESTDIR = $$LIB_PATH
 
 INCLUDEPATH += $$QSQLMIGRATOR_ROOT/src
+
+!contains(QMAKE_EXTRA_TARGETS, xunittest) {
+    xunittest.depends = first
+    QMAKE_EXTRA_TARGETS += xunittest
+}
