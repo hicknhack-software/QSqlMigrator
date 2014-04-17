@@ -37,8 +37,8 @@ win32:debug_and_release {
 
     XUNITTESTRUN_TARGET=$$replace(XUNITTESTRUN_TARGET,^\\.\\./,)
 }
-!isEmpty(XUNITTESTRUN_DESTDIR):!contains(XUNITTESTRUN_DESTDIR,^\\./?):check.commands = cd $(DESTDIR) &&
-contains(XUNITTESTRUN_TARGET,.*/.*):check.commands = cd $(DESTDIR) &&
+!isEmpty(XUNITTESTRUN_DESTDIR):!contains(XUNITTESTRUN_DESTDIR,^\\./?):xunittest.commands = cd $(DESTDIR) &&
+contains(XUNITTESTRUN_TARGET,.*/.*):xunittest.commands = cd $(DESTDIR) &&
 
 unix {
     isEmpty(XUNITTEST_TARGET_DIR): XUNITTEST_TARGET_DIR = .
