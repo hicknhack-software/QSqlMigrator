@@ -41,20 +41,16 @@ win32:debug_and_release {
 contains(XUNITTESTRUN_TARGET,.*/.*):xunittest.commands = cd $(DESTDIR) &&
 
 unix {
-    isEmpty(XUNITTEST_TARGET_DIR): XUNITTEST_TARGET_DIR = .
-
-    mac:app_bundle: \
-        xunittest.commands += $${XUNITTEST_TARGET_DIR}/$(QMAKE_TARGET).app/Contents/MacOS/$(QMAKE_TARGET)
-    else: \
-        xunittest.commands += $${XUNITTEST_TARGET_DIR}/$(QMAKE_TARGET)
+    mac:app_bundle: xunittest.commands += ./$(QMAKE_TARGET).app/Contents/MacOS/$(QMAKE_TARGET)
+    else: xunittest.commands += ./$(QMAKE_TARGET)
 } else {
     # Windows
-    xunittest.commands += $(DESTDIR_TARGET)
+    xunittest.commands += $(TARGET)
 }
 
 # Allow for custom arguments to tests
 XUNITXML_PATH = $${DESTDIR}$${QMAKE_DIR_SEP}$(QMAKE_TARGET)-xunit.xml
-win32: XUNITXML_PATH = $$replace(XUNITXML_PATH,/,\\\\)
+win32: XUNITXML_PATH = $$replace(XUNITXML_PATH,/,\\)
 xunittest.commands += -xml -o $${XUNITXML_PATH}
 
 contains(QT_MAJOR_VERSION, 5): qtAddTargetEnv(xunittest.commands, QT)
