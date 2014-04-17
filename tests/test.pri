@@ -29,19 +29,16 @@ xunittest.files =
 xunittest.path = .
 
 # If the test ends up in a different directory, we should cd to that directory.
-XUNITTESTRUN_CWD = $$DESTDIR
+XUNITTESTRUN_DESTDIR = $$DESTDIR
+XUNITTESTRUN_TARGET= $$TARGET
 
-debug_and_release:debug_and_release_target {
-    # But in debug-and-release-target mode we don't want to cd into the debug/release
-    # directory (e.g. if the test goes to foo/release/tst_thing.exe, we want to do
-    # 'cd foo && release/tst_thing.exe', not 'cd foo/release && tst_thing.exe').
+win32:debug_and_release {
+    contains(DESTDIR,^release$)|contains(DESTDIR,^debug$):XUNITTESTRUN_DESTDIR=
 
-    XUNITTESTRUN_CWD ~= s/(release|debug)$//
-    XUNITTEST_TARGET_DIR = $$relative_path($$absolute_path($$DESTDIR, $$OUT_PWD), $$absolute_path($$XUNITTESTRUN_CWD, $$OUT_PWD))
+    XUNITTESTRUN_TARGET=$$replace(XUNITTESTRUN_TARGET,^\\.\\./,)
 }
-
-!isEmpty(XUNITTESTRUN_CWD):!contains(XUNITTESTRUN_CWD,^\\./?): \
-    xunittest.commands = cd $$system_path($$XUNITTESTRUN_CWD) &&
+!isEmpty(XUNITTESTRUN_TARGET):!contains(XUNITTESTRUN_TARGET,^\\./?):check.commands = cd $(DESTDIR) &&
+contains(XUNITTESTRUN_TARGET,.*/.*):check.commands = cd $(DESTDIR) &&
 
 unix {
     isEmpty(XUNITTEST_TARGET_DIR): XUNITTEST_TARGET_DIR = .
@@ -52,14 +49,15 @@ unix {
         xunittest.commands += $${XUNITTEST_TARGET_DIR}/$(QMAKE_TARGET)
 } else {
     # Windows
-    !isEmpty(XUNITTEST_TARGET_DIR): XUNITTEST_TARGET_DIR = $${XUNITTEST_TARGET_DIR}$${QMAKE_DIR_SEP}
-    xunittest.commands += $${XUNITTEST_TARGET_DIR}$(TARGET)
+    xunittest.commands += $(DESTDIR_TARGET)
 }
 
 # Allow for custom arguments to tests
-xunittest.commands += -o $$system_path($$DESTDIR)$${QMAKE_DIR_SEP}$(QMAKE_TARGET)-xunit.xml,xunitxml
+XUNITXML_PATH = $${DESTDIR}$${QMAKE_DIR_SEP}$(QMAKE_TARGET)-xunit.xml
+win32: XUNITXML_PATH = $$replace(XUNITXML_PATH,/,\\\\)
+xunittest.commands += -o $${XUNITXML_PATH},xunitxml
 
-qtAddTargetEnv(xunittest.commands, QT)
+contains(QT_MAJOR_VERSION, 5): qtAddTargetEnv(xunittest.commands, QT)
 
 # If the test is marked as insignificant, discard the exit code
 insignificant_test:xunittest.commands = -$${xunittest.commands}
