@@ -55,7 +55,7 @@ unix {
 # Allow for custom arguments to tests
 XUNITXML_PATH = $${DESTDIR}$${QMAKE_DIR_SEP}$(QMAKE_TARGET)-xunit.xml
 win32: XUNITXML_PATH = $$replace(XUNITXML_PATH,/,\\\\)
-xunittest.commands += -o $${XUNITXML_PATH},xunitxml
+xunittest.commands += -o $${XUNITXML_PATH},xml
 
 contains(QT_MAJOR_VERSION, 5): qtAddTargetEnv(xunittest.commands, QT)
 
