@@ -29,3 +29,6 @@ HEADERS += \
          PostgresqlConfig.h \
     PostgresqlConfig.h.example \
     PostgresqlConfig.h.travis
+
+OTHER_FILES += \
+    PostgresqlDriver.txt
