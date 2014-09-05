@@ -289,7 +289,7 @@ void BasicTest::testUndoCreateTable()
     success = migrator.execute("Migration No2", *migrationContext);
     QVERIFY2(!success, "migration should fail!");
     QStringList tables = m_context->database().tables(QSql::Tables);
-    QVERIFY2(tables.contains("testtable1"), "testtable should be created during migrtaion No 1!");
+    QVERIFY2(tables.contains("testtable1"), "testtable should be created during migration No 1!");
     QVERIFY2(!tables.contains("testtable2"), "testtable should be deleted during rollback!");
 }
 

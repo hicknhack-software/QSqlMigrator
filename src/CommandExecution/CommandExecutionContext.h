@@ -44,7 +44,7 @@ public:
 
     QSqlDatabase database() const;
 
-    //TODO: undo-lgoic in own class
+    //TODO: undo-logic in own class
     //! \return true, when undo command will be used
     bool isUndoUsed() const;
     Commands::CommandPtr currentUndoCommand() const;
