@@ -2,6 +2,7 @@
 SUBDIRS += \
     SqliteMigrator \
     MysqlMigrator \
-    PostgresqlMigrator
+    PostgresqlMigrator \
+    FirebirdMigrator
 
 include(../_subdir.pri)
