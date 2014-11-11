@@ -82,14 +82,20 @@ bool MigrationExecutionService::execute(const QString &migrationName,
     const MigrationExecutionConfig &migrationConfig = migrationContext.migrationConfig();
     CommandExecution::CommandExecutionContext context(database, migrationConfig, migrationContext.helperRepository());
     CommandPtrList undoCommands;
-    if(migrationName.isEmpty()) {
+    if (migrationName.isEmpty()) {
         ::qWarning() << LOG_PREFIX << "migrationName is empty";
         return false;
     }
 
-    CommandPtrList migrationCommands = migrationContext.migrationMap()[migrationName]->commandList();
-    if( migrationCommands.isEmpty() ) {
-        ::qWarning() << LOG_PREFIX << "no comands for migration";
+    const Migrations::Migration* migration = migrationContext.migrationMap()[migrationName];
+    if (!migration) {
+        ::qWarning() << LOG_PREFIX << "migration is missing: " << migrationName;
+        return false;
+    }
+
+    CommandPtrList migrationCommands = migration->commandList();
+    if (migrationCommands.isEmpty()) {
+        ::qWarning() << LOG_PREFIX << "no commands for migration";
         return false;
     }
 
@@ -102,7 +108,7 @@ bool MigrationExecutionService::execute(const QString &migrationName,
     }
 
     MigrationTableServicePtr migrationTableService = migrationContext.baseMigrationTableService();
-    if(!migrationTableService) {
+    if (!migrationTableService) {
         ::qDebug() << LOG_PREFIX << Q_FUNC_INFO << "migrationTableService is 0";
         return false;
     }
