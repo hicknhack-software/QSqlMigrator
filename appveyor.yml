@@ -1,0 +1,30 @@
+version: 1.5.1_{build}
+
+os: unstable
+
+services:
+- mysql
+- postgresql
+
+install:
+#C:\MinGW\bin
+- set QTBASE="C:\Qt\Qt5.3.2"
+- set QTDIR="%QTBASE%\5.3\mingw482_32"
+- set QTSRC="%QTBASE%\5.3\Src\qtbase"
+- set PATH=%PATH%;%QTDIR%\bin;%QTBASE%\Tools\mingw482_32
+# build mysql driver
+#- copy %QTDIR%\.qmake.conf %QTDIR%\src\plugins\sqldrivers\mysql
+#- cd /d %TEMP% & mkdir build-qmysql & cd build-qmysql
+#- qmake "INCLUDEPATH+=%MYSQL%/include" "LIBS+=%MYSQL%/lib/libmysql.lib" %QTSRC%\src\plugins\sqldrivers\mysql\mysql.pro
+#- mingw32-make
+#- set PATH=%PATH%;%PWD%
+
+before_build:
+- move tests/mysql/MysqlConfig.h.appveyor tests/mysql/MysqlConfig.h
+- move tests/postgresql/PostgresqlConfig.h.appveyor tests/postgresql/PostgresqlConfig.h
+
+build_script:
+- qmake -r "CONFIG+=NO_QSM_FIREBIRD"
+- mingw32-make
+
+test_script:

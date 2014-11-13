@@ -1,18 +1,22 @@
 
-SUBDIRS += \
-        src \
-        plugins \
-        tests
+SUBDIRS += src
+!contains(CONFIG, NO_QSM_PLUGINS): {
+    SUBDIRS += plugins
+    plugins.depends = src
+
+    !contains(CONFIG, NO_QSM_TESTS) {
+        SUBDIRS += tests
+        tests.depends = src plugins
+    }
+}
 
 include(_subdir.pri)
 
-plugins.depends = src
-tests.depends = src plugins
-
 OTHER_FILES += \
-        README.md \
-        CHANGES \
-        LICENSE.GPL3 \
-        LICENSE.LGPL \
-        .travis.yml \
-        common.pri
+    README.md \
+    CHANGES \
+    LICENSE.GPL3 \
+    LICENSE.LGPL \
+    .travis.yml \
+    appveyor.yml \
+    common.pri
