@@ -7,7 +7,6 @@ services:
 - postgresql
 
 install:
-#C:\MinGW\bin
 - set QTBASE="C:\Qt\Qt5.3.2"
 - set QTDIR="%QTBASE%\5.3\mingw482_32"
 - set QTSRC="%QTBASE%\5.3\Src\qtbase"
@@ -28,3 +27,8 @@ build_script:
 - mingw32-make
 
 test_script:
+- mingw32-make check
+
+branches:
+  only:
+  - appveyor

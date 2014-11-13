@@ -9,8 +9,8 @@
 !contains(CONFIG, NO_QSM_POSTGRES) {
     SUBDIRS += postgresql
 }
-!contains(CONFIG, NO_QSM_FIREBIRD) {
-    SUBDIRS += firebird
-}
+#!contains(CONFIG, NO_QSM_FIREBIRD) {
+#    SUBDIRS += firebird
+#}
 
 include(../_subdir.pri)
