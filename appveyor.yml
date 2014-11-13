@@ -20,8 +20,8 @@ install:
 #- set PATH=%PATH%;%PWD%
 
 before_build:
-- move tests/mysql/MysqlConfig.h.appveyor tests/mysql/MysqlConfig.h
-- move tests/postgresql/PostgresqlConfig.h.appveyor tests/postgresql/PostgresqlConfig.h
+- move tests\mysql\MysqlConfig.h.appveyor tests\mysql\MysqlConfig.h
+- move tests\postgresql\PostgresqlConfig.h.appveyor tests\postgresql\PostgresqlConfig.h
 
 build_script:
 - qmake -r "CONFIG+=NO_QSM_FIREBIRD"

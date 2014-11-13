@@ -22,13 +22,14 @@ else:unix:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$LIB_PATH/libPostgres
 # }
 
 SOURCES += tst_PostgresqlTest.cpp \
-         ../BasicTest/BasicTest.cpp
+    ../BasicTest/BasicTest.cpp
 
 HEADERS += \
-         ../BasicTest/BasicTest.h \
-         PostgresqlConfig.h \
-    PostgresqlConfig.h.example \
-    PostgresqlConfig.h.travis
+    ../BasicTest/BasicTest.h \
+    PostgresqlConfig.h \
+    PostgresqlConfig.h.example
 
 OTHER_FILES += \
-    PostgresqlDriver.txt
+    PostgresqlDriver.txt \
+    PostgresqlConfig.h.appveyor \
+    PostgresqlConfig.h.travis
