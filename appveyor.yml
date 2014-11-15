@@ -24,14 +24,14 @@ before_build:
 - move tests\postgresql\PostgresqlConfig.h.appveyor tests\postgresql\PostgresqlConfig.h
 
 build_script:
+- dir %QTBASE%\Tools
+- dir %MINGWDIR%
+- dir %MINGWDIR%\bin
 - qmake -r "CONFIG+=NO_QSM_FIREBIRD"
 - mingw32-make
 
 test_script:
 - dir bin
-- dir %QTBASE%\Tools
-- dir %MINGWDIR%
-- dir %MINGWDIR%\bin
 - cmd: mingw32-make check
 
 branches:
