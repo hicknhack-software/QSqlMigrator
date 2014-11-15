@@ -25,12 +25,12 @@ before_build:
 
 build_script:
 - qmake -r "CONFIG+=NO_QSM_FIREBIRD"
-- cmd: |
-    set PATH=%QTDIR%\bin;%MINGWDIR%\bin;%PATH%
-    mingw32-make
+- set
+- type Makefile
+- mingw32-make
 
 test_script:
-- cmd: mingw32-make check
+- mingw32-make check
 
 branches:
   only:
