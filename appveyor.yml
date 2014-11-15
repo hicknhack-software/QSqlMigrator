@@ -7,11 +7,12 @@ services:
 - postgresql
 
 install:
-- set QTBASE="C:\Qt\Qt5.3.2"
-- set QTDIR="%QTBASE%\5.3\mingw482_32"
-- set QTSRC="%QTBASE%\5.3\Src\qtbase"
-- set MINGWDIR="%QTBASE%\Tools\mingw482_32"
-- set PATH=%QTDIR%\bin;%MINGWDIR%\bin;%PATH%
+- set "QTBASE=C:\Qt\Qt5.3.2"
+- set "QTDIR=%QTBASE%\5.3\mingw482_32"
+- set "QTSRC=%QTBASE%\5.3\Src\qtbase"
+- set "MINGWDIR=%QTBASE%\Tools\mingw482_32"
+- set "PATH=%QTDIR%\bin;%MINGWDIR%\bin;%PATH%"
+- set "PATH=%PATH:Git\bin;=Git\cmd;%"
 # build mysql driver
 #- copy %QTDIR%\.qmake.conf %QTDIR%\src\plugins\sqldrivers\mysql
 #- cd /d %TEMP% & mkdir build-qmysql & cd build-qmysql
@@ -26,7 +27,6 @@ before_build:
 build_script:
 - qmake -r "CONFIG+=NO_QSM_FIREBIRD"
 - set
-- type Makefile
 - mingw32-make
 
 test_script:
