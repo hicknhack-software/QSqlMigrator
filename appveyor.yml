@@ -10,7 +10,8 @@ install:
 - set QTBASE="C:\Qt\Qt5.3.2"
 - set QTDIR="%QTBASE%\5.3\mingw482_32"
 - set QTSRC="%QTBASE%\5.3\Src\qtbase"
-- set PATH=%PATH%;%QTDIR%\bin;C:\MinGW\bin
+- set MINGWDIR="%QTBASE%\Tools\mingw482_32"
+- set PATH=%PATH%;%QTDIR%\bin;%MINGWDIR%\bin
 # build mysql driver
 #- copy %QTDIR%\.qmake.conf %QTDIR%\src\plugins\sqldrivers\mysql
 #- cd /d %TEMP% & mkdir build-qmysql & cd build-qmysql
@@ -28,12 +29,9 @@ build_script:
 
 test_script:
 - dir bin
-- dir C:\MinGW\bin
-- dir C:\Qt
-- dir %QTBASE%
-- dir %QTBASE%\5.3
-- dir %QTDIR%
-- dir %QTDIR%\bin
+- dir %QTBASE%\Tools
+- dir %MINGWDIR%
+- dir %MINGWDIR%\bin
 - cmd: mingw32-make check
 
 branches:
