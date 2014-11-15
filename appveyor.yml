@@ -11,7 +11,7 @@ install:
 - set QTDIR="%QTBASE%\5.3\mingw482_32"
 - set QTSRC="%QTBASE%\5.3\Src\qtbase"
 - set MINGWDIR="%QTBASE%\Tools\mingw482_32"
-- set PATH=%PATH%;%QTDIR%\bin;%MINGWDIR%\bin
+- set PATH=%QTDIR%\bin;%MINGWDIR%\bin;%PATH%
 # build mysql driver
 #- copy %QTDIR%\.qmake.conf %QTDIR%\src\plugins\sqldrivers\mysql
 #- cd /d %TEMP% & mkdir build-qmysql & cd build-qmysql
@@ -24,14 +24,12 @@ before_build:
 - move tests\postgresql\PostgresqlConfig.h.appveyor tests\postgresql\PostgresqlConfig.h
 
 build_script:
-- dir %QTBASE%\Tools
-- dir %MINGWDIR%
-- dir %MINGWDIR%\bin
 - qmake -r "CONFIG+=NO_QSM_FIREBIRD"
-- mingw32-make
+- cmd: |
+    set PATH=%QTDIR%\bin;%MINGWDIR%\bin;%PATH%
+    mingw32-make
 
 test_script:
-- dir bin
 - cmd: mingw32-make check
 
 branches:
