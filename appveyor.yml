@@ -24,10 +24,17 @@ before_build:
 
 build_script:
 - qmake -r "CONFIG+=NO_QSM_FIREBIRD"
-- mingw32-make check
+- mingw32-make
 
-#test_script:
-#- cmd: mingw32-make check
+test_script:
+- dir bin
+- dir C:\MinGW\bin
+- dir C:\Qt
+- dir %QTBASE%
+- dir %QTBASE%\5.3
+- dir %QTDIR%
+- dir %QTDIR%\bin
+- cmd: mingw32-make check
 
 branches:
   only:
