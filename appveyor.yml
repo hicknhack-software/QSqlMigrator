@@ -24,10 +24,10 @@ before_build:
 
 build_script:
 - qmake -r "CONFIG+=NO_QSM_FIREBIRD"
-- mingw32-make
-
-test_script:
 - mingw32-make check
+
+#test_script:
+#- cmd: mingw32-make check
 
 branches:
   only:
