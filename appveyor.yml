@@ -81,7 +81,7 @@ install:
 - cd ..
 - set "PATH=%QTDIR%\bin;%PATH%"
 - if defined COMPILERDIR set "PATH=%COMPILERDIR%;%PATH%"
-- %COMPILERBAT%
+- '%COMPILERBAT%'
 
 before_build:
 - move tests\mysql\MysqlConfig.h.appveyor tests\mysql\MysqlConfig.h
