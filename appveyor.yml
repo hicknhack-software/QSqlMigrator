@@ -38,7 +38,8 @@ environment:
     MAKE: nmake
     CHECK: nmake check
     QMAKESPEC: win32-msvc2010
-    QTSUB: '$OUTDIR\bin'
+    QTMOVE: '$OUTDIR\bin 4.8.6-msvc2010'
+    QTSUB: '4.8.6-msvc2010'
     QTDOWNLOAD1: http://download.qt-project.org/official_releases/qt/4.8/4.8.6/qt-opensource-windows-x86-vs2010-4.8.6.exe
     QTARCHIVE1: 'qt-opensource-windows-x86-vs2010-4.8.6.exe'
     QTARCHIVE1_OPTS: '"-ir!?OUTDIR\*" "-xr!*doc\*" "-xr!*examples\*" "-xr!*demos\*" "-xr!*src\*"'
@@ -62,12 +63,13 @@ install:
 # install Qt
 - mkdir Qt
 - cd Qt
-- if defined QTSUB set "QTDIR=%CD%\%QTSUB%"
-- if defined QMAKESPEC set "QMAKESPEC=%QTDIR%\mkspecs\%QMAKESPEC%"
 - if defined QTDOWNLOAD1 curl -kLO %QTDOWNLOAD1%
 - if defined QTARCHIVE1 7z x %QTARCHIVE1_OPTS% %QTARCHIVE1% >nul
 - if defined QTDOWNLOAD2 curl -kLO %QTDOWNLOAD2%
 - if defined QTARCHIVE2 7z x %QTARCHIVE2_OPTS% %QTARCHIVE2% >nul
+- if defined QTMOVE move %QTMOVE%
+- if defined QTSUB set "QTDIR=%CD%\%QTSUB%"
+- if defined QTDOWNLOAD1 (echo [Paths]&& echo Prefix=..) >%QTDIR%\bin\qt.conf
 - cd ..
 
 # install mysql driver
@@ -95,10 +97,7 @@ build_script:
 - mkdir build
 - mkdir "build\%BUILD%"
 - cd "build\%BUILD%"
-#- echo %CD%
-#- dir ..\..\*.pro || dir ..\..
 - qmake -r "CONFIG+=NO_QSM_FIREBIRD" %QMAKE_OPTIONS% %PRO_FILE%
-#..\..\*.pro
 - '%MAKE%'
 - cd ..\..
 
