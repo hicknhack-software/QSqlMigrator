@@ -60,7 +60,7 @@ before_build:
 build_script:
 - mkdir build\%BUILD%
 - cd build\%BUILD%
-- qmake -r "CONFIG+=NO_QSM_FIREBIRD"
+- qmake -r "CONFIG+=NO_QSM_FIREBIRD" ..\..\*.pro
 - "%MAKE%"
 - cd ..\..
 
