@@ -17,7 +17,7 @@ install:
 - cd extern
 - choco install curl 7zip
 # install mysql driver
-- curl https://dev.mysql.com/get/Downloads/Connector-C/mysql-connector-c-6.1.5-win32.zip
+- curl http://dev.mysql.com/get/Downloads/Connector-C/mysql-connector-c-6.1.5-win32.zip
 - 7z x mysql-connector-c-6.1.5-win32.zip
 - set PATH=%PATH%;%CD%\mysql-connector-c-6.1.5-win32\lib
 # install postgres driver
