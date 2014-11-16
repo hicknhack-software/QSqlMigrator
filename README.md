@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/hicknhack-software/QSqlMigrator.svg?branch=master)](https://travis-ci.org/hicknhack-software/QSqlMigrator)
+Linux: [![Build Status](https://travis-ci.org/hicknhack-software/QSqlMigrator.svg?branch=master)](https://travis-ci.org/hicknhack-software/QSqlMigrator)
+Windows: [![Build Status](https://ci.appveyor.com/api/projects/status/github/hicknhack-software/QSqlMigrator?branch=master&svg=true)](https://ci.appveyor.com/project/arBmind/qsqlmigrator)
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/898/badge.svg)](https://scan.coverity.com/projects/898)
 
 HicknHack QSqlMigrator Library
@@ -26,7 +27,7 @@ Prerequisites
 QSqlMigrator is meant to be used with the Qt Framework.
 It has been successfully tested with:
 
-Windows: 
+Windows:
 - Visual Studio 2010, Qt 4.8.5 and Qt 5.2.1
 - Visual Studio 2012, Qt 5.2.1
 - Visual Studio 2013, Qt 5.2.1
