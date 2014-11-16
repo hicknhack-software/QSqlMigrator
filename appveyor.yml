@@ -30,14 +30,12 @@ before_build:
 - move tests\postgresql\PostgresqlConfig.h.appveyor tests\postgresql\PostgresqlConfig.h
 
 build_script:
-- dir "C:\Qt"
-- dir %QTBASE%
-- dir %QTDIR%\plugins\sqldrivers
+- dir %QTBASE%\5.3
 - qmake -r "CONFIG+=NO_QSM_FIREBIRD"
 - mingw32-make
 
 test_script:
-- set PATH=%CD%\pgsql\bin;%PATH%
+- set PATH=%CD%\extern\pgsql\bin;%PATH%
 - mingw32-make check
 
 branches:
