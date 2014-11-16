@@ -19,7 +19,7 @@ environment:
     QTDOWNLOAD1: http://download.qt-project.org/online/qtsdkrepository/windows_x86/desktop/qt5_53/qt.53.win32_msvc2013_opengl/5.3.2-0qt5_essentials.7z
     QTARCHIVE1: '5.3.2-0qt5_essentials.7z'
     QTDOWNLOAD2: http://download.qt-project.org/online/qtsdkrepository/windows_x86/desktop/qt5_53/qt.53.win32_msvc2013_opengl/5.3.2-0icu_52_1_msvc_2013_32.7z
-    QTARCHVIE2: '5.3.2-0icu_52_1_msvc_2013_32.7z'
+    QTARCHIVE2: '5.3.2-0icu_52_1_msvc_2013_32.7z'
 
   - BUILD: 'Qt5.3.2-x64-msvc2013'
     COMPILERBAT: '"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86_amd64'
@@ -30,13 +30,13 @@ environment:
     QTDOWNLOAD1: http://download.qt-project.org/online/qtsdkrepository/windows_x86/desktop/qt5_53/qt.53.win64_msvc2013_64_opengl/5.3.2-0qt5_essentials.7z
     QTARCHIVE1: '5.3.2-0qt5_essentials.7z'
     QTDOWNLOAD2: http://download.qt-project.org/online/qtsdkrepository/windows_x86/desktop/qt5_53/qt.53.win64_msvc2013_64_opengl/5.3.2-0icu_52_1_msvc_2013_64.7z
-    QTARCHVIE2: '5.3.2-0icu_52_1_msvc_2013_64.7z'
+    QTARCHIVE2: '5.3.2-0icu_52_1_msvc_2013_64.7z'
 
   - BUILD: Qt4.8.6-x86-msvc2010
     QMAKE_OPTIONS: "CONFIG+=NO_QSM_POSTGRES"
     COMPILERBAT: '"C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\vcvarsall.bat" x86'
-    MAKE: nmake
-    CHECK: nmake check
+    MAKE: nmake release
+    CHECK: 'cd ..\..\bin && tst_SqliteTest.exe'
     QMAKESPEC: win32-msvc2010
     QTMOVE: '$OUTDIR\bin 4.8.6-msvc2010'
     QTSUB: '4.8.6-msvc2010'
@@ -103,11 +103,11 @@ build_script:
 
 test_script:
 - set "PATH=%CD%\extern\pgsql\bin;%PATH%"
-- echo %CD%
-- set
+#- echo %CD%
+#- set
 - dir %QTDIR%\bin
-- depends.exe /ot:text.txt /c bin\tst_SqliteTest.exe
-- type text.txt
+#- depends.exe /ot:text.txt /c bin\tst_SqliteTest.exe
+#- type text.txt
 - cd "build\%BUILD%"
 - '%CHECK%'
 - cd ..\..
