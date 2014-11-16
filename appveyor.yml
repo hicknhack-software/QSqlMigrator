@@ -10,21 +10,10 @@ environment:
   PRO_FILE: 'C:\projects\qsqlmigrator\QSqlMigrator.pro'
 
   matrix:
-  - BUILD: 'Qt5.3.2-x86-msvc2013'
-    COMPILERBAT: '"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86'
-    MAKE: nmake
-    CHECK: nmake check
-    QMAKESPEC: win32-msvc2013
-    QTSUB: '5.3\msvc2013_opengl'
-    QTDOWNLOAD1: http://download.qt-project.org/online/qtsdkrepository/windows_x86/desktop/qt5_53/qt.53.win32_msvc2013_opengl/5.3.2-0qt5_essentials.7z
-    QTARCHIVE1: '5.3.2-0qt5_essentials.7z'
-    QTDOWNLOAD2: http://download.qt-project.org/online/qtsdkrepository/windows_x86/desktop/qt5_53/qt.53.win32_msvc2013_opengl/5.3.2-0icu_52_1_msvc_2013_32.7z
-    QTARCHIVE2: '5.3.2-0icu_52_1_msvc_2013_32.7z'
-
   - BUILD: 'Qt5.3.2-x64-msvc2013'
     COMPILERBAT: '"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86_amd64'
-    MAKE: nmake
-    CHECK: nmake check
+    PRO_MAKE: nmake
+    PRO_CHECK: nmake check
     QMAKESPEC: win32-msvc2013
     QTSUB: '5.3\msvc2013_64_opengl'
     QTDOWNLOAD1: http://download.qt-project.org/online/qtsdkrepository/windows_x86/desktop/qt5_53/qt.53.win64_msvc2013_64_opengl/5.3.2-0qt5_essentials.7z
@@ -35,8 +24,8 @@ environment:
   - BUILD: Qt4.8.6-x86-msvc2010
     QMAKE_OPTIONS: "CONFIG+=NO_QSM_POSTGRES"
     COMPILERBAT: '"C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\vcvarsall.bat" x86'
-    MAKE: nmake release
-    CHECK: 'cd ..\..\bin && tst_SqliteTest.exe'
+    PRO_MAKE: nmake release
+    PRO_CHECK: 'cd ..\..\bin && tst_SqliteTest.exe'
     QMAKESPEC: win32-msvc2010
     QTMOVE: '$OUTDIR\bin 4.8.6-msvc2010'
     QTSUB: '4.8.6-msvc2010'
@@ -44,12 +33,23 @@ environment:
     QTARCHIVE1: 'qt-opensource-windows-x86-vs2010-4.8.6.exe'
     QTARCHIVE1_OPTS: '"-ir!?OUTDIR\*" "-xr!*doc\*" "-xr!*examples\*" "-xr!*demos\*"'
 
-  #- BUILD: Qt5.3.2-mingw32
-  #QTDIR: 'C:\Qt\Qt5.3.2\5.3\mingw482_32'
-  #COMPILERDIR: 'C:\Qt\Qt5.3.2\Tools\mingw482_32\bin'
-  #QMAKESPEC: win32-g++
-  #MAKE: mingw32-make
-  #CHECK: mingw32-make check
+  - BUILD: 'Qt5.3.2-x86-msvc2013'
+    COMPILERBAT: '"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86'
+    PRO_MAKE: nmake
+    PRO_CHECK: nmake check
+    QMAKESPEC: win32-msvc2013
+    QTSUB: '5.3\msvc2013_opengl'
+    QTDOWNLOAD1: http://download.qt-project.org/online/qtsdkrepository/windows_x86/desktop/qt5_53/qt.53.win32_msvc2013_opengl/5.3.2-0qt5_essentials.7z
+    QTARCHIVE1: '5.3.2-0qt5_essentials.7z'
+    QTDOWNLOAD2: http://download.qt-project.org/online/qtsdkrepository/windows_x86/desktop/qt5_53/qt.53.win32_msvc2013_opengl/5.3.2-0icu_52_1_msvc_2013_32.7z
+    QTARCHIVE2: '5.3.2-0icu_52_1_msvc_2013_32.7z'
+
+  - BUILD: Qt5.3.2-mingw32
+    QTDIR: 'C:\Qt\Qt5.3.2\5.3\mingw482_32'
+    COMPILERDIR: 'C:\Qt\Qt5.3.2\Tools\mingw482_32\bin'
+    QMAKESPEC: win32-g++
+    PRO_MAKE: mingw32-make
+    PRO_CHECK: mingw32-make check
 
 install:
 # fix git\bin bug for mingw build
@@ -98,7 +98,7 @@ build_script:
 - mkdir "build\%BUILD%"
 - cd "build\%BUILD%"
 - qmake -r "CONFIG+=NO_QSM_FIREBIRD" %QMAKE_OPTIONS% %PRO_FILE%
-- '%MAKE%'
+- '%PRO_MAKE%'
 - cd ..\..
 
 test_script:
@@ -106,10 +106,11 @@ test_script:
 #- echo %CD%
 #- set
 - dir %QTDIR%\bin
-#- depends.exe /ot:text.txt /c bin\tst_SqliteTest.exe
-#- type text.txt
+- dir bin
+- depends.exe /ot:text.txt /c bin\tst_SqliteTest.exe
+- type text.txt
 - cd "build\%BUILD%"
-- '%CHECK%'
+- '%PRO_CHECK%'
 - cd ..\..
 
 branches:
