@@ -103,6 +103,9 @@ build_script:
 
 test_script:
 - set "PATH=%CD%\extern\pgsql\bin;%PATH%"
+- echo %CD%
+- set
+- dir %QTDIR%\bin
 - depends.exe /ot:text.txt /c bin\tst_SqliteTest.exe
 - type text.txt
 - cd "build\%BUILD%"
