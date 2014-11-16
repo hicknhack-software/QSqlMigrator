@@ -53,7 +53,7 @@ install:
 before_build:
 - set "PATH=%QTDIR%\bin;%PATH%"
 - if defined COMPILERDIR set "PATH=%COMPILERDIR%;%PATH%"
-- if defined COMPILERBAT %COMPILERBAT%
+- if defined COMPILERBAT "%COMPILERBAT%"
 - move tests\mysql\MysqlConfig.h.appveyor tests\mysql\MysqlConfig.h
 - move tests\postgresql\PostgresqlConfig.h.appveyor tests\postgresql\PostgresqlConfig.h
 
