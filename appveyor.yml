@@ -6,16 +6,25 @@ services:
 - mysql
 - postgresql
 
+environment:
+  matrix:
+  - BUILD: Qt5.3.2-mingw
+    QTDIR: C:\Qt\Qt5.3.2\5.3\mingw482_32
+    COMPILERDIR: C:\Qt\Qt5.3.2\Tools\mingw482_32\bin
+    MAKE: mingw32-make
+    CHECK: mingw32-make check
+  #- BUILD: Qt5.3.2-msvc2013
+  # TODO: no other Qt installation currently available
+  # NOTE: Silent installers of choco miss mysql & postgresql plugins
+  # NOTE: Official installers are not silent
+
 install:
-- set "QTBASE=C:\Qt\Qt5.3.2"
-- set "QTDIR=%QTBASE%\5.3\mingw482_32"
-- set "QTSRC=%QTBASE%\5.3\Src\qtbase"
-- set "MINGWDIR=%QTBASE%\Tools\mingw482_32"
-- set "PATH=%QTDIR%\bin;%MINGWDIR%\bin;%PATH%"
+# fix git\bin bug
 - set "PATH=%PATH:Git\bin;=Git\cmd;%"
+# prepare extern install
+- choco install curl 7zip
 - mkdir extern
 - cd extern
-- choco install curl 7zip
 # install mysql driver
 - curl -kLO https://dev.mysql.com/get/Downloads/Connector-C/mysql-connector-c-6.1.5-win32.zip
 - 7z x mysql-connector-c-6.1.5-win32.zip >nul
@@ -23,20 +32,21 @@ install:
 # install postgres driver
 - curl -kLO http://get.enterprisedb.com/postgresql/postgresql-9.3.5-1-windows-binaries.zip
 - 7z x postgresql-9.3.5-1-windows-binaries.zip >nul
+# finish install
 - cd ..
 
 before_build:
+- set "PATH=%QTDIR%\bin;%COMPILERDIR%;%PATH%"
 - move tests\mysql\MysqlConfig.h.appveyor tests\mysql\MysqlConfig.h
 - move tests\postgresql\PostgresqlConfig.h.appveyor tests\postgresql\PostgresqlConfig.h
 
 build_script:
-- dir %QTBASE%\5.3
 - qmake -r "CONFIG+=NO_QSM_FIREBIRD"
-- mingw32-make
+- %MAKE%
 
 test_script:
 - set PATH=%CD%\extern\pgsql\bin;%PATH%
-- mingw32-make check
+- %CHECK%
 
 branches:
   only:
