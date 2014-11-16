@@ -13,22 +13,25 @@ install:
 - set "MINGWDIR=%QTBASE%\Tools\mingw482_32"
 - set "PATH=%QTDIR%\bin;%MINGWDIR%\bin;%PATH%"
 - set "PATH=%PATH:Git\bin;=Git\cmd;%"
-# build mysql driver
-#- copy %QTDIR%\.qmake.conf %QTDIR%\src\plugins\sqldrivers\mysql
-#- cd /d %TEMP% & mkdir build-qmysql & cd build-qmysql
-#- qmake "INCLUDEPATH+=%MYSQL%/include" "LIBS+=%MYSQL%/lib/libmysql.lib" %QTSRC%\src\plugins\sqldrivers\mysql\mysql.pro
-#- mingw32-make
-#- set PATH=%PATH%;%PWD%
+- mkdir extern
+- cd extern
+- choco install curl 7zip
+# install mysql driver
+- curl https://dev.mysql.com/get/Downloads/Connector-C/mysql-connector-c-6.1.5-win32.zip
+- 7z x mysql-connector-c-6.1.5-win32.zip
+- set PATH=%PATH%;%CD%\mysql-connector-c-6.1.5-win32\lib
+# install postgres driver
+- curl http://get.enterprisedb.com/postgresql/postgresql-9.3.5-1-windows-binaries.zip
+- 7z x postgresql-9.3.5-1-windows-binaries.zip
+- set PATH=%PATH%;%CD%\pgsql\lib
+- cd ..
 
 before_build:
-- dir "C:\Program Files"
-- dir "C:\Program Files (x86)"
-- dir "C:\"
-- dir "C:\Tools"
 - move tests\mysql\MysqlConfig.h.appveyor tests\mysql\MysqlConfig.h
 - move tests\postgresql\PostgresqlConfig.h.appveyor tests\postgresql\PostgresqlConfig.h
 
 build_script:
+- dir extern
 - qmake -r "CONFIG+=NO_QSM_FIREBIRD"
 - mingw32-make
 
