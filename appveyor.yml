@@ -23,7 +23,7 @@ install:
 # install postgres driver
 - curl -kLO http://get.enterprisedb.com/postgresql/postgresql-9.3.5-1-windows-binaries.zip
 - 7z x postgresql-9.3.5-1-windows-binaries.zip
-- set PATH=%PATH%;%CD%\pgsql\lib
+- set PATH=%CD%\pgsql\lib;%PATH%
 - cd ..
 
 before_build:
@@ -31,7 +31,7 @@ before_build:
 - move tests\postgresql\PostgresqlConfig.h.appveyor tests\postgresql\PostgresqlConfig.h
 
 build_script:
-- dir extern
+- dir %MINGWDIR%\plugins\sqldrivers
 - qmake -r "CONFIG+=NO_QSM_FIREBIRD"
 - mingw32-make
 
