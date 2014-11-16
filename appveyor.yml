@@ -21,12 +21,15 @@ install:
 #- set PATH=%PATH%;%PWD%
 
 before_build:
+- dir "C:\Program Files"
+- dir "C:\Program Files (x86)"
+- dir "C:\"
+- dir "C:\Tools"
 - move tests\mysql\MysqlConfig.h.appveyor tests\mysql\MysqlConfig.h
 - move tests\postgresql\PostgresqlConfig.h.appveyor tests\postgresql\PostgresqlConfig.h
 
 build_script:
 - qmake -r "CONFIG+=NO_QSM_FIREBIRD"
-- set
 - mingw32-make
 
 test_script:
