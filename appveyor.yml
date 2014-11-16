@@ -31,7 +31,7 @@ before_build:
 - move tests\postgresql\PostgresqlConfig.h.appveyor tests\postgresql\PostgresqlConfig.h
 
 build_script:
-- dir %MINGWDIR%\plugins\sqldrivers
+- dir %QTDIR%\plugins\sqldrivers
 - qmake -r "CONFIG+=NO_QSM_FIREBIRD"
 - mingw32-make
 
