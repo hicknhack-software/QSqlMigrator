@@ -40,12 +40,13 @@ namespace QSqlMigrator {
  * \brief The QSqlMigratorService class is used to control all relevant features of the QSqlMigrator.
  * The User should use this service within it's own applications.
  *
- * context c;
- * if( ! missingMigrations(c).empty() ) exit(1);
- * if( ! unappliedMigrations(c).empty() ) {
- *    DatabaseLock lock(c);
+ * Context c = { ... };
+ * QSqlMigratorService s(c);
+ * if( ! s.missingMigrations().empty() ) exit(1);
+ * if( ! s.unappliedMigrations().empty() ) {
+ *    DatabaseLock lock(c); // make sure nobody uses the db
  *    if(lock)
- *      applyAll(c);
+ *      s.applyAll();
  *
  *    // or exit(1);
  * }
@@ -55,24 +56,44 @@ namespace QSqlMigrator {
 class QSQLMIGRATOR_DLL_EXPORT QSqlMigratorService
 {
 public:
-    /*! \return names of all migrations that have been applied */
-    QStringList appliedMigrations(const MigrationExecution::MigrationExecutionContext &context) const;
-    /*! \return names of all defined and registered migrations */
-    QStringList definedMigrations(const MigrationExecution::MigrationExecutionContext &context) const;
-    /*! \return name the last migration that was applied */
-    QString lastAppliedMigration(const MigrationExecution::MigrationExecutionContext &context) const;
-    /*! \return names of all migrations that are applied but are not registered */
-    QStringList missingMigrations(const MigrationExecution::MigrationExecutionContext &context) const;
-    /*! \return names of all migrations that need to be applied */
-    QStringList unappliedMigrations(const MigrationExecution::MigrationExecutionContext &context) const;
+    typedef MigrationExecution::MigrationExecutionContext Context;
 
+    QSqlMigratorService(const Context &context);
 
+    //! \return names of all migrations that have been applied
+    QStringList appliedMigrations() const;
 
-    bool applyAll(const MigrationExecution::MigrationExecutionContext &context) const;
-    bool applyMigration(const QString &migrationName, const MigrationExecution::MigrationExecutionContext &context) const;
-    bool migrateTo(const QString &migrationName, const MigrationExecution::MigrationExecutionContext &context) const;
-    bool revertMigration(const QString &migrationName, const MigrationExecution::MigrationExecutionContext &context) const;
+    //! \return names of all defined and registered migrations
+    QStringList definedMigrations() const;
+
+    //! \return name the last migration that was applied
+    QString lastAppliedMigration() const;
+
+    //! \return names of all migrations that are applied but are not registered
+    QStringList missingMigrations() const;
+
+    //! \return names of all migrations that need to be applied
+    QStringList unappliedMigrations() const;
+
+    //! \return true if all unapplied migrations were successfully applied
+    bool applyAll() const;
+
+    //! \return true if the specified migration was successfully applied
+    bool applyMigration(const QString &migrationName) const;
+
+    //! \return true if all migrations up to were successfully applied (and if neccessary later migrations are reverted)
+    bool migrateTo(const QString &migrationName) const;
+
+    //! \return true if the specified migration was successfully reverted
+    bool revertMigration(const QString &migrationName) const;
+
+private:
+    const Context &context;
 };
+
+inline QSqlMigratorService::QSqlMigratorService(const Context &context)
+    : context(context)
+{}
 
 } // namespace QSqlMigrator
 

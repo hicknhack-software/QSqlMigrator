@@ -52,7 +52,7 @@ const QString &QSqlMigratorConfig::databasePassword() const
     return m_databasePassword;
 }
 
-const QString &QSqlMigratorConfig::databasename() const
+const QString &QSqlMigratorConfig::databaseName() const
 {
     return m_databaseName;
 }
@@ -102,7 +102,7 @@ void QSqlMigratorConfig::setDatabasePassword(const QString &password)
     m_databasePassword = password;
 }
 
-void QSqlMigratorConfig::setDatabasename(const QString &databaseName)
+void QSqlMigratorConfig::setDatabaseName(const QString &databaseName)
 {
     m_databaseName = databaseName;
 }

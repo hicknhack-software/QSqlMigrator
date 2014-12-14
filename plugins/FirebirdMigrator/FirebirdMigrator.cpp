@@ -73,7 +73,7 @@ MigrationExecution::MigrationExecutionContextPtr buildContext(MigrationExecution
     using namespace MigrationExecution;
 
     CommandServiceRepositoryPtr commandRepository(createCommandServiceRepository());
-    MigrationTableServicePtr migrationTableService(new MigrationTracker::BaseMigrationTableService);
+    MigrationTrackerServicePtr migrationTableService(new MigrationTracker::BaseMigrationTableService);
 
     MigrationExecutionContextPtr context = contextBuilder.build(commandRepository, createHelperRepository(), migrationTableService);
 

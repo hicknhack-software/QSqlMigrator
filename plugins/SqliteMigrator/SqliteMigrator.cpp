@@ -92,7 +92,7 @@ MigrationExecution::MigrationExecutionContextPtr buildContext(MigrationExecution
     using namespace MigrationExecution;
 
     CommandServiceRepositoryPtr commandRepository(createCommandServiceRepository());
-    MigrationTableServicePtr migrationTableService(new MigrationTracker::SqliteMigrationTableService);
+    MigrationTrackerServicePtr migrationTableService(new MigrationTracker::SqliteMigrationTableService);
 
     MigrationExecutionContextPtr context = contextBuilder.build(commandRepository, createHelperRepository(), migrationTableService);
 

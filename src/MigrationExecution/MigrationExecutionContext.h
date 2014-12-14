@@ -38,23 +38,20 @@
 
 class QSqlDatabase;
 
-//namespace CommandExecution {
-//class CommandExecutionServiceRepository;
-//}
 namespace Helper {
 class HelperRepository;
-}
+} // namespace Helper
 namespace Migrations {
 class Migration;
-}
+} // namespace Migrations
 namespace MigrationTracker {
 class MigrationTrackerService;
-}
+} // namespace MigrationTracker
 
 namespace MigrationExecution {
 
 typedef QSharedPointer<CommandExecution::CommandExecutionServiceRepository> CommandServiceRepositoryPtr;
-typedef QSharedPointer<MigrationTracker::MigrationTrackerService> MigrationTableServicePtr;
+typedef QSharedPointer<MigrationTracker::MigrationTrackerService> MigrationTrackerServicePtr;
 
 class MigrationExecutionContext;
 typedef QSharedPointer<MigrationExecutionContext> MigrationExecutionContextPtr;
@@ -67,14 +64,14 @@ public:
     class QSQLMIGRATOR_DLL_EXPORT Builder
     {
     public:
-        Builder(const NameMigrationMap &migrations);
+        explicit Builder(const NameMigrationMap &migrations);
 
         void setConfig(const MigrationExecutionConfig &migrationConfig);
         void setDatabase(const QSqlDatabase &database);
 
         MigrationExecutionContextPtr build(const CommandServiceRepositoryPtr &commandServiceRepository,
                                            const Helper::HelperRepository &helperRepository,
-                                           const MigrationTableServicePtr &migrationTableService) const;
+                                           const MigrationTrackerServicePtr &migrationTrackerService) const;
 
     private:
         const NameMigrationMap m_migrations;
@@ -87,9 +84,9 @@ public:
                               const QSqlDatabase &database,
                               const CommandServiceRepositoryPtr &commandServiceRepository,
                               const Helper::HelperRepository &helperRepository,
-                              const MigrationTableServicePtr &migrationTableService);
+                              const MigrationTrackerServicePtr &migrationTableService);
 
-    const MigrationTableServicePtr baseMigrationTableService() const;
+    const MigrationTrackerServicePtr migrationTrackerService() const;
     const CommandServiceRepositoryPtr commandServiceRepository() const;
     const Helper::HelperRepository &helperRepository() const;
     const QSqlDatabase &database() const;
@@ -102,7 +99,7 @@ private:
     const QSqlDatabase m_database;
     const CommandServiceRepositoryPtr m_commandServiceRepository;
     const Helper::HelperRepository m_helperRepository;
-    const MigrationTableServicePtr m_migrationTableService;
+    const MigrationTrackerServicePtr m_migrationTrackerService;
 };
 
 inline MigrationExecutionContext::Builder::Builder(const MigrationExecutionContext::NameMigrationMap &migrations)
@@ -120,9 +117,9 @@ inline void MigrationExecutionContext::Builder::setDatabase(const QSqlDatabase &
     m_database = database;
 }
 
-inline const MigrationTableServicePtr MigrationExecutionContext::baseMigrationTableService() const
+inline const MigrationTrackerServicePtr MigrationExecutionContext::migrationTrackerService() const
 {
-    return m_migrationTableService;
+    return m_migrationTrackerService;
 }
 
 inline const CommandServiceRepositoryPtr MigrationExecutionContext::commandServiceRepository() const

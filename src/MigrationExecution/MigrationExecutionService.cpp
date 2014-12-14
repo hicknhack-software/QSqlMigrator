@@ -107,7 +107,7 @@ bool MigrationExecutionService::execute(const QString &migrationName,
         }
     }
 
-    MigrationTableServicePtr migrationTableService = migrationContext.baseMigrationTableService();
+    MigrationTrackerServicePtr migrationTableService = migrationContext.migrationTrackerService();
     if (!migrationTableService) {
         ::qDebug() << LOG_PREFIX << Q_FUNC_INFO << "migrationTableService is 0";
         return false;
@@ -170,7 +170,7 @@ bool MigrationExecutionService::isMigrationRemembered(const QString &migrationNa
                                                       Direction direction) const
 {
     CommandExecution::CommandExecutionContext serviceContext(context.database(), context.migrationConfig(), context.helperRepository());
-    MigrationTableServicePtr tableService = context.baseMigrationTableService();
+    MigrationTrackerServicePtr tableService = context.migrationTrackerService();
     bool isExecuted = tableService->wasMigrationExecuted(migrationName, serviceContext);
 
     switch (direction) {
@@ -190,7 +190,7 @@ bool MigrationExecutionService::rememberMigration(const QString &migrationName,
                                                   Direction direction) const
 {
     CommandExecution::CommandExecutionContext serviceContext(context.database(), context.migrationConfig(), context.helperRepository());
-    MigrationTableServicePtr tableService = context.baseMigrationTableService();
+    MigrationTrackerServicePtr tableService = context.migrationTrackerService();
     switch (direction) {
     case Up:
         return tableService->addMigration(migrationName, serviceContext);

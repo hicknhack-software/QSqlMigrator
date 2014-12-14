@@ -32,14 +32,14 @@ namespace MigrationExecution {
 
 MigrationExecutionContextPtr MigrationExecutionContext::Builder::build(const CommandServiceRepositoryPtr &commandServiceRepository,
                                                                        const Helper::HelperRepository &helperRepository,
-                                                                       const MigrationTableServicePtr &migrationTableService) const
+                                                                       const MigrationTrackerServicePtr &migrationTrackerService) const
 {
     return MigrationExecutionContextPtr(new MigrationExecutionContext(m_migrations,
                                                                       m_migrationConfig,
                                                                       m_database,
                                                                       commandServiceRepository,
                                                                       helperRepository,
-                                                                      migrationTableService));
+                                                                      migrationTrackerService));
 }
 
 MigrationExecutionContext::MigrationExecutionContext(const MigrationExecutionContext::NameMigrationMap &migrations,
@@ -47,13 +47,13 @@ MigrationExecutionContext::MigrationExecutionContext(const MigrationExecutionCon
                                                      const QSqlDatabase &database,
                                                      const CommandServiceRepositoryPtr &commandServiceRepository,
                                                      const Helper::HelperRepository &helperRepository,
-                                                     const MigrationTableServicePtr &migrationTableService)
+                                                     const MigrationTrackerServicePtr &migrationTableService)
     : m_migrations(migrations)
     , m_migrationConfig(migrationConfig)
     , m_database(database)
     , m_commandServiceRepository(commandServiceRepository)
     , m_helperRepository(helperRepository)
-    , m_migrationTableService(migrationTableService)
+    , m_migrationTrackerService(migrationTableService)
 {
 }
 

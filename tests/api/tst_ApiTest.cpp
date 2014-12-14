@@ -162,8 +162,8 @@ void ApiTest::testRegistrationMacro()
 
 void ApiTest::testDefinedMigrations()
 {
-    QSqlMigrator::QSqlMigratorService manager;
-    QStringList migrations = manager.definedMigrations(*m_context);
+    QSqlMigrator::QSqlMigratorService manager(*m_context);
+    QStringList migrations = manager.definedMigrations();
 
     QVERIFY2(migrations.contains("M20131501_191807_CreateUsers"),
              "migrationList should contain CreateUsers migration");
@@ -183,15 +183,15 @@ void ApiTest::testDefinedMigrations()
 
 void ApiTest::testAppliedMigrations()
 {
-    QSqlMigrator::QSqlMigratorService manager;
-    QStringList definedMigrations = manager.definedMigrations(*m_context);
-    QStringList appliedMigrations = manager.appliedMigrations(*m_context);
+    QSqlMigrator::QSqlMigratorService manager(*m_context);
+    QStringList definedMigrations = manager.definedMigrations();
+    QStringList appliedMigrations = manager.appliedMigrations();
     QVERIFY2(appliedMigrations.size() == 0, "no migration could be applied yet!");
 
     MigrationTracker::SqliteMigrationTableService tableService;
     CommandExecution::CommandExecutionContext serviceContext(m_context->database(), m_context->migrationConfig(), m_context->helperRepository());
     tableService.addMigration(definedMigrations.at(0), serviceContext);
-    appliedMigrations = manager.appliedMigrations(*m_context);
+    appliedMigrations = manager.appliedMigrations();
     QVERIFY2(appliedMigrations.size() == 1, "one migration should be shown as applied");
 
     QVERIFY2(appliedMigrations.contains(definedMigrations.at(0)),
@@ -200,28 +200,28 @@ void ApiTest::testAppliedMigrations()
 
 void ApiTest::testLastAppliedMigration()
 {
-    QSqlMigrator::QSqlMigratorService manager;
-    QStringList definedMigrations = manager.definedMigrations(*m_context);
-    QString lastAppliedMigration = manager.lastAppliedMigration(*m_context);
+    QSqlMigrator::QSqlMigratorService manager(*m_context);
+    QStringList definedMigrations = manager.definedMigrations();
+    QString lastAppliedMigration = manager.lastAppliedMigration();
     QVERIFY2(lastAppliedMigration.isEmpty(), "no Migration could be applied yet!");
 
     MigrationTracker::SqliteMigrationTableService tableService;
     CommandExecution::CommandExecutionContext serviceContext(m_context->database(), m_context->migrationConfig(), m_context->helperRepository());
     tableService.addMigration(definedMigrations.at(1), serviceContext);
-    lastAppliedMigration = manager.lastAppliedMigration(*m_context);
+    lastAppliedMigration = manager.lastAppliedMigration();
     QVERIFY2(lastAppliedMigration == definedMigrations.at(1), "second defined migration was applied last!");
 
     //at this point, 2 migrations are within the migrationTable, but hey are not sorted! nevertheless,
     //the last applied migration has to be the second of the defined migrations
     tableService.addMigration(definedMigrations.at(0), serviceContext);
-    lastAppliedMigration = manager.lastAppliedMigration(*m_context);
+    lastAppliedMigration = manager.lastAppliedMigration();
     QVERIFY2(lastAppliedMigration == definedMigrations.at(1), "second defined migration was applied last!");
 }
 
 void ApiTest::testApplyMigration()
 {
-    QSqlMigrator::QSqlMigratorService manager;
-    bool success = manager.applyMigration("M20132201_175827_CreateAddresses", *m_context);
+    QSqlMigrator::QSqlMigratorService manager(*m_context);
+    bool success = manager.applyMigration("M20132201_175827_CreateAddresses");
     QVERIFY2(success, "applyMigration should return true");
     QStringList tables = m_context->database().tables(QSql::Tables);
     QVERIFY2(tables.contains("addresses"), "table 'addresses' should be created during migration");
@@ -230,8 +230,8 @@ void ApiTest::testApplyMigration()
 
 void ApiTest::testApplyAll()
 {
-    QSqlMigrator::QSqlMigratorService manager;
-    bool success = manager.applyAll(*m_context);
+    QSqlMigrator::QSqlMigratorService manager(*m_context);
+    bool success = manager.applyAll();
     QVERIFY2(success, "applyAll should return true");
     QStringList tables = m_context->database().tables();
     QVERIFY2(tables.contains("users"), "table 'users' should be created during migration");
@@ -241,13 +241,13 @@ void ApiTest::testApplyAll()
 
 void ApiTest::testMigrateTo()
 {
-    QSqlMigrator::QSqlMigratorService manager;
-    bool success = manager.migrateTo("M20131501_191807_CreateUsers", *m_context);
+    QSqlMigrator::QSqlMigratorService manager(*m_context);
+    bool success = manager.migrateTo("M20131501_191807_CreateUsers");
     QVERIFY2(success, "migrateTo should return true");
     QStringList tables = m_context->database().tables(QSql::Tables);
     QVERIFY2(tables.size() == 2, "one table (+ migrationTable) should be created yet");
     QVERIFY2(tables.contains("users"), "table 'users' should be created during migration");
-    success = manager.migrateTo("M20132201_180943_CreateCars", *m_context);
+    success = manager.migrateTo("M20132201_180943_CreateCars");
     QVERIFY2(success, "migrateTo should return true");
     tables = m_context->database().tables(QSql::Tables);
 
@@ -260,12 +260,12 @@ void ApiTest::testMigrateTo()
 
 void ApiTest::testMissingMigrations()
 {
-    QSqlMigrator::QSqlMigratorService manager;
+    QSqlMigrator::QSqlMigratorService manager(*m_context);
     MigrationTracker::SqliteMigrationTableService tableService;
     CommandExecution::CommandExecutionContext serviceContext(m_context->database(), m_context->migrationConfig(), m_context->helperRepository());
     tableService.addMigration("M20132301_103512_MissingMigration", serviceContext);
-    QStringList definedMigrations = manager.definedMigrations(*m_context);
-    QStringList appliedMigrations = manager.appliedMigrations(*m_context);
+    QStringList definedMigrations = manager.definedMigrations();
+    QStringList appliedMigrations = manager.appliedMigrations();
 
     QVERIFY2(appliedMigrations.contains("M20132301_103512_MissingMigration"),
              "M20132301_103512_MissingMigration should be part of the appliedMigrationsList");
@@ -273,7 +273,7 @@ void ApiTest::testMissingMigrations()
     QVERIFY2(!definedMigrations.contains("M20132301_103512_MissingMigration"),
              "M20132301_103512_MissingMigration should NOT be part of the definedMigrationsList");
 
-    QStringList missingMigrations = manager.missingMigrations(*m_context);
+    QStringList missingMigrations = manager.missingMigrations();
     QVERIFY2(missingMigrations.size() == 1, "one missing migration");
 
     QVERIFY2(missingMigrations.contains("M20132301_103512_MissingMigration"),
@@ -282,10 +282,10 @@ void ApiTest::testMissingMigrations()
 
 void ApiTest::testRevertMigration()
 {
-    QSqlMigrator::QSqlMigratorService manager;
-    bool success = manager.applyAll(*m_context);
+    QSqlMigrator::QSqlMigratorService manager(*m_context);
+    bool success = manager.applyAll();
     QVERIFY2(success, "applyAll should return true");
-    success = manager.revertMigration("M20132201_180943_CreateCars", *m_context);
+    success = manager.revertMigration("M20132201_180943_CreateCars");
     QVERIFY2(success, "revertMigration should return true");
     QStringList tables = m_context->database().tables(QSql::Tables);
     QVERIFY2(tables.contains("users"), "table 'users' should be created during migration");
@@ -296,15 +296,15 @@ void ApiTest::testRevertMigration()
 
 void ApiTest::testUnappliedMigrations()
 {
-    QSqlMigrator::QSqlMigratorService manager;
-    QStringList definedMigrations = manager.definedMigrations(*m_context);
+    QSqlMigrator::QSqlMigratorService manager(*m_context);
+    QStringList definedMigrations = manager.definedMigrations();
     MigrationTracker::SqliteMigrationTableService tableService;
     CommandExecution::CommandExecutionContext serviceContext(m_context->database(), m_context->migrationConfig(), m_context->helperRepository());
     tableService.addMigration(definedMigrations.at(0), serviceContext);
     tableService.addMigration(definedMigrations.at(2), serviceContext);
     tableService.addMigration(definedMigrations.at(3), serviceContext);
 
-    QStringList unappliedMigrations = manager.unappliedMigrations(*m_context);
+    QStringList unappliedMigrations = manager.unappliedMigrations();
     QVERIFY2(unappliedMigrations.size() == 1, "one unapplied migration!");
 
     QVERIFY2(unappliedMigrations.contains(definedMigrations.at(1)),

@@ -35,39 +35,39 @@ using namespace MigrationExecution;
 
 namespace QSqlMigrator {
 
-QStringList QSqlMigratorService::appliedMigrations(const MigrationExecutionContext &context) const
+QStringList QSqlMigratorService::appliedMigrations() const
 {
     CommandExecution::CommandExecutionContext serviceContext(context.database(), context.migrationConfig(), context.helperRepository());
-    QStringList list = context.baseMigrationTableService()->migrationList(serviceContext);
+    QStringList list = context.migrationTrackerService()->migrationList(serviceContext);
     list.sort();
     return list;
 }
 
-bool QSqlMigratorService::applyAll(const MigrationExecutionContext &context) const
+bool QSqlMigratorService::applyAll() const
 {
     const MigrationExecutionService migrator;
-    return migrator.executeBatch(this->unappliedMigrations(context), context);
+    return migrator.executeBatch(this->unappliedMigrations(), context);
 }
 
-bool QSqlMigratorService::applyMigration(const QString &migrationName, const MigrationExecutionContext &context) const
+bool QSqlMigratorService::applyMigration(const QString &migrationName) const
 {
     const MigrationExecutionService migrator;
     return migrator.execute(migrationName, context);
 }
 
-bool QSqlMigratorService::migrateTo(const QString &migrationName, const MigrationExecutionContext &context) const
+bool QSqlMigratorService::migrateTo(const QString &migrationName) const
 {
-    if (migrationName == this->lastAppliedMigration(context)) {
+    if (migrationName == this->lastAppliedMigration()) {
         return true;
     }
 
     bool bSuccess = true;
     const MigrationExecutionService migrator;
-    while (bSuccess && (this->lastAppliedMigration(context) != migrationName)) {
-        if (migrationName < this->lastAppliedMigration(context)) {
-            bSuccess = migrator.execute(this->lastAppliedMigration(context), context, MigrationExecutionService::Down);
+    while (bSuccess && (this->lastAppliedMigration() != migrationName)) {
+        if (migrationName < this->lastAppliedMigration()) {
+            bSuccess = migrator.execute(this->lastAppliedMigration(), context, MigrationExecutionService::Down);
         } else {
-            QStringList unapplied = this->unappliedMigrations(context);
+            QStringList unapplied = this->unappliedMigrations();
             if(!unapplied.empty())
                 bSuccess = migrator.execute(unapplied.first(), context, MigrationExecutionService::Up);
         }
@@ -75,22 +75,22 @@ bool QSqlMigratorService::migrateTo(const QString &migrationName, const Migratio
     return bSuccess;
 }
 
-bool QSqlMigratorService::revertMigration(const QString &migrationName, const MigrationExecutionContext &context) const
+bool QSqlMigratorService::revertMigration(const QString &migrationName) const
 {
     const MigrationExecutionService migrator;
     return migrator.execute(migrationName, context, MigrationExecutionService::Down);
 }
 
-QStringList QSqlMigratorService::definedMigrations(const MigrationExecutionContext &context) const
+QStringList QSqlMigratorService::definedMigrations() const
 {
     QStringList list = context.migrationMap().keys();
     list.sort();
     return list;
 }
 
-QString QSqlMigratorService::lastAppliedMigration(const MigrationExecutionContext &context) const
+QString QSqlMigratorService::lastAppliedMigration() const
 {
-    const QStringList appliedMigrations = this->appliedMigrations(context);
+    const QStringList appliedMigrations = this->appliedMigrations();
     if (appliedMigrations.isEmpty()) {
         return QString("");
     } else {
@@ -98,12 +98,12 @@ QString QSqlMigratorService::lastAppliedMigration(const MigrationExecutionContex
     }
 }
 
-QStringList QSqlMigratorService::missingMigrations(const MigrationExecutionContext &context) const
+QStringList QSqlMigratorService::missingMigrations() const
 {
     //applied - defined
     QStringList missingMigrations;
-    foreach (QString migrationName, this->appliedMigrations(context)) {
-        if (!this->definedMigrations(context).contains(migrationName)) {
+    foreach (QString migrationName, this->appliedMigrations()) {
+        if (!this->definedMigrations().contains(migrationName)) {
             missingMigrations << migrationName;
         }
     }
@@ -111,12 +111,12 @@ QStringList QSqlMigratorService::missingMigrations(const MigrationExecutionConte
     return missingMigrations;
 }
 
-QStringList QSqlMigratorService::unappliedMigrations(const MigrationExecutionContext &context) const
+QStringList QSqlMigratorService::unappliedMigrations() const
 {
     //defined - applied
     QStringList unappliedMigrations;
-    foreach (QString migrationName, this->definedMigrations(context)) {
-        if (!this->appliedMigrations(context).contains(migrationName)) {
+    foreach (QString migrationName, this->definedMigrations()) {
+        if (!this->appliedMigrations().contains(migrationName)) {
             unappliedMigrations << migrationName;
         }
     }

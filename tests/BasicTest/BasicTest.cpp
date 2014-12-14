@@ -200,7 +200,7 @@ void BasicTest::testDropTable()
 
 void BasicTest::testTransaction()
 {
-    if (!m_context->baseMigrationTableService()->canRevertStrucuturalChangesUsingTransactions()) {
+    if (!m_context->migrationTrackerService()->canRevertStrucuturalChangesUsingTransactions()) {
         QSKIP("database driver does not support transactions for structural changes, SKIPPING TEST!", SkipSingle);
     }
 
@@ -247,7 +247,7 @@ void BasicTest::testTransaction()
 
 void BasicTest::testUndoCreateTable()
 {
-    if (m_context->baseMigrationTableService()->canRevertStrucuturalChangesUsingTransactions()) {
+    if (m_context->migrationTrackerService()->canRevertStrucuturalChangesUsingTransactions()) {
         QSKIP("database driver should support transactions for structural changes, SKIPPING TEST!", SkipSingle);
     }
 
@@ -295,7 +295,7 @@ void BasicTest::testUndoCreateTable()
 
 void BasicTest::testUndoDropTable()
 {
-    if (m_context->baseMigrationTableService()->canRevertStrucuturalChangesUsingTransactions()) {
+    if (m_context->migrationTrackerService()->canRevertStrucuturalChangesUsingTransactions()) {
         QSKIP("database driver should support transactions for structural changes, SKIPPING TEST!", SkipSingle);
     }
 

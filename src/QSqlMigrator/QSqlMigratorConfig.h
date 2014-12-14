@@ -44,7 +44,7 @@ public:
      const QString &databasePort() const;
      const QString &databaseUserName() const;
      const QString &databasePassword() const;
-     const QString &databasename() const;
+     const QString &databaseName() const;
 
      const QString &migrationTableName() const;
      const QString &migrationTablePrefix() const;
@@ -56,7 +56,7 @@ public:
      void setDatabasePort(const QString &port);
      void setDatabaseUserName(const QString &user);
      void setDatabasePassword(const QString &password);
-     void setDatabasename(const QString &databaseName);
+     void setDatabaseName(const QString &databaseName);
 
      void setMigrationTableName(const QString &migrationTableName);
      void setMigrationTablePrefix(const QString &tablePrefix);
