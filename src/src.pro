@@ -35,9 +35,6 @@ SOURCES += \
     Structure/Column.cpp \
     CommandExecution/CustomCommandService.cpp \
     Commands/CustomCommandBase.cpp \
-    Scheme/Database.cpp \
-    Scheme/DbColumn.cpp \
-    Scheme/DbTable.cpp \
     BaseSqlMigrator/CommandExecution/BaseSqlAddColumnService.cpp \
     BaseSqlMigrator/CommandExecution/BaseSqlAlterColumnTypeService.cpp \
     BaseSqlMigrator/CommandExecution/BaseSqlCreateIndexService.cpp \
@@ -113,9 +110,6 @@ HEADERS += \
     MigrationExecution/LocalSchemeMigrationExecutionContext.h \
     CommandExecution/CustomCommandService.h \
     Commands/CustomCommandBase.h \
-    Scheme/Database.h \
-    Scheme/DbColumn.h \
-    Scheme/DbTable.h \
     BaseSqlMigrator/CommandExecution/BaseSqlAddColumnService.h \
     BaseSqlMigrator/CommandExecution/BaseSqlAlterColumnTypeService.h \
     BaseSqlMigrator/CommandExecution/BaseSqlCreateIndexService.h \
