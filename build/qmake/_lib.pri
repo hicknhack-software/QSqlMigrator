@@ -19,35 +19,26 @@
 # packaging of this file.  Please review the following information to
 # ensure the GNU General Public License version 3.0 requirements will be
 # met: http://www.gnu.org/copyleft/gpl.html.
-TARGET = TestApi
+TEMPLATE = lib
+CONFIG += dll
 
-!exists(ApiConfig.h) {
-    system($$QMAKE_COPY ApiConfig.h.example ApiConfig.h)
+HEADERS += $$INSTALL_HEADERS
+
+include(_common.pri)
+
+DESTDIR = $$LIB_PATH
+
+!isEmpty(INSTALL_PREFIX) {
+    target.path = $$INSTALL_PREFIX
+    INSTALLS += target
 }
-
-SOURCES += tst_ApiTest.cpp \
-    M20132201_180943_CreateCars.cpp \
-    M20132201_175827_CreateAddresses.cpp \
-    M20131501_191807_CreateUsers.cpp \
-    M20133001_164323_AddUsers.cpp \
-    SqliteAddUser.cpp
-
-HEADERS += \
-    M20132201_180943_CreateCars.h \
-    M20132201_175827_CreateAddresses.h \
-    M20131501_191807_CreateUsers.h \
-    M20133001_164323_AddUsers.h \
-    SqliteAddUser.h \
-    ApiConfig.h \
-    ApiConfig.h.example
-
-include(../../build/qmake/_test.pri)
-
-# SqliteMigrator {
-LIBS += -lSqliteMigrator
-
-DEPENDPATH += $$LIB_PATH
-
-win32: PRE_TARGETDEPS += $$LIB_PATH/SqliteMigrator.dll
-else: PRE_TARGETDEPS += $$LIB_PATH/libSqliteMigrator.so
-# }
+!isEmpty(INSTALL_HEADERS_PREFIX) {
+    for(header, INSTALL_HEADERS) {
+        path = $${dirname(header)}
+        eval(headers_$${path}.files += $$header)
+        eval(headers_$${path}.path = $$INSTALL_HEADERS_PREFIX/$$TARGET_INSTALL_HEADERS_PREFIX$$path)
+        eval(win32:!isEmpty(headers_$${path}.extra): headers_$${path}.extra += &&)
+        eval(win32:headers_$${path}.extra += $(COPY) \\\"$$shell_path($$_PRO_FILE_PWD_/$$header)\\\" \\\"$$shell_path($$INSTALL_HEADERS_PREFIX/$$TARGET_INSTALL_HEADERS_PREFIX$$path)\\\")
+        eval(INSTALLS *= headers_$${path})
+    }
+}

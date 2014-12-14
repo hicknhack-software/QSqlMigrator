@@ -1,47 +1,40 @@
-
-TEMPLATE = lib
-CONFIG += dll
-include(../common.pri)
-
+TARGET = QSqlMigrator
 DEFINES += _BUILDING_QSQLMIGRATOR_DLL
 DEFINES += LOG_PREFIX=\\\"[QSqlMigrator]\\\"
 
-CONFIG(release, debug|release): TARGET = QSqlMigrator
-else:CONFIG(debug, debug|release): TARGET = QSqlMigratord
-
 SOURCES += \
-	 QSqlMigrator/QSqlMigratorService.cpp \
-	 QSqlMigrator/QSqlMigratorConfig.cpp \
-	 CommandExecution/CommandExecutionServiceRepository.cpp \
-	 CommandExecution/CommandExecutionService.cpp \
-	 CommandExecution/CommandExecutionContext.cpp \
-	 CommandExecution/BaseCommandExecutionService.cpp \
-     CommandExecution/LocalSchemeBaseCommandExecutionService.cpp \
-     CommandExecution/LocalSchemeCommandExecutionContext.cpp \
-     CommandExecution/LocalSchemeCommandExecutionService.cpp \
-     CommandExecution/LocalSchemeCommandExecutionServiceRepository.cpp \
-	 Commands/RenameTable.cpp \
-	 Commands/RenameColumn.cpp \
-	 Commands/DropTable.cpp \
-	 Commands/DropIndex.cpp \
-	 Commands/DropColumn.cpp \
-	 Commands/CreateTable.cpp \
-	 Commands/CreateIndex.cpp \
-	 Commands/BaseCommand.cpp \
-	 Commands/AlterColumnType.cpp \
-	 Commands/AddColumn.cpp \
-	 Migrations/MigrationRepository.cpp \
-	 Migrations/Migration.cpp \
-	 MigrationExecution/MigrationExecutionService.cpp \
-	 MigrationExecution/MigrationExecutionContext.cpp \
-	 MigrationExecution/MigrationExecutionConfig.cpp \
-     MigrationExecution/LocalSchemeMigrationExecutionService.cpp \
-     MigrationExecution/LocalSchemeMigrationExecutionContext.cpp \
-     Structure/Table.cpp \
-	 Structure/Index.cpp \
-	 Structure/Column.cpp \
-	 CommandExecution/CustomCommandService.cpp \
-	 Commands/CustomCommandBase.cpp \
+    QSqlMigrator/QSqlMigratorService.cpp \
+    QSqlMigrator/QSqlMigratorConfig.cpp \
+    CommandExecution/CommandExecutionServiceRepository.cpp \
+    CommandExecution/CommandExecutionService.cpp \
+    CommandExecution/CommandExecutionContext.cpp \
+    CommandExecution/BaseCommandExecutionService.cpp \
+    CommandExecution/LocalSchemeBaseCommandExecutionService.cpp \
+    CommandExecution/LocalSchemeCommandExecutionContext.cpp \
+    CommandExecution/LocalSchemeCommandExecutionService.cpp \
+    CommandExecution/LocalSchemeCommandExecutionServiceRepository.cpp \
+    Commands/RenameTable.cpp \
+    Commands/RenameColumn.cpp \
+    Commands/DropTable.cpp \
+    Commands/DropIndex.cpp \
+    Commands/DropColumn.cpp \
+    Commands/CreateTable.cpp \
+    Commands/CreateIndex.cpp \
+    Commands/BaseCommand.cpp \
+    Commands/AlterColumnType.cpp \
+    Commands/AddColumn.cpp \
+    Migrations/MigrationRepository.cpp \
+    Migrations/Migration.cpp \
+    MigrationExecution/MigrationExecutionService.cpp \
+    MigrationExecution/MigrationExecutionContext.cpp \
+    MigrationExecution/MigrationExecutionConfig.cpp \
+    MigrationExecution/LocalSchemeMigrationExecutionService.cpp \
+    MigrationExecution/LocalSchemeMigrationExecutionContext.cpp \
+    Structure/Table.cpp \
+    Structure/Index.cpp \
+    Structure/Column.cpp \
+    CommandExecution/CustomCommandService.cpp \
+    Commands/CustomCommandBase.cpp \
     Scheme/Database.cpp \
     Scheme/DbColumn.cpp \
     Scheme/DbTable.cpp \
@@ -74,42 +67,52 @@ SOURCES += \
     BaseSqlMigrator/MigrationTracker/BaseMigrationTableService.cpp \
     Structure/Type.cpp
 
+INSTALL_HEADERS += \
+    api.h \
+    config.h \
+    BaseSqlMigrator/MigrationTracker/BaseMigrationTableService.h \
+    CommandExecution/CommandExecutionServiceRepository.h \
+    CommandExecution/CommandExecutionService.h \
+    CommandExecution/CommandExecutionContext.h \
+    CommandExecution/BaseCommandExecutionService.h \
+    Commands/AlterColumnType.h \
+    Commands/AddColumn.h \
+    Commands/BaseCommand.h \
+    Commands/DropColumn.h \
+    Commands/DropIndex.h \
+    Commands/DropTable.h \
+    Commands/CreateIndex.h \
+    Commands/CreateTable.h \
+    Commands/RenameColumn.h \
+    Commands/RenameTable.h \
+    Helper/ColumnService.h \
+    Helper/HelperRepository.h \
+    Helper/QuoteService.h \
+    Helper/SqlStructureService.h \
+    Helper/TypeMapperService.h \
+    MigrationExecution/MigrationExecutionConfig.h \
+    MigrationExecution/MigrationExecutionContext.h \
+    MigrationExecution/MigrationExecutionService.h \
+    Migrations/Migration.h \
+    Migrations/MigrationRepository.h \
+    Migrations/RegisterMigration.h \
+    MigrationTracker/MigrationTrackerService.h \
+    Structure/Column.h \
+    Structure/Index.h \
+    Structure/Table.h \
+    Structure/Type.h \
+    QSqlMigrator/QSqlMigratorConfig.h \
+    QSqlMigrator/QSqlMigratorService.h \
+
 HEADERS += \
-	 QSqlMigrator/QSqlMigratorService.h \
-	 QSqlMigrator/QSqlMigratorConfig.h \
-	 CommandExecution/CommandExecutionServiceRepository.h \
-	 CommandExecution/CommandExecutionService.h \
-	 CommandExecution/CommandExecutionContext.h \
-	 CommandExecution/BaseCommandExecutionService.h \
-     CommandExecution/LocalSchemeBaseCommandExecutionService.h \
-     CommandExecution/LocalSchemeCommandExecutionContext.h \
-     CommandExecution/LocalSchemeCommandExecutionService.h \
-     CommandExecution/LocalSchemeCommandExecutionServiceRepository.h \
-     Commands/RenameTable.h \
-	 Commands/RenameColumn.h \
-	 Commands/DropTable.h \
-	 Commands/DropIndex.h \
-	 Commands/DropColumn.h \
-	 Commands/CreateTable.h \
-	 Commands/CreateIndex.h \
-	 Commands/BaseCommand.h \
-	 Commands/AlterColumnType.h \
-	 Commands/AddColumn.h \
-	 Migrations/RegisterMigration.h \
-	 Migrations/MigrationRepository.h \
-	 Migrations/Migration.h \
-	 MigrationExecution/MigrationExecutionService.h \
-	 MigrationExecution/MigrationExecutionContext.h \
-	 MigrationExecution/MigrationExecutionConfig.h \
-     MigrationExecution/LocalSchemeMigrationExecutionService.h \
-     MigrationExecution/LocalSchemeMigrationExecutionContext.h \
-	 Structure/Table.h \
-	 Structure/Index.h \
-	 Structure/Column.h \
-	 api.h \
-	 CommandExecution/CustomCommandService.h \
-	 Commands/CustomCommandBase.h \
-	 config.h \
+    CommandExecution/LocalSchemeBaseCommandExecutionService.h \
+    CommandExecution/LocalSchemeCommandExecutionContext.h \
+    CommandExecution/LocalSchemeCommandExecutionService.h \
+    CommandExecution/LocalSchemeCommandExecutionServiceRepository.h \
+    MigrationExecution/LocalSchemeMigrationExecutionService.h \
+    MigrationExecution/LocalSchemeMigrationExecutionContext.h \
+    CommandExecution/CustomCommandService.h \
+    Commands/CustomCommandBase.h \
     Scheme/Database.h \
     Scheme/DbColumn.h \
     Scheme/DbTable.h \
@@ -125,11 +128,6 @@ HEADERS += \
     BaseSqlMigrator/Helper/BaseSqlColumnService.h \
     BaseSqlMigrator/Helper/BaseSqlQuoteService.h \
     BaseSqlMigrator/Helper/BaseSqlTypeMapperService.h \
-    Helper/HelperRepository.h \
-    Helper/ColumnService.h \
-    Helper/SqlStructureService.h \
-    Helper/QuoteService.h \
-    Helper/TypeMapperService.h \
     Structure/LocalScheme.h \
     LocalSchemeMigrator/LocalSchemeMigrator.h \
     LocalSchemeMigrator/CommandExecution/LocalSchemeAddColumnService.h \
@@ -143,6 +141,5 @@ HEADERS += \
     LocalSchemeMigrator/CommandExecution/LocalSchemeRenameTableService.h \
     LocalSchemeMigrator/LocalSchemeComparisonService.h \
     LocalSchemeMigrator/LocalSchemeComparisonContext.h \
-    MigrationTracker/MigrationTrackerService.h \
-    BaseSqlMigrator/MigrationTracker/BaseMigrationTableService.h \
-    Structure/Type.h
+
+include(../build/qmake/_lib.pri)

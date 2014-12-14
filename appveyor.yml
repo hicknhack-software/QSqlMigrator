@@ -16,7 +16,7 @@ environment:
 
   matrix:
   - BUILD: Qt4.8.6-x86-msvc2010
-    QMAKE_OPTIONS: "CONFIG+=NO_QSM_POSTGRES"
+    QMAKE_OPTIONS: "CONFIG+=NoPostgres"
     COMPILERBAT: '"C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\vcvarsall.bat" x86'
     PRO_MAKE: nmake release
     PRO_CHECK: 'cd ..\..\bin && dir && tst_SqliteTest.exe'
@@ -108,7 +108,7 @@ build_script:
 - mkdir "build\%BUILD%"
 - cd "build\%BUILD%"
 - set
-- qmake -r "CONFIG+=NO_QSM_FIREBIRD" %QMAKE_OPTIONS% %PRO_FILE%
+- qmake -r "CONFIG+=NoFirebird" %QMAKE_OPTIONS% %PRO_FILE%
 - '%PRO_MAKE%'
 - cd ..\..
 
@@ -120,4 +120,5 @@ test_script:
 
 branches:
   only:
+  - develop
   - master

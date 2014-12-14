@@ -19,35 +19,18 @@
 # packaging of this file.  Please review the following information to
 # ensure the GNU General Public License version 3.0 requirements will be
 # met: http://www.gnu.org/copyleft/gpl.html.
-TARGET = TestApi
+TARGET_INSTALL_HEADERS_PREFIX = $$TARGET/
 
-!exists(ApiConfig.h) {
-    system($$QMAKE_COPY ApiConfig.h.example ApiConfig.h)
-}
+include(_lib.pri)
 
-SOURCES += tst_ApiTest.cpp \
-    M20132201_180943_CreateCars.cpp \
-    M20132201_175827_CreateAddresses.cpp \
-    M20131501_191807_CreateUsers.cpp \
-    M20133001_164323_AddUsers.cpp \
-    SqliteAddUser.cpp
+INCLUDEPATH += $$PROJECT_ROOT/plugins
 
-HEADERS += \
-    M20132201_180943_CreateCars.h \
-    M20132201_175827_CreateAddresses.h \
-    M20131501_191807_CreateUsers.h \
-    M20133001_164323_AddUsers.h \
-    SqliteAddUser.h \
-    ApiConfig.h \
-    ApiConfig.h.example
+unix: LIBS += -Wl,-rpath,$$LIB_PATH
 
-include(../../build/qmake/_test.pri)
-
-# SqliteMigrator {
-LIBS += -lSqliteMigrator
-
+# QSqlMigrator {
+LIBS += -L$$LIB_PATH -lQSqlMigrator
 DEPENDPATH += $$LIB_PATH
 
-win32: PRE_TARGETDEPS += $$LIB_PATH/SqliteMigrator.dll
-else: PRE_TARGETDEPS += $$LIB_PATH/libSqliteMigrator.so
+win32: PRE_TARGETDEPS += $$LIB_PATH/QSqlMigrator.dll
+else: PRE_TARGETDEPS += $$LIB_PATH/libQSqlMigrator.so
 # }
