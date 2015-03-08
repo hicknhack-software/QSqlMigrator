@@ -19,7 +19,7 @@
 # packaging of this file.  Please review the following information to
 # ensure the GNU General Public License version 3.0 requirements will be
 # met: http://www.gnu.org/copyleft/gpl.html.
-TARGET_INSTALL_HEADERS_PREFIX = $$TARGET/
+CONFIG += dll
 
 include(_lib.pri)
 

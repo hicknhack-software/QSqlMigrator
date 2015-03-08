@@ -23,26 +23,27 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef SQLITEADDUSER_H
-#define SQLITEADDUSER_H
+#pragma once
 
-#include "Commands/CustomCommandBase.h"
+#include "SqlSchemaCommand/CustomBase.h"
 
 #include <QSharedPointer>
 
-class SqliteAddUser : public Commands::CustomCommandBase
+class SqliteAddUser : public QSqlMigrator::SqlSchemaCommand::CustomBase
 {
 public:
-    SqliteAddUser(int id, const QString &userName, const QString &userMail, const QString &password);
-    ~SqliteAddUser() QSQL_OVERRIDE_D {}
+    using UserId = int;
+    using UserName = QString;
+    using UserMail = QString;
+    using Password = QString;
+
+    SqliteAddUser(UserId, UserName, UserMail, Password);
 
     bool up(const QSqlDatabase &database) const Q_DECL_OVERRIDE;
 
 private:
-    const int m_id;
-    const QString m_userName;
-    const QString m_userMail;
-    const QString m_password;
+    const UserId m_userId;
+    const UserName m_userName;
+    const UserMail m_userMail;
+    const Password m_password;
 };
-
-#endif // SQLITEADDUSER_H

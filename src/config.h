@@ -23,10 +23,9 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef QSQLMIGRATOR_CONFIG_H
-#define QSQLMIGRATOR_CONFIG_H
+#pragma once
 
-#define QSQLMIGRATOR_VERSION "1.0.0"
+#define QSQLMIGRATOR_VERSION "2.0.0"
 
 #include <Qt>
 
@@ -41,18 +40,3 @@
 #       define QSQLMIGRATOR_DLL_EXPORT __attribute__ ((visibility("default")))
 #   endif // Q_OS_WIN
 #endif // QSQLMIGRATOR_DLL_EXPORT
-
-#ifndef Q_DECL_OVERRIDE
-#   define Q_DECL_OVERRIDE
-#endif
-#if _MSC_VER >= 1700
-#   define QSQL_OVERRIDE_D Q_DECL_OVERRIDE
-#else
-#   define QSQL_OVERRIDE_D
-#endif
-
-#ifndef Q_NULLPTR
-#   define Q_NULLPTR 0
-#endif
-
-#endif // QSQLMIGRATOR_CONFIG_H

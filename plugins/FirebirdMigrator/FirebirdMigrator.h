@@ -23,14 +23,13 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef FIREBIRDMIGRATOR_H
-#define FIREBIRDMIGRATOR_H
+#pragma once
 
 #include "MigrationExecution/MigrationExecutionContext.h"
 
 #include <Qt>
 
-#ifndef FIREBIRDMIGRATOR_DLL_EXPORT
+#ifndef QSQLMIGRATOR_FIREBIRDMIGRATOR_DLL_EXPORT
 #   ifdef Q_OS_WIN
 #       ifdef _BUILDING_FIREBIRDMIGRATOR_DLL
 #           define FIREBIRDMIGRATOR_DLL_EXPORT __declspec(dllexport)
@@ -40,7 +39,7 @@
 #   else
 #       define FIREBIRDMIGRATOR_DLL_EXPORT __attribute__ ((visibility("default")))
 #   endif // Q_OS_WIN
-#endif // FIREBIRDMIGRATOR_DLL_EXPORT
+#endif // QSQLMIGRATOR_FIREBIRDMIGRATOR_DLL_EXPORT
 
 namespace FirebirdMigrator {
 
@@ -52,5 +51,3 @@ namespace FirebirdMigrator {
 MigrationExecution::MigrationExecutionContextPtr FIREBIRDMIGRATOR_DLL_EXPORT buildContext(MigrationExecution::MigrationExecutionContext::Builder &contextBuilder);
 
 } // namespace FirebirdMigrator
-
-#endif // FIREBIRDMIGRATOR_H

@@ -23,8 +23,7 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef HELPER_POSTGRESQLQUOTESERVICE_H
-#define HELPER_POSTGRESQLQUOTESERVICE_H
+#pragma once
 
 #include "PostgresqlMigrator/PostgresqlMigrator.h"
 
@@ -44,11 +43,9 @@ public:
 
     QString quoteTableName(const QString &tableName) const Q_DECL_OVERRIDE;
     QString quoteColumnName(const QString &columnName) const Q_DECL_OVERRIDE;
-    QString quoteString(const QString &string) const Q_DECL_OVERRIDE;
+    QString quoteValue(const QString &string) const Q_DECL_OVERRIDE;
 
     QString quoteUnicodeString(const QString &string, const char UESCAPE = '\\') const;
 };
 
 } // namespace Helper
-
-#endif // HELPER_POSTGRESQLQUOTESERVICE_H

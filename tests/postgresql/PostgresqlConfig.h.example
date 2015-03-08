@@ -1,8 +1,4 @@
-//$Id$
 #pragma once
-
-#ifndef POSTGRESQLCONFIG_H
-#define POSTGRESQLCONFIG_H
 
 #define POSTGRESQL_DRIVERNAME "QPSQL"
 
@@ -10,5 +6,3 @@
 #define POSTGRESQL_HOSTPORT 5432
 #define POSTGRESQL_USERNAME "test"
 #define POSTGRESQL_PASSWORD "test"
-
-#endif // POSTGRESQLCONFIG_H

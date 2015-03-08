@@ -93,7 +93,8 @@ MigrationExecution::MigrationExecutionContextPtr buildContext(MigrationExecution
 
     MigrationTrackerServicePtr migrationTableService(new MigrationTracker::BaseMigrationTableService());
 
-    MigrationExecution::MigrationExecutionContextPtr context(contextBuilder.build(createCommandRepository(), createHelperRepository(), migrationTableService));
+    MigrationExecutionContextPtr context(
+        contextBuilder.build(createCommandRepository(), createHelperRepository(), migrationTableService));
 
     QSqlDatabase database(context->database());
     bool success = false;

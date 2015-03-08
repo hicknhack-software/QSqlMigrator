@@ -23,73 +23,57 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef DATABASELOCK_H
-#define DATABASELOCK_H
+#pragma once
 
-#include "CommandExecution/CommandExecutionServiceRepository.h"
-#include "MigrationTracker/MigrationTrackerService.h"
+#include "SqliteMigrator.h"
 
 #include <QObject>
-#include "SqliteMigrator.h"
 #include <QUuid>
 #include <QString>
 
-namespace MigrationExecution {
-class MigrationExecutionContext;
-}
-
 namespace SqliteMigrator {
 
-class RefreshLockIsLivingInvoker;
-
-// TODO:
-// P1: what are good default time values?
-// P2: do the user need the option to set a own timeout?
+class IntervallCallback;
 
 /*!
- * \brief   The DatabaseLock try to lock a database for this QSqlMigrator process.
- *          You have to check if you got the lock ( see example with operator bool ).
+ * \brief The DatabaseLock try to lock a database for this QSqlMigrator process.
+ * You have to check if you got the lock ( see example with operator bool ).
  *
- *          The lock will be done with a lock-file in the same folder where the db
- *          is locatded.
+ * The lock will be done with a lock-file in the same folder where the db is locatded.
  *
- *          The lock will automatically released on deconstruction.
+ * The lock will automatically released on deconstruction.
  *
  * Example:
  *
- * unsigned int timeOutToGetLock = 60;
- * context c( ... );
- * DatabaseLock lock(c, timeOutToGetLock);
+ * DatabaseLock lock(database);
  * if(lock) {
  *    // do mirgration stuff
  * }
  *
  */
-class SQLITEMIGRATOR_DLL_EXPORT DatabaseLock : public QObject
-{
+class SQLITEMIGRATOR_DLL_EXPORT DatabaseLock : public QObject {
     Q_OBJECT
 
-    // P1: what are good default time values?
-    enum IN_SEC
-    {
-        tryGetLockInterval = 1,
-        timeOut = 10,
-        otherLockIsOutOfDateAfter = 4,
-        refreshLockIsLivingInterval = 1
+public:
+    struct Config {
+        int tryGetLockInterval = 1;
+        int tryGetLockCount = 10;
+        int otherLockIsOutOfDateAfter = 4;
+        int refreshLockInterval = 1;
     };
 
 public:
-    /*! try to make a lock for the database in the context */                         // P2: do the user need the option to set a own timeout?
-    DatabaseLock(MigrationExecution::MigrationExecutionContext &context, unsigned int timeOutTryGetLock = timeOut);
+    /// try to make a lock for the database in the context
+    DatabaseLock(QSqlDatabase, Config = Config());
 
-    /*! return true if the lock is successfully set for this process */
-    operator bool () const;
-
-    /*! auto release the own lock */
+    /// auto release the own lock
     ~DatabaseLock();
 
-    /*! return the lock file name which will be used for this migration context */
-    static QString buildLockFileName(const MigrationExecution::MigrationExecutionContext &context);
+    /// return true if the lock is successfully set for this process
+    operator bool() const;
+
+    /// return the lock file name which will be used for this migration context
+    static QString buildLockFileName(const QSqlDatabase &);
 
 private:
     QString ownProcessInfo() const;
@@ -101,20 +85,23 @@ private:
     bool tryWriteUuidToLockFile() const;
     bool tryReleaseOwnLock() const;
     bool tryReleaseAnyLock() const;
+    bool refreshLockIsLiving() const;
 
-
+private:
+    Config m_config;
     const QUuid m_uuid;
     const QString m_lockFileName;
-    const unsigned int m_timeOutTryGetLock;
-    bool m_lockedSuccessful;
+    bool m_lockedSuccessful = false;
 
-
-    RefreshLockIsLivingInvoker* m_refreshLockIsLivingInvoker;
-    friend class RefreshLockIsLivingInvoker;
-private slots:
-    bool refreshLockIsLiving() const;
+    struct IntervallCallbackDeleter {
+        static void cleanup(IntervallCallback*);
+    };
+    QScopedPointer<IntervallCallback, IntervallCallbackDeleter> m_refreshLockInterval;
 };
 
-} // namespace SqliteMigrator
+inline DatabaseLock::operator bool() const
+{
+    return m_lockedSuccessful;
+}
 
-#endif // DATABASELOCK_H
+} // namespace SqliteMigrator

@@ -21,7 +21,7 @@
 # met: http://www.gnu.org/copyleft/gpl.html.
 TEMPLATE = subdirs
 
-!CONFIG(NoSqlite): SUBDIRS += sqlite api
+!CONFIG(NoSqlite): SUBDIRS += api sqlite
 !CONFIG(NoMysql): SUBDIRS += mysql
 !CONFIG(NoPostgres): SUBDIRS += postgresql
 #!CONFIG(NoFirebird): SUBDIRS += firebird

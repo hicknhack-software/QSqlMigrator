@@ -25,24 +25,28 @@
 ****************************************************************************/
 #include "M20131501_191807_CreateUsers.h"
 
-QSQL_MIGRATION_IMPL(M20131501_191807_CreateUsers)
+#include "SqlSchema/Table.h"
+#include "SqlSchema/Index.h"
+#include "SqlSchemaCommand/CreateTable.h"
+#include "SqlSchemaCommand/CreateIndex.h"
 
 M20131501_191807_CreateUsers::M20131501_191807_CreateUsers()
+    : MigrationBuilder("M20131501_191807_CreateUsers")
 {
-    using namespace Structure;
-    using namespace Commands;
+    using namespace QSqlMigrator::SqlSchema;
+    using namespace QSqlMigrator::SqlSchemaCommand;
 
-    Table::Builder table("users");
-    table << Column( "id", Type::Integer, Column::Primary )
-          << Column( "name", Type(Type::VarChar, 50) )
-          << Column( "email", Type(Type::VarChar, 100) )
-          << Column( "password_salt", Type(Type::VarChar, 64) )
-          << Column( "password_encrypted", Type(Type::VarChar, 64) );
+    auto table = TableBuilder("users");
+    table << Column( "id", ValueType(Type::Integer), Column::Primary )
+          << Column( "name", ValueType(Type::VarChar, 50) )
+          << Column( "email", ValueType(Type::VarChar, 100) )
+          << Column( "password_salt", ValueType(Type::VarChar, 64) )
+          << Column( "password_encrypted", ValueType(Type::VarChar, 64) );
 
-    this->add(new CreateTable(table));
+    addCommand<CreateTable>(table);
 
-    Index::Builder emailIndex( "users_email", "users" );
-    emailIndex << Index::Column("email");
+    auto emailIndex = IndexBuilder( "users_email", "users" );
+    emailIndex << IndexColumn("email");
 
-    this->add(new CreateIndex(emailIndex));
+    addCommand<CreateIndex>(emailIndex);
 }

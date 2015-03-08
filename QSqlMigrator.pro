@@ -33,6 +33,7 @@ OTHER_FILES += \
     CHANGES \
     LICENSE.GPL3 \
     LICENSE.LGPL \
+    .clang-format \
     .travis.yml \
     appveyor.yml \
     build/qmake/_app.pri \

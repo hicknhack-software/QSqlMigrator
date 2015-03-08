@@ -27,11 +27,10 @@
 
 #include "SqliteAddUser.h"
 
-QSQL_MIGRATION_IMPL(M20133001_164323_AddUsers)
-
 M20133001_164323_AddUsers::M20133001_164323_AddUsers()
+    : MigrationBuilder("M20133001_164323_AddUsers")
 {
-    this->add(new SqliteAddUser(1, "klaus", "klaus@test.com", "secret_password"));
-    this->add(new SqliteAddUser(2, "franz", "franz@test.com", "secret_password"));
-    this->add(new SqliteAddUser(3, "hans", "hans@test.com", "secret_password"));
+    addCommand<SqliteAddUser>(1, "klaus", "klaus@test.com", "secret_password");
+    addCommand<SqliteAddUser>(2, "franz", "franz@test.com", "secret_password");
+    addCommand<SqliteAddUser>(3, "hans", "hans@test.com", "secret_password");
 }

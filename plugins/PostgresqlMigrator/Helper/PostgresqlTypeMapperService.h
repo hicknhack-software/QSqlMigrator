@@ -23,8 +23,7 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef HELPER_POSTGRESQLTYPEMAPPERSERVICE_H
-#define HELPER_POSTGRESQLTYPEMAPPERSERVICE_H
+#pragma once
 
 #include "PostgresqlMigrator/PostgresqlMigrator.h"
 
@@ -46,5 +45,3 @@ public:
 };
 
 } // namespace Helper
-
-#endif // HELPER_POSTGRESQLTYPEMAPPERSERVICE_H

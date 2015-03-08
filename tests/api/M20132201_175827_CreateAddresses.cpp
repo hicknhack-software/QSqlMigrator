@@ -25,17 +25,19 @@
 ****************************************************************************/
 #include "M20132201_175827_CreateAddresses.h"
 
-QSQL_MIGRATION_IMPL(M20132201_175827_CreateAddresses)
+#include "SqlSchema/Table.h"
+#include "SqlSchemaCommand/CreateTable.h"
 
 M20132201_175827_CreateAddresses::M20132201_175827_CreateAddresses()
+    : MigrationBuilder("M20132201_175827_CreateAddresses")
 {
-    using namespace Structure;
-    using namespace Commands;
+    using namespace QSqlMigrator::SqlSchema;
+    using namespace QSqlMigrator::SqlSchemaCommand;
 
-    Table::Builder table("addresses");
-    table << Column( "city", Type(Type::VarChar, 50) )
-          << Column( "zip_code", Type(Type::VarChar, 50) )
-          << Column( "country", Type(Type::VarChar, 50) );
+    auto table = TableBuilder("addresses");
+    table << Column("city", ValueType(Type::VarChar, 50))
+          << Column("zip_code", ValueType(Type::VarChar, 50))
+          << Column("country", ValueType(Type::VarChar, 50));
 
-    this->add(new CreateTable(table));
+    addCommand<CreateTable>(table);
 }

@@ -1,0 +1,11 @@
+BasedOnStyle: LLVM
+BreakBeforeBraces: Stroustrup
+AllowShortFunctionsOnASingleLine: None
+IndentWidth: 4
+AccessModifierOffset: -4
+BreakConstructorInitializersBeforeComma: true
+AlwaysBreakAfterDefinitionReturnType: true
+AlwaysBreakTemplateDeclarations: true
+BinPackParameters: false
+AlignTrailingComments: false
+ColumnLimit: 100

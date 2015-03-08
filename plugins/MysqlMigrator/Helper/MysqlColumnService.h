@@ -23,8 +23,7 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef HELPER_MYSQLCOLUMNSERVICE_H
-#define HELPER_MYSQLCOLUMNSERVICE_H
+#pragma once
 
 #include "MysqlMigrator/MysqlMigrator.h"
 
@@ -51,5 +50,3 @@ public:
 };
 
 } // namespace Helper
-
-#endif // HELPER_MYSQLCOLUMNSERVICE_H

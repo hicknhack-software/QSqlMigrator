@@ -23,8 +23,7 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef COMMANDEXECUTION_MYSQLRENAMECOLUMNSERVICE_H
-#define COMMANDEXECUTION_MYSQLRENAMECOLUMNSERVICE_H
+#pragma once
 
 #include "MysqlMigrator/MysqlMigrator.h"
 
@@ -44,10 +43,7 @@ public:
 
     static bool execute(const Commands::RenameColumn &renameColumn, const Structure::Column &originalColumn, const CommandExecution::CommandExecutionContext &context);
 
-    bool execute(const Commands::ConstCommandPtr &command, CommandExecution::CommandExecutionContext &context) const Q_DECL_OVERRIDE;
+    bool execute(const Command &, Context &) const Q_DECL_OVERRIDE;
 };
 
 } // namespace CommandExecution
-
-#endif // COMMANDEXECUTION_MYSQLRENAMECOLUMNSERVICE_H
-

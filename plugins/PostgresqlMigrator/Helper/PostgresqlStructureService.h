@@ -23,8 +23,7 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef HELPER_POSTGRESQLSTRUCTURESERVICE_H
-#define HELPER_POSTGRESQLSTRUCTURESERVICE_H
+#pragma once
 
 #include "Helper/SqlStructureService.h"
 
@@ -52,5 +51,3 @@ public:
 };
 
 } // namespace Helper
-
-#endif // HELPER_POSTGRESQLSTRUCTURESERVICE_H

@@ -23,8 +23,7 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef COMMANDEXECUTION_POSTGRESQLALTERCOLUMNTYPESERVICE_H
-#define COMMANDEXECUTION_POSTGRESQLALTERCOLUMNTYPESERVICE_H
+#pragma once
 
 #include "PostgresqlMigrator/PostgresqlMigrator.h"
 
@@ -41,6 +40,3 @@ public:
 };
 
 } // namespace CommandExecution
-
-#endif // COMMANDEXECUTION_POSTGRESQLALTERCOLUMNTYPESERVICE_H
-

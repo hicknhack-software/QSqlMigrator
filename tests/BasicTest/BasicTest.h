@@ -23,24 +23,12 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef BASICTEST_H
-#define BASICTEST_H
+#pragma once
 
-#include "Commands/AlterColumnType.h"
-#include "Commands/CreateIndex.h"
-#include "Commands/CreateTable.h"
-#include "Commands/DropTable.h"
-#include "Commands/DropColumn.h"
-#include "Commands/RenameColumn.h"
-#include "CommandExecution/BaseCommandExecutionService.h"
-#include "CommandExecution/CommandExecutionServiceRepository.h"
-#include "MigrationExecution/MigrationExecutionConfig.h"
-#include "MigrationExecution/MigrationExecutionContext.h"
-#include "MigrationExecution/MigrationExecutionService.h"
-#include "Migrations/Migration.h"
-#include "MigrationTracker/MigrationTrackerService.h"
-#include "Structure/Table.h"
-#include "Structure/Column.h"
+#include "LoggingTrace/Logging.h"
+#include "SqlDatabaseAdapter/Adapter.h"
+#include "SqlDatabaseSchemaAdapter/CommandExecutorRepository.h"
+#include "SqlMigration/MigrationTracker.h"
 
 #include <QMap>
 #include <QObject>
@@ -58,6 +46,33 @@
 class BasicTest : public QObject
 {
     Q_OBJECT
+
+protected:
+    using Logging = QSharedPointer< QSqlMigrator::LoggingTrace::Logging >;
+    using Adapter = QSqlMigrator::SqlDatabaseAdapter::Adapter;
+    using CommandExecutors = QSqlMigrator::SqlDatabaseSchemaAdapter::CommandExecutorRepository;
+    using MigrationTracker = QSharedPointer<QSqlMigrator::SqlMigration::MigrationTracker>;
+
+protected:
+    BasicTest(const QString &driverName, const QString &testDatabaseName, const QString &structureDatabaseName = "",
+              const QString &hostName = "", const int hostPort = 0, const QString &userName = "", const QString &password = "");
+
+    void initLibraryPath();
+
+    virtual Adapter buildAdapter(QSqlDatabase) = 0;
+    virtual CommandExecutors commandExecutors() = 0;
+    virtual MigrationTracker migrationTracker();
+
+    virtual void defineStructureDatabase();
+    virtual void createStructureDatabase();
+    virtual void cleanStructureDatabase();
+    virtual void defineTestDatabase();
+    void closeTestDatabase();
+
+private:
+    template< typename Command, typename... Args >
+    bool execCommand(Args &&...);
+
 private Q_SLOTS:
     //TODO add tests for "default value", "autoincrement" and other constraints
     //TODO check if versionTable is maintained correctly
@@ -77,35 +92,19 @@ private Q_SLOTS:
     void testDropColumn();
     void testRenameColumn();
     void testColumnType();
-    void closeTestDatabase();
     void testLocalSchemeMigration();
     void testCreateIndex();
 
 protected:
-    BasicTest(const QString &driverName, const QString &testDatabaseName,
-              MigrationExecution::MigrationExecutionContextPtr (*buildContext)(MigrationExecution::MigrationExecutionContext::Builder &),
-              const QString &structureDatabase = "", const QString &hostName = "", const int hostPort = 0, const QString &userName = "", const QString &password = "");
-
-protected:
-    void initLibraryPath();
-    virtual void defineStructureDatabase();
-    virtual void createStructureDatabase();
-    virtual void cleanStructureDatabase();
-    virtual void defineTestDatabase();
-
     const QString m_driverName;
     const QString m_testDatabaseName;
-    MigrationExecution::MigrationExecutionContextPtr (*m_buildContext)(MigrationExecution::MigrationExecutionContext::Builder &);
-
-    const QString m_structureDatabase;
+    const QString m_structureDatabaseName;
 
     const QString m_hostName;
     const int m_hostPort;
     const QString m_userName;
     const QString m_password;
 
-    MigrationExecution::MigrationExecutionContext::Builder m_contextBuilder;
-    MigrationExecution::MigrationExecutionContextPtr m_context;
+    Logging m_logging;
+    Adapter m_adapter;
 };
-
-#endif // BASICTEST_H

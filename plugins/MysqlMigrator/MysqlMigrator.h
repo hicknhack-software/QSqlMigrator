@@ -23,8 +23,7 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef MYSQLMIGRATOR_H
-#define MYSQLMIGRATOR_H
+#pragma once
 
 #include "MigrationExecution/MigrationExecutionContext.h"
 
@@ -57,5 +56,3 @@ namespace MysqlMigrator {
 MigrationExecution::MigrationExecutionContextPtr MYSQLMIGRATOR_DLL_EXPORT buildContext(MigrationExecution::MigrationExecutionContext::Builder &contextBuilder);
 
 } // namespace MysqlMigrator
-
-#endif // MYSQLMIGRATOR_H

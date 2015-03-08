@@ -23,8 +23,7 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef POSTGRESQLMIGRATOR_H
-#define POSTGRESQLMIGRATOR_H
+#pragma once
 
 #include "MigrationExecution/MigrationExecutionContext.h"
 
@@ -52,5 +51,3 @@ namespace PostgresqlMigrator {
 MigrationExecution::MigrationExecutionContextPtr POSTGRESQLMIGRATOR_DLL_EXPORT buildContext(MigrationExecution::MigrationExecutionContext::Builder &contextBuilder);
 
 } // namespace PostgresqlMigrator
-
-#endif // POSTGRESQLMIGRATOR_H

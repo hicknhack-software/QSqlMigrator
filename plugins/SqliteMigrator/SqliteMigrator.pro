@@ -24,24 +24,24 @@ DEFINES += _BUILDING_SQLITEMIGRATOR_DLL
 
 SOURCES += \
     DatabaseLock.cpp \
-    CommandExecution/SqliteDropColumnService.cpp \
-    CommandExecution/SqliteAlterColumnTypeService.cpp \
-    CommandExecution/SqliteAlterColumnService.cpp \
-    CommandExecution/SqliteRenameColumnService.cpp \
     MigrationTracker/SqliteMigrationTableService.cpp \
     SqliteMigrator.cpp \
-    Helper/SqliteSqlStructureService.cpp
+    Helper/SqliteSchemaReflection.cpp \
+    CommandExecutor/SqliteAlterColumn.cpp \
+    CommandExecutor/SqliteAlterColumnType.cpp \
+    CommandExecutor/SqliteDropColumn.cpp \
+    CommandExecutor/SqliteRenameColumn.cpp
 
 INSTALL_HEADERS += \
     SqliteMigrator.h \
     DatabaseLock.h
 
 HEADERS += \
-    CommandExecution/SqliteDropColumnService.h \
-    CommandExecution/SqliteAlterColumnTypeService.h \
-    CommandExecution/SqliteAlterColumnService.h \
-    CommandExecution/SqliteRenameColumnService.h \
     MigrationTracker/SqliteMigrationTableService.h \
-    Helper/SqliteSqlStructureService.h
+    Helper/SqliteSchemaReflection.h \
+    CommandExecutor/SqliteAlterColumn.h \
+    CommandExecutor/SqliteAlterColumnType.h \
+    CommandExecutor/SqliteDropColumn.h \
+    CommandExecutor/SqliteRenameColumn.h
 
 include(../../build/qmake/_plugin.pri)

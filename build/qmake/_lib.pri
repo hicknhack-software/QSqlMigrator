@@ -20,7 +20,6 @@
 # ensure the GNU General Public License version 3.0 requirements will be
 # met: http://www.gnu.org/copyleft/gpl.html.
 TEMPLATE = lib
-CONFIG += dll
 
 HEADERS += $$INSTALL_HEADERS
 
@@ -32,13 +31,15 @@ DESTDIR = $$LIB_PATH
     target.path = $$INSTALL_PREFIX
     INSTALLS += target
 }
-!isEmpty(INSTALL_HEADERS_PREFIX) {
+!isEmpty(INSTALL_HEADERS_PREFIX):!isEmpty(INSTALL_HEADERS) {
     for(header, INSTALL_HEADERS) {
-        path = $${dirname(header)}
+        path = $${dirname($$header)}
         eval(headers_$${path}.files += $$header)
         eval(headers_$${path}.path = $$INSTALL_HEADERS_PREFIX/$$TARGET_INSTALL_HEADERS_PREFIX$$path)
         eval(win32:!isEmpty(headers_$${path}.extra): headers_$${path}.extra += &&)
-        eval(win32:headers_$${path}.extra += $(COPY) \\\"$$shell_path($$_PRO_FILE_PWD_/$$header)\\\" \\\"$$shell_path($$INSTALL_HEADERS_PREFIX/$$TARGET_INSTALL_HEADERS_PREFIX$$path)\\\")
+        src = $$shell_path($$_PRO_FILE_PWD_/$$header)\\\"
+        dst = $$shell_path($${INSTALL_HEADERS_PREFIX}/$${TARGET}/$${path})
+        eval(win32:headers_$${path}.extra += $(COPY) \\\"$$val_escape(src)\\\" \\\"$$val_escape(dst)\\\")
         eval(INSTALLS *= headers_$${path})
     }
 }

@@ -23,8 +23,7 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef HELPER_POSTGRESQLCOLUMNSERVICE_H
-#define HELPER_POSTGRESQLCOLUMNSERVICE_H
+#pragma once
 
 #include "PostgresqlMigrator/PostgresqlMigrator.h"
 
@@ -53,5 +52,3 @@ public:
 };
 
 } // namespace Helper
-
-#endif // HELPER_BASESQLCOLUMNSERVICE_H

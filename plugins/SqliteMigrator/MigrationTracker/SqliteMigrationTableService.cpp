@@ -25,15 +25,16 @@
 ****************************************************************************/
 #include "SqliteMigrator/MigrationTracker/SqliteMigrationTableService.h"
 
-namespace MigrationTracker {
+namespace SqliteMigrator {
 
-SqliteMigrationTableService::SqliteMigrationTableService()
-{
-}
+//SqliteMigrationTableService::SqliteMigrationTableService()
+//{
+//}
 
-bool SqliteMigrationTableService::canRevertStrucuturalChangesUsingTransactions() const
-{
-    return true;
-}
+//bool
+//SqliteMigrationTableService::canRevertStructuralChangesUsingTransactions() const
+//{
+//    return true;
+//}
 
-} // namespace MigrationTracker
+} // namespace SqliteMigrator

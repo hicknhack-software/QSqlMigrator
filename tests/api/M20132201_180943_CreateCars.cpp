@@ -25,18 +25,19 @@
 ****************************************************************************/
 #include "M20132201_180943_CreateCars.h"
 
-QSQL_MIGRATION_IMPL(M20132201_180943_CreateCars)
+#include "SqlSchema/Table.h"
+#include "SqlSchemaCommand/CreateTable.h"
 
 M20132201_180943_CreateCars::M20132201_180943_CreateCars()
+    : MigrationBuilder("M20132201_180943_CreateCars")
 {
-    using namespace Structure;
-    using namespace Commands;
+    using namespace QSqlMigrator::SqlSchema;
+    using namespace QSqlMigrator::SqlSchemaCommand;
 
-    Table::Builder table("cars");
-    table << Column( "name", Type(Type::VarChar, 50) );
-    table << Column( "manufacturer", Type(Type::VarChar, 50) );
-    table << Column( "horse_power", Type::Integer );
+    auto table = TableBuilder("cars");
+    table << Column( "name", ValueType(Type::VarChar, 50) );
+    table << Column( "manufacturer", ValueType(Type::VarChar, 50) );
+    table << Column( "horse_power", ValueType(Type::Integer) );
 
-    this->add(new CreateTable(table));
-
+    addCommand<CreateTable>(table);
 }

@@ -23,23 +23,19 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef MIGRATIONTRACKER_SQLITEMIGRATIONTABLESERVICE_H
-#define MIGRATIONTRACKER_SQLITEMIGRATIONTABLESERVICE_H
+#pragma once
 
-#include "BaseSqlMigrator/MigrationTracker/BaseMigrationTableService.h"
+//#include "BaseSqlMigrator/MigrationTracker/BaseMigrationTableService.h"
 #include "SqliteMigrator/SqliteMigrator.h"
 
-namespace MigrationTracker {
+namespace SqliteMigrator {
 
-class SQLITEMIGRATOR_DLL_EXPORT SqliteMigrationTableService : public MigrationTracker::BaseMigrationTableService
-{
-public:
-    SqliteMigrationTableService();
-    ~SqliteMigrationTableService() QSQL_OVERRIDE_D {}
+//class SQLITEMIGRATOR_DLL_EXPORT SqliteMigrationTableService : public MigrationTracker::BaseMigrationTableService
+//{
+//public:
+//    SqliteMigrationTableService();
 
-    bool canRevertStrucuturalChangesUsingTransactions() const Q_DECL_OVERRIDE;
-};
+//    bool canRevertStructuralChangesUsingTransactions() const Q_DECL_OVERRIDE;
+//};
 
-} // namespace MigrationTracker
-
-#endif // MIGRATIONTRACKER_SQLITEMIGRATIONTABLESERVICE_H
+} // namespace SqliteMigrator

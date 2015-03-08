@@ -23,10 +23,10 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef SQLITEMIGRATOR_H
-#define SQLITEMIGRATOR_H
+#pragma once
 
-#include "MigrationExecution/MigrationExecutionContext.h"
+#include "SqlDatabaseAdapter/Adapter.h"
+#include "SqlDatabaseSchemaAdapter/CommandExecutorRepository.h"
 
 #include <Qt>
 
@@ -44,25 +44,27 @@
 
 namespace SqliteMigrator {
 
+using Adapter = QSqlMigrator::SqlDatabaseAdapter::Adapter;
+using CommandRepository = QSqlMigrator::SqlDatabaseSchemaAdapter::CommandExecutorRepository;
+
 /*!
  * \brief Use this function to setup your execution context for sqlite migrations.
  *
  * Example:
  *
- * MigrationExecutionContext::Builder builder(...);
+ * auto database = QSqlDatabase::addDatabase("QSQLITE");
+ * database.setDatabaseName("sample_db.sqlite3");
  *
- * QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
- * db.setDatabaseName("sample_db.sqlite3");
- * builder.setDatabase(db);
+ * auto adapter = SqliteMigrator::createAdapter(database);
  *
- * MigrationExecutionContextPtr context( SqliteMigrator::buildContext(builder) );
- * if (context) {
- *      // do something
- * }
+ * auto migrator = QSqlMigrator({ migrations, tracker, SqliteMigrator::createCommandRepository(), adapter, logging });
+ * // do something
  *
  */
-MigrationExecution::MigrationExecutionContextPtr SQLITEMIGRATOR_DLL_EXPORT buildContext(MigrationExecution::MigrationExecutionContext::Builder &contextBuilder);
+SQLITEMIGRATOR_DLL_EXPORT Adapter
+createAdapter(QSqlDatabase database);
+
+SQLITEMIGRATOR_DLL_EXPORT CommandRepository
+createCommandRepository();
 
 } // namespace SqliteMigrator
-
-#endif // SQLITEMIGRATOR_H

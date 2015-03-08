@@ -48,7 +48,8 @@ QString PostgresqlQuoteService::quoteColumnName(const QString &columnName) const
     return QString("\"%1\"").arg(columnName);
 }
 
-QString PostgresqlQuoteService::quoteString(const QString &string) const
+QString
+PostgresqlQuoteService::quoteValue(const QString &string) const
 {
     return QString("'%1'").arg(string);
 }

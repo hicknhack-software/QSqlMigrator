@@ -25,27 +25,34 @@
 ****************************************************************************/
 #include "SqliteAddUser.h"
 
-SqliteAddUser::SqliteAddUser(int id, const QString &userName, const QString &userMail, const QString &password)
-    : CustomCommandBase("SqliteAddUser")
-    , m_id(id)
+SqliteAddUser::SqliteAddUser(UserId userId, UserName userName, UserMail userMail, Password password)
+    : CustomBase("SqliteAddUser")
+    , m_userId(userId)
     , m_userName(userName)
     , m_userMail(userMail)
     , m_password(password)
 {
 }
 
-bool SqliteAddUser::up(const QSqlDatabase &database) const
+bool
+SqliteAddUser::up(const QSqlDatabase &database) const
 {
-    QString insertQuery("INSERT INTO users (id, name, email, password_encrypted) VALUES ('%1', '%2', '%3', '%4')");
-    insertQuery = insertQuery.arg(m_id).arg(m_userName).arg(m_userMail).arg(m_password);
+    static const auto insertQuery =
+        QString("INSERT INTO users (id, name, email, password_encrypted) "
+                "VALUES (:id, :name, :email, :pw)");
 
-    ::qDebug() << "complete query-string looks like:";
-    ::qDebug() << insertQuery;
-    QSqlQuery query = database.exec(insertQuery);
+    auto query = QSqlQuery(database);
+    query.prepare(insertQuery);
+    query.bindValue(":id", m_userId);
+    query.bindValue(":name", m_userName);
+    query.bindValue(":email", m_userMail);
+    query.bindValue(":pw", m_password);
+    query.exec();
+
     QSqlError error = query.lastError();
     if (error.isValid()) {
-         ::qDebug() << Q_FUNC_INFO << error.text();
-         return false;
+        ::qDebug() << Q_FUNC_INFO << error.text();
+        return false;
     }
     return true;
 }

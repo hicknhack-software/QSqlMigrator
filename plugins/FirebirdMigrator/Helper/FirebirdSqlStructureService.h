@@ -23,8 +23,7 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef HELPER_FIREBIRSQLSTRUCTURESERVICE_H
-#define HELPER_FIREBIRSQLSTRUCTURESERVICE_H
+#pragma once
 
 #include "Helper/SqlStructureService.h"
 
@@ -52,5 +51,3 @@ public:
 };
 
 } // namespace Helper
-
-#endif // HELPER_FIREBIRSQLSTRUCTURESERVICE_H

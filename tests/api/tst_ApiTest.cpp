@@ -23,12 +23,21 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "MigrationExecution/MigrationExecutionContext.h"
-#include "Migrations/MigrationRepository.h"
-#include "QSqlMigrator/QSqlMigratorService.h"
+#include "M20131501_191807_CreateUsers.h"
+#include "M20132201_175827_CreateAddresses.h"
+#include "M20132201_180943_CreateCars.h"
+#include "M20133001_164323_AddUsers.h"
+
 #include "SqliteMigrator/SqliteMigrator.h"
 #include "SqliteMigrator/MigrationTracker/SqliteMigrationTableService.h"
 #include "SqliteMigrator/DatabaseLock.h"
+
+#include "LoggingTrace/DebugLogging.h"
+
+#include "SqlDatabaseAdapter/Adapter.h"
+#include "SqlMigration/MigrationRepository.h"
+#include "SqlMigration/DatabaseMigrationTracker.h"
+#include "SqlDatabaseMigrator/SqlMigrator.h"
 
 #include "ApiConfig.h"
 
@@ -36,22 +45,28 @@
 #include <QSqlDatabase>
 #include <QtTest>
 
-using namespace Migrations;
-using namespace MigrationExecution;
+using namespace QSqlMigrator;
+using namespace QSqlMigrator::SqlMigration;
 
-class ApiTest : public QObject
-{
+class ApiTest : public QObject {
     Q_OBJECT
 
 public:
     ApiTest();
 
+    SqlMigrator sqlMigrator();
+
 private Q_SLOTS:
     void initTestCase();
-    void init();
+    void cleanupTestCase();
 
+    void init();
+    void cleanup();
+
+private:
     void testDatabaseLock();
 
+private Q_SLOTS:
     void testRegistrationMacro();
     void testDefinedMigrations();
     void testAppliedMigrations();
@@ -63,27 +78,51 @@ private Q_SLOTS:
     void testRevertMigration();
     void testUnappliedMigrations();
 
-    void cleanup();
-    void cleanupTestCase();
-
 private:
-    MigrationExecutionContext::Builder m_contextBuilder;
-    MigrationExecutionContextPtr m_context;
+    QSharedPointer<LoggingTrace::Logging> m_logging;
+    SqlDatabaseAdapter::Adapter m_databaseAdapter;
+    SqlDatabaseSchemaAdapter::CommandExecutorRepository m_commandExecutors;
+    MigrationRepository m_migrationRepository;
+    QSharedPointer<MigrationTracker> m_migrationTracker;
 };
 
-ApiTest::ApiTest() : m_contextBuilder(MigrationRepository::migrations())
+ApiTest::ApiTest()
+    : m_logging(QSharedPointer<LoggingTrace::DebugLogging>::create())
+    , m_commandExecutors(SqliteMigrator::createCommandRepository())
+    , m_migrationRepository(MigrationRepository::fromBuilders<M20131501_191807_CreateUsers,
+                                                              M20132201_175827_CreateAddresses,
+                                                              M20132201_180943_CreateCars,
+                                                              M20133001_164323_AddUsers>())
 {
 }
 
-void ApiTest::initTestCase()
+SqlMigrator
+ApiTest::sqlMigrator()
+{
+    return {{m_migrationRepository,
+             m_migrationTracker,
+             m_commandExecutors,
+             m_databaseAdapter,
+             m_logging}};
+}
+
+void
+ApiTest::initTestCase()
 {
     ::qDebug() << "running test for Api";
+
+    QVERIFY2(!m_databaseAdapter.isValid(), "adapter should not be valid!");
+    m_databaseAdapter = SqliteMigrator::createAdapter(QSqlDatabase::addDatabase(API_DRIVERNAME));
+    QVERIFY2(m_databaseAdapter.isValid(), "adapter should be valid!");
+
+    m_migrationTracker = QSharedPointer<DatabaseMigrationTracker>::create(m_databaseAdapter, m_logging);
 }
 
-void ApiTest::cleanupTestCase()
+void
+ApiTest::cleanupTestCase()
 {
-    if (m_context && m_context->database().isOpen()) {
-        QSqlDatabase(m_context->database()).close();
+    if (m_databaseAdapter.database().isOpen()) {
+        QSqlDatabase(m_databaseAdapter.database()).close();
     }
     if (!QString(API_DATABASE_FILENAME).isEmpty()) {
         if (QFile::exists(API_DATABASE_FILENAME)) {
@@ -92,180 +131,203 @@ void ApiTest::cleanupTestCase()
     }
 }
 
-void ApiTest::init()
+void
+ApiTest::init()
 {
-    QSqlDatabase database;
-    if(!QSqlDatabase::contains(/*default-connection*/)) {
-        database = QSqlDatabase::addDatabase(API_DRIVERNAME);
-        database.setDatabaseName(API_DATABASE);
-        m_contextBuilder.setDatabase(database);
-    }
+    QSqlDatabase database = m_databaseAdapter.database();
+    database.setHostName(API_HOSTNAME);
+    database.setPort(API_HOSTPORT);
+    database.setDatabaseName(API_DATABASE);
+    database.setUserName(API_USERNAME);
+    database.setPassword(API_PASSWORD);
 
-    m_context = SqliteMigrator::buildContext(m_contextBuilder);
-    QVERIFY2(m_context, "context should be builded correctly!");
+    auto successOpen = database.open();
+    QVERIFY2(successOpen, "database should open");
+
+    auto successTracker = m_migrationTracker->prepare();
+    QVERIFY2(successTracker, "tracker should prepare");
 }
 
-void ApiTest::cleanup()
+void
+ApiTest::cleanup()
 {
-    if (m_context->database().isOpen()) {
-        QSqlDatabase(m_context->database()).close();
+    if (m_databaseAdapter.database().isOpen()) {
+        QSqlDatabase(m_databaseAdapter.database()).close();
     }
     if (!QString(API_DATABASE_FILENAME).isEmpty()) {
         QFile::remove(API_DATABASE_FILENAME);
     }
 }
 
-void ApiTest::testDatabaseLock()
+void
+ApiTest::testDatabaseLock()
 {
-    QString dummyLockFileName = SqliteMigrator::DatabaseLock::buildLockFileName(*m_context);
+    auto dummyLockFileName =
+        SqliteMigrator::DatabaseLock::buildLockFileName(m_databaseAdapter.database());
     QFile dummyLockFile(dummyLockFileName);
     {
         dummyLockFile.open(QIODevice::WriteOnly);
         dummyLockFile.write("test dummy lock");
         dummyLockFile.close();
 
-        SqliteMigrator::DatabaseLock dummyLockReleaser(*m_context);
+        SqliteMigrator::DatabaseLock dummyLockReleaser(m_databaseAdapter.database());
+        Q_UNUSED(dummyLockReleaser);
     }
     QVERIFY2(!QFile::exists(dummyLockFileName), "dummy lock file shold NO more exist!");
 
     {
-        SqliteMigrator::DatabaseLock lockA(*m_context);
+        SqliteMigrator::DatabaseLock lockA(m_databaseAdapter.database());
         QVERIFY2(lockA, "lockA shold be successful got the lock!");
 
-        SqliteMigrator::DatabaseLock lockB(*m_context);
+        SqliteMigrator::DatabaseLock lockB(m_databaseAdapter.database());
         QVERIFY2(!lockB, "lockB should not got the lock, lockA should still have the lock!");
     }
 
-    SqliteMigrator::DatabaseLock lockC(*m_context);
+    SqliteMigrator::DatabaseLock lockC(m_databaseAdapter.database());
     QVERIFY2(lockC, "lockC shold be successful got the lock!");
 }
 
-
-void ApiTest::testRegistrationMacro()
+void
+ApiTest::testRegistrationMacro()
 {
-    QMap<QString, const Migration*> migrationList;
-    migrationList = MigrationRepository::migrations();
-    ::qDebug() << migrationList.keys();
+    auto migrationNames = m_migrationRepository.migrationNames();
+    ::qDebug() << migrationNames;
 
-    QVERIFY2(migrationList.contains("M20131501_191807_CreateUsers"),
+    QVERIFY2(migrationNames.contains("M20131501_191807_CreateUsers"),
              "migrationList should contain CreateUsers migration");
 
-    QVERIFY2(migrationList.contains("M20132201_180943_CreateCars"),
+    QVERIFY2(migrationNames.contains("M20132201_180943_CreateCars"),
              "migrationList should contain CreateCars migration");
 
-    QVERIFY2(migrationList.contains("M20133001_164323_AddUsers"),
+    QVERIFY2(migrationNames.contains("M20133001_164323_AddUsers"),
              "migrationList should contain AddUsers migration");
 
-    QVERIFY2(migrationList.contains("M20132201_175827_CreateAddresses"),
+    QVERIFY2(migrationNames.contains("M20132201_175827_CreateAddresses"),
              "migrationList should contain CreateAddresses migration");
 }
 
-void ApiTest::testDefinedMigrations()
+void
+ApiTest::testDefinedMigrations()
 {
-    QSqlMigrator::QSqlMigratorService manager(*m_context);
-    QStringList migrations = manager.definedMigrations();
+    auto migrator = sqlMigrator();
+    auto migrationNames = migrator.definedMigrations();
 
-    QVERIFY2(migrations.contains("M20131501_191807_CreateUsers"),
+    QVERIFY2(migrationNames.contains("M20131501_191807_CreateUsers"),
              "migrationList should contain CreateUsers migration");
-    //test if the list was sorted
-    QVERIFY2(migrations.at(0) == "M20131501_191807_CreateUsers",
+    // test if the list was sorted
+    QVERIFY2(migrationNames.at(0) == "M20131501_191807_CreateUsers",
              "createUsers must be the first due to its timestamp!");
 
-    QVERIFY2(migrations.at(1) == "M20132201_175827_CreateAddresses",
+    QVERIFY2(migrationNames.at(1) == "M20132201_175827_CreateAddresses",
              "createAddresses must be the second due to its timestamp!");
 
-    QVERIFY2(migrations.at(2) == "M20132201_180943_CreateCars",
+    QVERIFY2(migrationNames.at(2) == "M20132201_180943_CreateCars",
              "createCars must be the third due to its timestamp!");
 
-    QVERIFY2(migrations.at(3) == "M20133001_164323_AddUsers",
+    QVERIFY2(migrationNames.at(3) == "M20133001_164323_AddUsers",
              "addUsers must be the fourth due to its timestamp!");
 }
 
-void ApiTest::testAppliedMigrations()
+void
+ApiTest::testAppliedMigrations()
 {
-    QSqlMigrator::QSqlMigratorService manager(*m_context);
-    QStringList definedMigrations = manager.definedMigrations();
-    QStringList appliedMigrations = manager.appliedMigrations();
+    auto migrator = sqlMigrator();
+    auto definedMigrations = migrator.definedMigrations();
+    auto appliedMigrations = migrator.appliedMigrations();
     QVERIFY2(appliedMigrations.size() == 0, "no migration could be applied yet!");
 
-    MigrationTracker::SqliteMigrationTableService tableService;
-    CommandExecution::CommandExecutionContext serviceContext(m_context->database(), m_context->migrationConfig(), m_context->helperRepository());
-    tableService.addMigration(definedMigrations.at(0), serviceContext);
-    appliedMigrations = manager.appliedMigrations();
+    m_migrationTracker->track(definedMigrations.at(0));
+
+    appliedMigrations = migrator.appliedMigrations();
     QVERIFY2(appliedMigrations.size() == 1, "one migration should be shown as applied");
 
     QVERIFY2(appliedMigrations.contains(definedMigrations.at(0)),
              "appliedMigrations should contain first of the defined migrations");
 }
 
-void ApiTest::testLastAppliedMigration()
+void
+ApiTest::testLastAppliedMigration()
 {
-    QSqlMigrator::QSqlMigratorService manager(*m_context);
-    QStringList definedMigrations = manager.definedMigrations();
-    QString lastAppliedMigration = manager.lastAppliedMigration();
+    auto migrator = sqlMigrator();
+
+    auto definedMigrations = migrator.definedMigrations();
+    auto lastAppliedMigration = migrator.lastAppliedMigration();
     QVERIFY2(lastAppliedMigration.isEmpty(), "no Migration could be applied yet!");
 
-    MigrationTracker::SqliteMigrationTableService tableService;
-    CommandExecution::CommandExecutionContext serviceContext(m_context->database(), m_context->migrationConfig(), m_context->helperRepository());
-    tableService.addMigration(definedMigrations.at(1), serviceContext);
-    lastAppliedMigration = manager.lastAppliedMigration();
-    QVERIFY2(lastAppliedMigration == definedMigrations.at(1), "second defined migration was applied last!");
+    m_migrationTracker->track(definedMigrations.at(1));
 
-    //at this point, 2 migrations are within the migrationTable, but hey are not sorted! nevertheless,
-    //the last applied migration has to be the second of the defined migrations
-    tableService.addMigration(definedMigrations.at(0), serviceContext);
-    lastAppliedMigration = manager.lastAppliedMigration();
-    QVERIFY2(lastAppliedMigration == definedMigrations.at(1), "second defined migration was applied last!");
+    lastAppliedMigration = migrator.lastAppliedMigration();
+    QVERIFY2(lastAppliedMigration == definedMigrations.at(1),
+             "second defined migration was applied last!");
+
+    // at this point, 2 migrations are within the migrationTable, but hey are not sorted!
+    // nevertheless, the last applied migration has to be the second of the defined migrations
+    m_migrationTracker->track(definedMigrations.at(0));
+
+    lastAppliedMigration = migrator.lastAppliedMigration();
+    QVERIFY2(lastAppliedMigration == definedMigrations.at(1),
+             "second defined migration was applied last!");
 }
 
-void ApiTest::testApplyMigration()
+void
+ApiTest::testApplyMigration()
 {
-    QSqlMigrator::QSqlMigratorService manager(*m_context);
-    bool success = manager.applyMigration("M20132201_175827_CreateAddresses");
+    auto migrator = sqlMigrator();
+
+    bool success = migrator.applyMigration("M20132201_175827_CreateAddresses");
     QVERIFY2(success, "applyMigration should return true");
-    QStringList tables = m_context->database().tables(QSql::Tables);
+
+    auto tables = m_databaseAdapter.database().tables(QSql::Tables);
     QVERIFY2(tables.contains("addresses"), "table 'addresses' should be created during migration");
     QVERIFY2(tables.size() == 2, "only one table (+ migrationTable) should be created");
 }
 
-void ApiTest::testApplyAll()
+void
+ApiTest::testApplyAll()
 {
-    QSqlMigrator::QSqlMigratorService manager(*m_context);
-    bool success = manager.applyAll();
+    auto migrator = sqlMigrator();
+
+    bool success = migrator.applyAll();
     QVERIFY2(success, "applyAll should return true");
-    QStringList tables = m_context->database().tables();
+
+    auto tables = m_databaseAdapter.database().tables();
     QVERIFY2(tables.contains("users"), "table 'users' should be created during migration");
     QVERIFY2(tables.contains("addresses"), "table 'addresses' should be created during migration");
     QVERIFY2(tables.contains("cars"), "table 'cars' should be created during migration");
 }
 
-void ApiTest::testMigrateTo()
+void
+ApiTest::testMigrateTo()
 {
-    QSqlMigrator::QSqlMigratorService manager(*m_context);
-    bool success = manager.migrateTo("M20131501_191807_CreateUsers");
+    auto migrator = sqlMigrator();
+
+    bool success = migrator.migrateTo("M20131501_191807_CreateUsers");
     QVERIFY2(success, "migrateTo should return true");
-    QStringList tables = m_context->database().tables(QSql::Tables);
+
+    auto tables = m_databaseAdapter.database().tables(QSql::Tables);
     QVERIFY2(tables.size() == 2, "one table (+ migrationTable) should be created yet");
     QVERIFY2(tables.contains("users"), "table 'users' should be created during migration");
-    success = manager.migrateTo("M20132201_180943_CreateCars");
-    QVERIFY2(success, "migrateTo should return true");
-    tables = m_context->database().tables(QSql::Tables);
 
-    QVERIFY2(tables.size() == 4,
-             "two tables should be added during second migrateTo(), makes three (+ migrationTable) tables overall");
+    success = migrator.migrateTo("M20132201_180943_CreateCars");
+    QVERIFY2(success, "migrateTo should return true");
+    tables = m_databaseAdapter.database().tables(QSql::Tables);
+
+    QVERIFY2(tables.size() == 4, "two tables should be added during second migrateTo(), makes "
+                                 "three (+ migrationTable) tables overall");
 
     QVERIFY2(tables.contains("addresses"), "table 'addresses' should be created during migration");
     QVERIFY2(tables.contains("cars"), "table 'cars' should be created during migration");
 }
 
-void ApiTest::testMissingMigrations()
+void
+ApiTest::testMissingMigrations()
 {
-    QSqlMigrator::QSqlMigratorService manager(*m_context);
-    MigrationTracker::SqliteMigrationTableService tableService;
-    CommandExecution::CommandExecutionContext serviceContext(m_context->database(), m_context->migrationConfig(), m_context->helperRepository());
-    tableService.addMigration("M20132301_103512_MissingMigration", serviceContext);
-    QStringList definedMigrations = manager.definedMigrations();
-    QStringList appliedMigrations = manager.appliedMigrations();
+    auto migrator = sqlMigrator();
+
+    m_migrationTracker->track("M20132301_103512_MissingMigration");
+
+    auto definedMigrations = migrator.definedMigrations();
+    auto appliedMigrations = migrator.appliedMigrations();
 
     QVERIFY2(appliedMigrations.contains("M20132301_103512_MissingMigration"),
              "M20132301_103512_MissingMigration should be part of the appliedMigrationsList");
@@ -273,40 +335,43 @@ void ApiTest::testMissingMigrations()
     QVERIFY2(!definedMigrations.contains("M20132301_103512_MissingMigration"),
              "M20132301_103512_MissingMigration should NOT be part of the definedMigrationsList");
 
-    QStringList missingMigrations = manager.missingMigrations();
+    QStringList missingMigrations = migrator.missingMigrations();
     QVERIFY2(missingMigrations.size() == 1, "one missing migration");
-
     QVERIFY2(missingMigrations.contains("M20132301_103512_MissingMigration"),
              "M20132301_103512_MissingMigration should be part of the missingMigrationsList");
 }
 
-void ApiTest::testRevertMigration()
+void
+ApiTest::testRevertMigration()
 {
-    QSqlMigrator::QSqlMigratorService manager(*m_context);
-    bool success = manager.applyAll();
+    auto migrator = sqlMigrator();
+
+    bool success = migrator.applyAll();
     QVERIFY2(success, "applyAll should return true");
-    success = manager.revertMigration("M20132201_180943_CreateCars");
+
+    success = migrator.revertMigration("M20132201_180943_CreateCars");
     QVERIFY2(success, "revertMigration should return true");
-    QStringList tables = m_context->database().tables(QSql::Tables);
+
+    auto tables = m_databaseAdapter.database().tables(QSql::Tables);
     QVERIFY2(tables.contains("users"), "table 'users' should be created during migration");
     QVERIFY2(tables.contains("addresses"), "table 'addresses' should be created during migration");
     QVERIFY2(!tables.contains("cars"), "table 'cars' should be dropped during revertMigration");
-    QVERIFY2(tables.size() == 3, "one table should be dropped, two (+ migrationTable) should be left");
+    QVERIFY2(tables.size() == 3,
+             "one table should be dropped, two (+ migrationTable) should be left");
 }
 
-void ApiTest::testUnappliedMigrations()
+void
+ApiTest::testUnappliedMigrations()
 {
-    QSqlMigrator::QSqlMigratorService manager(*m_context);
-    QStringList definedMigrations = manager.definedMigrations();
-    MigrationTracker::SqliteMigrationTableService tableService;
-    CommandExecution::CommandExecutionContext serviceContext(m_context->database(), m_context->migrationConfig(), m_context->helperRepository());
-    tableService.addMigration(definedMigrations.at(0), serviceContext);
-    tableService.addMigration(definedMigrations.at(2), serviceContext);
-    tableService.addMigration(definedMigrations.at(3), serviceContext);
+    auto migrator = sqlMigrator();
 
-    QStringList unappliedMigrations = manager.unappliedMigrations();
+    auto definedMigrations = migrator.definedMigrations();
+    m_migrationTracker->track(definedMigrations.at(0));
+    m_migrationTracker->track(definedMigrations.at(2));
+    m_migrationTracker->track(definedMigrations.at(3));
+
+    auto unappliedMigrations = migrator.unappliedMigrations();
     QVERIFY2(unappliedMigrations.size() == 1, "one unapplied migration!");
-
     QVERIFY2(unappliedMigrations.contains(definedMigrations.at(1)),
              "unappliedMigrations should contain second of the defined migrations");
 }

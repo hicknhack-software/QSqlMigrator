@@ -23,17 +23,11 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef M20132201_175827_CREATEADDRESSES_H
-#define M20132201_175827_CREATEADDRESSES_H
+#pragma once
 
-#include "api.h"
+#include "SqlMigration/Migration.h"
 
-class M20132201_175827_CreateAddresses : public Migrations::Migration
-{
+class M20132201_175827_CreateAddresses : public QSqlMigrator::SqlMigration::MigrationBuilder {
 public:
     M20132201_175827_CreateAddresses();
 };
-
-QSQL_MIGRATION(M20132201_175827_CreateAddresses)
-
-#endif // M20132201_175827_CREATEADDRESSES_H

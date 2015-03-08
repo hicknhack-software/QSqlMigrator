@@ -25,27 +25,27 @@
 ****************************************************************************/
 #include "SqliteMigrator/SqliteMigrator.h"
 
-#include "BaseSqlMigrator/CommandExecution/BaseSqlAddColumnService.h"
-#include "BaseSqlMigrator/CommandExecution/BaseSqlCreateIndexService.h"
-#include "BaseSqlMigrator/CommandExecution/BaseSqlCreateTableService.h"
-#include "BaseSqlMigrator/CommandExecution/BaseSqlDropIndexService.h"
-#include "BaseSqlMigrator/CommandExecution/BaseSqlDropTableService.h"
-#include "BaseSqlMigrator/CommandExecution/BaseSqlRenameTableService.h"
+#include "SqlDatabaseSchemaAdapter/CommandExecutor/StandardAddColumn.h"
+#include "SqliteMigrator/CommandExecutor/SqliteAlterColumnType.h"
+#include "SqlDatabaseSchemaAdapter/CommandExecutor/StandardCreateIndex.h"
+#include "SqlDatabaseSchemaAdapter/CommandExecutor/StandardCreateTable.h"
+#include "SqlDatabaseSchemaAdapter/CommandExecutor/StandardCustom.h"
+#include "SqliteMigrator/CommandExecutor/SqliteDropColumn.h"
+#include "SqlDatabaseSchemaAdapter/CommandExecutor/StandardDropIndex.h"
+#include "SqlDatabaseSchemaAdapter/CommandExecutor/StandardDropTable.h"
+#include "SqliteMigrator/CommandExecutor/SqliteRenameColumn.h"
+#include "SqlDatabaseSchemaAdapter/CommandExecutor/StandardRenameTable.h"
 
-#include "SqliteMigrator/CommandExecution/SqliteAlterColumnTypeService.h"
-#include "SqliteMigrator/CommandExecution/SqliteDropColumnService.h"
-#include "SqliteMigrator/CommandExecution/SqliteRenameColumnService.h"
+#include "SqlDatabaseAdapter/StandardQuotation.h"
+#include "SqlDatabaseAdapter/StandardColumnMapper.h"
+#include "SqliteMigrator/Helper/SqliteSchemaReflection.h"
+#include "SqlDatabaseAdapter/StandardValueTypeMapper.h"
 
-#include "Helper/HelperRepository.h"
+#include "Helper/SqliteSchemaReflection.h"
 
-#include "BaseSqlMigrator/Helper/BaseSqlQuoteService.h"
-#include "BaseSqlMigrator/Helper/BaseSqlColumnService.h"
-#include "SqliteMigrator/Helper/SqliteSqlStructureService.h"
-#include "BaseSqlMigrator/Helper/BaseSqlTypeMapperService.h"
+#include "SqlDatabaseSchemaAdapter/CommandExecutorRepository.h"
 
-#include "CommandExecution/CustomCommandService.h"
-#include "MigrationExecution/MigrationExecutionContext.h"
-#include "MigrationTracker/SqliteMigrationTableService.h"
+#include "SqlMigration/DatabaseMigrationTracker.h"
 
 #include <QSqlDatabase>
 
@@ -53,57 +53,37 @@
 
 namespace SqliteMigrator {
 
-QSharedPointer<CommandExecution::CommandExecutionServiceRepository> createCommandServiceRepository()
+Adapter
+createAdapter(QSqlDatabase database)
 {
-    using namespace CommandExecution;
+    using namespace QSqlMigrator::SqlDatabaseAdapter;
 
-    QSharedPointer<CommandExecutionServiceRepository> commandRepository(new CommandExecutionServiceRepository);
-    commandRepository->add(BaseCommandServicePtr(new BaseSqlAddColumnService));
-    commandRepository->add(BaseCommandServicePtr(new SqliteAlterColumnTypeService));
-    commandRepository->add(BaseCommandServicePtr(new BaseSqlCreateIndexService));
-    commandRepository->add(BaseCommandServicePtr(new BaseSqlCreateTableService));
-    commandRepository->add(BaseCommandServicePtr(new SqliteDropColumnService));
-    commandRepository->add(BaseCommandServicePtr(new BaseSqlDropIndexService));
-    commandRepository->add(BaseCommandServicePtr(new BaseSqlDropTableService));
-    commandRepository->add(BaseCommandServicePtr(new SqliteRenameColumnService));
-    commandRepository->add(BaseCommandServicePtr(new BaseSqlRenameTableService));
-    commandRepository->add(BaseCommandServicePtr(new CustomCommandService));
+    const auto quotation = QSharedPointer<StandardQuotation>::create();
+    const auto valueTypeMapper = QSharedPointer<StandardValueTypeMapper>::create();
+    const auto columnMapper = QSharedPointer<StandardColumnMapper>::create(valueTypeMapper);
+    const auto schemaReflection = QSharedPointer<SqliteSchemaReflection>::create();
 
+    return Adapter{database, quotation, valueTypeMapper, columnMapper, schemaReflection};
+}
+
+CommandRepository
+createCommandRepository()
+{
+    using namespace QSqlMigrator::SqlDatabaseSchemaAdapter;
+    using namespace SqliteMigrator::SqlDatabaseSchemaAdapter;
+
+    CommandRepository commandRepository;
+    commandRepository.add(QSharedPointer<StandardAddColumn>::create());
+    commandRepository.add(QSharedPointer<SqliteAlterColumnType>::create());
+    commandRepository.add(QSharedPointer<StandardCreateIndex>::create());
+    commandRepository.add(QSharedPointer<StandardCreateTable>::create());
+    commandRepository.add(QSharedPointer<StandardCustom>::create());
+    commandRepository.add(QSharedPointer<SqliteDropColumn>::create());
+    commandRepository.add(QSharedPointer<StandardDropIndex>::create());
+    commandRepository.add(QSharedPointer<StandardDropTable>::create());
+    commandRepository.add(QSharedPointer<SqliteRenameColumn>::create());
+    commandRepository.add(QSharedPointer<StandardRenameTable>::create());
     return commandRepository;
-}
-
-Helper::HelperRepository &createHelperRepository()
-{
-    ::qDebug() << "creating SQLite helper aggregate";
-
-    using namespace Helper;
-
-    static BaseSqlQuoteService quoteService;
-    static BaseSqlTypeMapperService typeMapperService;
-    static BaseSqlColumnService columnService(typeMapperService);
-    static SqliteSqlStructureService structureService;
-    static HelperRepository repository(quoteService, typeMapperService, columnService, structureService);
-
-    return repository;
-}
-
-MigrationExecution::MigrationExecutionContextPtr buildContext(MigrationExecution::MigrationExecutionContext::Builder &contextBuilder)
-{
-    using namespace MigrationExecution;
-
-    CommandServiceRepositoryPtr commandRepository(createCommandServiceRepository());
-    MigrationTrackerServicePtr migrationTableService(new MigrationTracker::SqliteMigrationTableService);
-
-    MigrationExecutionContextPtr context = contextBuilder.build(commandRepository, createHelperRepository(), migrationTableService);
-
-    QSqlDatabase database(context->database());
-    bool success = false;
-    if( database.open() ) {
-        success = migrationTableService->prepare(*context);
-    }
-    if (!success)
-        context.clear();
-    return context;
 }
 
 } // namespace SqliteMigrator

@@ -31,46 +31,62 @@
 #include <QString>
 #include <QtTest>
 
-using namespace Structure;
-using namespace Migrations;
-using namespace MigrationExecution;
-
-class SqliteTest : public BasicTest
-{
+class SqliteTest : public BasicTest {
     Q_OBJECT
 
 public:
     SqliteTest();
 
+protected:
+    Adapter buildAdapter(QSqlDatabase) Q_DECL_OVERRIDE;
+    CommandExecutors commandExecutors() Q_DECL_OVERRIDE;
+
 private:
-    void defineStructureDatabase();
-    void createStructureDatabase();
-    void cleanStructureDatabase();
-    void defineTestDatabase();
+    void defineStructureDatabase() Q_DECL_OVERRIDE;
+    void createStructureDatabase() Q_DECL_OVERRIDE;
+    void cleanStructureDatabase() Q_DECL_OVERRIDE;
+    void defineTestDatabase() Q_DECL_OVERRIDE;
 };
 
-SqliteTest::SqliteTest() : BasicTest(SQLITE_DRIVERNAME, SQLITE_DATABASE_FILE, &SqliteMigrator::buildContext)
+SqliteTest::SqliteTest()
+    : BasicTest(SQLITE_DRIVERNAME, SQLITE_DATABASE_FILE)
 {
 }
 
-void SqliteTest::defineStructureDatabase()
+BasicTest::Adapter
+SqliteTest::buildAdapter(QSqlDatabase database)
+{
+    return SqliteMigrator::createAdapter(database);
+}
+
+BasicTest::CommandExecutors
+SqliteTest::commandExecutors()
+{
+    return SqliteMigrator::createCommandRepository();
+}
+
+void
+SqliteTest::defineStructureDatabase()
 {
     // empty
 }
 
-void SqliteTest::createStructureDatabase()
+void
+SqliteTest::createStructureDatabase()
 {
     // empty
 }
 
-void SqliteTest::cleanStructureDatabase()
+void
+SqliteTest::cleanStructureDatabase()
 {
     if (QFile::exists(m_testDatabaseName)) {
         QFile::remove(m_testDatabaseName);
     }
 }
 
-void SqliteTest::defineTestDatabase()
+void
+SqliteTest::defineTestDatabase()
 {
     QSqlDatabase database = QSqlDatabase::addDatabase(m_driverName, TEST_CONNECTION_NAME);
     database.setDatabaseName(m_testDatabaseName);

@@ -23,17 +23,11 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef M20133001_164323_ADDUSERS_H
-#define M20133001_164323_ADDUSERS_H
+#pragma once
 
-#include "api.h"
+#include "SqlMigration/Migration.h"
 
-class M20133001_164323_AddUsers : public Migrations::Migration
-{
+class M20133001_164323_AddUsers : public QSqlMigrator::SqlMigration::MigrationBuilder {
 public:
     M20133001_164323_AddUsers();
 };
-
-QSQL_MIGRATION(M20133001_164323_AddUsers)
-
-#endif // M20133001_164323_ADDUSERS_H

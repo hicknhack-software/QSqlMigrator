@@ -1,8 +1,4 @@
-//$Id$
 #pragma once
-
-#ifndef MYSQLCONFIG_H
-#define MYSQLCONFIG_H
 
 #define MYSQL_DRIVERNAME "QMYSQL"
 
@@ -10,5 +6,3 @@
 #define MYSQL_HOSTPORT 3306
 #define MYSQL_USERNAME "root"
 #define MYSQL_PASSWORD "Password12!"
-
-#endif // MYSQLCONFIG_H

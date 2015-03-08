@@ -23,17 +23,11 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef M20132201_180943_CREATECARS_H
-#define M20132201_180943_CREATECARS_H
+#pragma once
 
-#include "api.h"
+#include "SqlMigration/Migration.h"
 
-class M20132201_180943_CreateCars : public Migrations::Migration
-{
+class M20132201_180943_CreateCars : public QSqlMigrator::SqlMigration::MigrationBuilder {
 public:
     M20132201_180943_CreateCars();
 };
-
-QSQL_MIGRATION(M20132201_180943_CreateCars)
-
-#endif // M20132201_180943_CREATECARS_H

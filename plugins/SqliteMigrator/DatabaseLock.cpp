@@ -25,8 +25,6 @@
 ****************************************************************************/
 #include "DatabaseLock.h"
 
-#include "MigrationExecution/MigrationExecutionContext.h"
-
 #include <QDebug>
 #include <QFile>
 #include <QFileInfo>
@@ -34,84 +32,101 @@
 #include <QTimer>
 #include <QThread>
 
+#include <functional>
 
 #ifdef Q_OS_WIN
 #include <windows.h> // Sleep
 #define SleepSec(sec) Sleep(sec * 1000)
 #else
-#include <unistd.h>  // sleep
+#include <unistd.h> // sleep
 #define SleepSec(sec) usleep(sec * 1000 * 1000)
 #endif
 
-
 namespace SqliteMigrator {
 
-class RefreshLockIsLivingInvoker : public QThread
-{
+class IntervallCallback : public QObject {
+    Q_OBJECT
 public:
-    /*! init with the database lock which should invoked */
-    RefreshLockIsLivingInvoker(const DatabaseLock*const databaseLock);
+    using IntervalSeconds = int;
+    using Callback = std::function<void()>;
 
-    /*! start the invoke timer for x seconds */
-    void start(unsigned int invokeAfterSecs);
-
-    /*! safety stop the timer and the thread, but you can use the dctor as well */
-    void stop();
-
-    /*! safety auto clean */
-    ~RefreshLockIsLivingInvoker();
+public:
+    IntervallCallback(IntervalSeconds, Callback);
+    ~IntervallCallback();
 
 private:
     void run();
 
-    const DatabaseLock*const m_databaseLock;
-    unsigned int m_sleepFor;
-    bool m_isStopped;
+protected slots:
+    void update();
+
+private:
+    Callback m_callback;
+    QThread m_thread;
+    QTimer m_timer;
 };
 
-DatabaseLock::DatabaseLock(MigrationExecution::MigrationExecutionContext &context, unsigned int timeOutTryGetLock)
-    : QObject(NULL),
-      m_uuid(QUuid::createUuid()),
-      m_lockFileName(buildLockFileName(context)),
-      m_timeOutTryGetLock(timeOutTryGetLock),
-      m_lockedSuccessful(false),
-      m_refreshLockIsLivingInvoker(NULL)
+IntervallCallback::IntervallCallback(IntervalSeconds intervalSeconds, Callback callback)
+    : m_callback(callback)
 {
-    m_lockedSuccessful= tryMakeWaitForLock();
+    m_timer.setSingleShot(false);
+    m_timer.setInterval(intervalSeconds * 1000);
+    m_timer.moveToThread(&m_thread);
+    this->moveToThread(&m_thread);
+    connect(&m_timer, SIGNAL(timeout()), this, SLOT(update()));
+    connect(&m_thread, SIGNAL(started()), &m_timer, SLOT(start()));
+    connect(&m_thread, SIGNAL(finished()), &m_timer, SLOT(stop()));
+    m_thread.start();
+}
 
-    if(m_lockedSuccessful) {
-        m_refreshLockIsLivingInvoker = new RefreshLockIsLivingInvoker(this);
-        m_refreshLockIsLivingInvoker->start(refreshLockIsLivingInterval);
+IntervallCallback::~IntervallCallback()
+{
+    m_thread.quit();
+    m_thread.wait();
+}
+
+void
+IntervallCallback::update()
+{
+    m_callback();
+}
+
+DatabaseLock::DatabaseLock(QSqlDatabase database, Config config)
+    : QObject(Q_NULLPTR)
+    , m_config(config)
+    , m_uuid(QUuid::createUuid())
+    , m_lockFileName(buildLockFileName(database))
+{
+    m_lockedSuccessful = tryMakeWaitForLock();
+
+    if (m_lockedSuccessful) {
+        m_refreshLockInterval.reset(
+            new IntervallCallback(m_config.refreshLockInterval, [&]() { refreshLockIsLiving(); }));
     }
 }
 
-SqliteMigrator::DatabaseLock::operator bool() const
-{
-    return m_lockedSuccessful;
-}
-
-QString DatabaseLock::buildLockFileName(const MigrationExecution::MigrationExecutionContext &context)
+QString
+DatabaseLock::buildLockFileName(const QSqlDatabase &database)
 {
     static const QString lockFileNameExtension = ".qsqlm_lock";
-    return context.database().databaseName() + lockFileNameExtension;
+    return database.databaseName() + lockFileNameExtension;
 }
 
-QString DatabaseLock::ownProcessInfo() const
+QString
+DatabaseLock::ownProcessInfo() const
 {
     static const QString pid = "PID:";
     return pid + m_uuid.toString();
 }
 
-bool DatabaseLock::tryMakeWaitForLock() const
+bool
+DatabaseLock::tryMakeWaitForLock() const
 {
-    for(unsigned int i = 0 ; i != m_timeOutTryGetLock ; ++i ) {
-        if(!isCurrentlyLocked())
+    for (unsigned int i = 0; i != m_config.tryGetLockCount; ++i) {
+        if (tryReleaseOutOfDateLock())
             return tryMakeLock();
 
-        if(tryReleaseOutOfDateLock())
-            return tryMakeLock();
-
-        SleepSec(tryGetLockInterval);
+        SleepSec(m_config.tryGetLockInterval);
     }
 
     ::qWarning() << ownProcessInfo() << "can NOT lock db or release the existing lock";
@@ -119,45 +134,46 @@ bool DatabaseLock::tryMakeWaitForLock() const
     return false;
 }
 
-bool DatabaseLock::isCurrentlyLocked() const
+bool
+DatabaseLock::isCurrentlyLocked() const
 {
     return QFile::exists(m_lockFileName);
 }
 
-bool DatabaseLock::tryReleaseOutOfDateLock() const
+bool
+DatabaseLock::tryReleaseOutOfDateLock() const
 {
-    if(!isCurrentlyLocked()) {
+    if (!isCurrentlyLocked())
         return true;
-    }
 
     QDateTime lastModified = QFileInfo(m_lockFileName).lastModified();
     ::qDebug() << ownProcessInfo() << "current lock last update" << lastModified;
-    if(lastModified.addSecs(otherLockIsOutOfDateAfter) < QDateTime::currentDateTime()) {
+    if (lastModified.addSecs(m_config.otherLockIsOutOfDateAfter) < QDateTime::currentDateTime()) {
         ::qWarning() << ownProcessInfo() << "the lock is out of date";
         ::qWarning() << "NOTE: The last job has NOT finished correctly!" << m_lockFileName;
         return tryReleaseAnyLock();
     }
-
     return false;
 }
 
-bool DatabaseLock::tryMakeLock() const
+bool
+DatabaseLock::tryMakeLock() const
 {
-    if(isCurrentlyLocked()) {
+    if (isCurrentlyLocked()) {
         ::qDebug() << ownProcessInfo() << "can NOT lock db, db is currently locked!";
         return false;
     }
 
-    if(!tryWriteUuidToLockFile()){
+    if (!tryWriteUuidToLockFile()) {
         return false;
     }
 
     ::qDebug() << ownProcessInfo() << "get lock database:" << m_lockFileName;
-
     return true;
 }
 
-bool DatabaseLock::tryWriteUuidToLockFile() const
+bool
+DatabaseLock::tryWriteUuidToLockFile() const
 {
     QFile lockFile(m_lockFileName);
     if (!lockFile.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
@@ -165,7 +181,7 @@ bool DatabaseLock::tryWriteUuidToLockFile() const
         return false;
     }
 
-    if(!lockFile.write(m_uuid.toByteArray())) {
+    if (!lockFile.write(m_uuid.toByteArray())) {
         ::qWarning() << ownProcessInfo() << "can NOT lock db, can NOT write UUID to lock file!";
         return false;
     }
@@ -176,30 +192,28 @@ bool DatabaseLock::tryWriteUuidToLockFile() const
 
 DatabaseLock::~DatabaseLock()
 {
-    // NOTE do not release the lock before killing
-    //      the invoker, otherwise the invoker get the
-    //      chance to create a new lock!
-    if(m_refreshLockIsLivingInvoker) {
-        delete m_refreshLockIsLivingInvoker;
-    }
-
+    // do not release the lock before killing
+    // the callback might create a new lock!
+    m_refreshLockInterval.reset();
     tryReleaseOwnLock();
 }
 
-bool DatabaseLock::tryReleaseOwnLock() const
+bool
+DatabaseLock::tryReleaseOwnLock() const
 {
-    if(!isCurrentlyLocked()) {
+    if (!isCurrentlyLocked()) {
         ::qDebug() << ownProcessInfo() << "can NOT release lock, db is NOT locked!";
         return false;
     }
 
     QFile lockFile(m_lockFileName);
     if (!lockFile.open(QIODevice::ReadOnly)) {
-        ::qWarning() << ownProcessInfo() << "can NOT release lock, can NOT open existing lock file!" << m_lockFileName;
+        ::qWarning() << ownProcessInfo() << "can NOT release lock, can NOT open existing lock file!"
+                     << m_lockFileName;
         return false;
     }
 
-    if(m_uuid.toString() != lockFile.readLine()) {
+    if (m_uuid.toString() != lockFile.readLine()) {
         ::qDebug() << ownProcessInfo() << "can NOT release own lock, db is NOT locked from me!";
         lockFile.close();
         return false;
@@ -209,10 +223,12 @@ bool DatabaseLock::tryReleaseOwnLock() const
     return tryReleaseAnyLock();
 }
 
-bool DatabaseLock::tryReleaseAnyLock() const
+bool
+DatabaseLock::tryReleaseAnyLock() const
 {
-    if(!QFile::remove(m_lockFileName)) {
-        ::qWarning() << ownProcessInfo() << "can NOT release any lock, can NOT delete lock file!" << m_lockFileName;
+    if (!QFile::remove(m_lockFileName)) {
+        ::qWarning() << ownProcessInfo() << "can NOT release any lock, can NOT delete lock file!"
+                     << m_lockFileName;
         return false;
     }
 
@@ -220,44 +236,18 @@ bool DatabaseLock::tryReleaseAnyLock() const
     return true;
 }
 
-bool DatabaseLock::refreshLockIsLiving() const
+bool
+DatabaseLock::refreshLockIsLiving() const
 {
     return tryWriteUuidToLockFile();
 }
 
-/**
- * impl RefreshLockIsLivingInvoker
- **/
-RefreshLockIsLivingInvoker::RefreshLockIsLivingInvoker(const DatabaseLock*const databaseLock)
-    : m_databaseLock(databaseLock),
-      m_sleepFor(0),
-      m_isStopped(false)
-{}
-
-void RefreshLockIsLivingInvoker::start(unsigned int callbackAfterSecs)
+void
+DatabaseLock::IntervallCallbackDeleter::cleanup(IntervallCallback *intervalCallback)
 {
-    m_sleepFor = callbackAfterSecs;
-    QThread::start();
+    delete intervalCallback;
 }
 
-RefreshLockIsLivingInvoker::~RefreshLockIsLivingInvoker()
-{
-    this->stop();
-}
+} // namespace SqliteMigrator
 
-void RefreshLockIsLivingInvoker::stop()
-{
-    m_isStopped = true;
-    QThread::quit();
-    QThread::wait();
-}
-
-void RefreshLockIsLivingInvoker::run()
-{
-    while(!m_isStopped) {
-        QThread::sleep(m_sleepFor);
-        m_databaseLock->refreshLockIsLiving();
-    }
-}
-
-}
+#include "DatabaseLock.moc"
