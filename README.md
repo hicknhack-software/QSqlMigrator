@@ -70,11 +70,11 @@ M201503301340654_CreateUsers::M201503301340654_CreateUsers() {
     using namespace Commands;
     // create the table
     Table::Builder table("users");
-    table << Column( "id", Type::Integer, Column::Primary )
-          << Column( "name", Type(Type::VarChar, 50) )
-          << Column( "email", Type(Type::VarChar, 100) )
-          << Column( "password_salt", Type(Type::VarChar, 64) )
-          << Column( "password_encrypted", Type(Type::VarChar, 64) );
+    table << Column("id", Type::Integer, Column::Primary|Column::AutoIncrement)
+          << Column("name", Type(Type::VarChar, 50))
+          << Column("email", Type(Type::VarChar, 100))
+          << Column("password_salt", Type(Type::VarChar, 64))
+          << Column("password_encrypted", Type(Type::VarChar, 64));
     add(new CreateTable(table));
     // add an index to the emails
     Index::Builder emailIndex( "users_email", "users" );
@@ -103,8 +103,8 @@ A very basic implementation:
 #include "QSqlMigrator/QSqlMigratorService.h"
 #include "SqliteMigrator/SqliteMigrator.h"
 
-MigrationRepository::MigrationMap migrations() {
-    MigrationRepository::MigrationMap result;
+MigrationRepository::NameMigrationMap migrations() {
+    MigrationRepository::NameMigrationMap result;
     result.insert("M201503301340654_CreateUsers", new M201503301340654_CreateUsers());
     return result;
 }
@@ -115,7 +115,7 @@ bool MyAppMigrator::migrate(QSqlDatabase database) {
     auto context = SqliteMigrator::buildContext(contextBuilder);
 
     QSqlMigrator::QSqlMigratorService manager;
-    return manager.applyAll(context);
+    return manager.applyAll(*context);
 }
 ```
 
@@ -127,7 +127,11 @@ In production systems it's advisable to check if the present database schema is 
 
 An implementation to the above example might look like:
 ```cpp
+#include "MigrationExecution/LocalSchemeMigrationExecutionContext.h"
+#include "MigrationExecution/LocalSchemeMigrationExecutionService.h"
 #include "LocalSchemeMigrator/LocalSchemeMigrator.h"
+#include "LocalSchemeMigrator/LocalSchemeComparisonContext.h"
+#include "LocalSchemeMigrator/LocalSchemeComparisonService.h"
 
 bool MyAppMigrator::validate(QSqlDatabase database) {
     LocalSchemePtr localScheme(new Structure::LocalScheme);
@@ -142,11 +146,13 @@ bool MyAppMigrator::validate(QSqlDatabase database) {
     contextBuilder.setDatabase(database);
     auto context = SqliteMigrator::buildContext(contextBuilder);
 
-    LocalSchemeComparisonContext comparisonContext(localScheme, context.helperRepository(), database);
+    LocalSchemeComparisonContext comparisonContext(localScheme, context->helperRepository(), database);
     LocalSchemeComparisonService comparisonService;
     return comparisonService.compareLocalSchemeWithDatabase(comparisonContext);
 }
 ```
+
+Look at the `example/` folder for a complete working version of the above example.
 
 ## Changelog
 

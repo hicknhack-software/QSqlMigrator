@@ -5,6 +5,9 @@ SUBDIRS += src
     plugins.depends = src
 
     !contains(CONFIG, NO_QSM_TESTS) {
+        SUBDIRS += example
+        example.depends = src plugins
+
         SUBDIRS += tests
         tests.depends = src plugins
     }
