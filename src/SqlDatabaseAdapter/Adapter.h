@@ -70,7 +70,7 @@ private:
     SchemaReflection m_schemaReflection;
 };
 
-inline Adapter::Adapter()
+inline Adapter::Adapter() Q_DECL_NOEXCEPT
 {
 }
 

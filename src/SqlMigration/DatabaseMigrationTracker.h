@@ -42,7 +42,8 @@ public:
     using Adapter = SqlDatabaseAdapter::Adapter;
     using Logging = QSharedPointer<LoggingTrace::Logging>;
     struct Config {
-        QString tableName = "qt_tracked_migrations"; ///< name of the version table
+        Config() : tableName("qt_tracked_migrations") {};
+        QString tableName; ///< name of the version table
     };
 
 public:
