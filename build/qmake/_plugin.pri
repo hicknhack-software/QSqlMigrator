@@ -32,5 +32,6 @@ LIBS += -L$$LIB_PATH -lQSqlMigrator
 DEPENDPATH += $$LIB_PATH
 
 win32: PRE_TARGETDEPS += $$LIB_PATH/QSqlMigrator.dll
+macx: PRE_TARGETDEPS += $$LIB_PATH/libQSqlMigrator.dylib
 else: PRE_TARGETDEPS += $$LIB_PATH/libQSqlMigrator.so
 # }

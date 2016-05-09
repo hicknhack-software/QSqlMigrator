@@ -46,5 +46,6 @@ LIBS += -lPostgresqlMigrator
 DEPENDPATH += $$LIB_PATH
 
 win32: PRE_TARGETDEPS += $$LIB_PATH/PostgresqlMigrator.dll
+macx: PRE_TARGETDEPS += $$LIB_PATH/libPostgresqlMigrator.dylib
 else: PRE_TARGETDEPS += $$LIB_PATH/libPostgresqlMigrator.so
 # }

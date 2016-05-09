@@ -40,5 +40,6 @@ LIBS += -lSqliteMigrator
 DEPENDPATH += $$LIB_PATH
 
 win32: PRE_TARGETDEPS += $$LIB_PATH/SqliteMigrator.dll
+macx: PRE_TARGETDEPS += $$LIB_PATH/libSqliteMigrator.dylib
 else: PRE_TARGETDEPS += $$LIB_PATH/libSqliteMigrator.so
 # }

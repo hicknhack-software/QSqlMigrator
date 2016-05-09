@@ -46,5 +46,6 @@ LIBS += -lMysqlMigrator
 DEPENDPATH += $$LIB_PATH
 
 win32: PRE_TARGETDEPS += $$LIB_PATH/MysqlMigrator.dll
+macx: PRE_TARGETDEPS += $$LIB_PATH/libMysqlMigrator.dylib
 else: PRE_TARGETDEPS += $$LIB_PATH/libMysqlMigrator.so
 # }
