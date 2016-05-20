@@ -56,10 +56,11 @@ class SQLITEMIGRATOR_DLL_EXPORT DatabaseLock : public QObject {
 
 public:
     struct Config {
-        int tryGetLockInterval = 1;
-        int tryGetLockCount = 10;
-        int otherLockIsOutOfDateAfter = 4;
-        int refreshLockInterval = 1;
+        Config () : tryGetLockInterval(1), tryGetLockCount(10), otherLockIsOutOfDateAfter(4), refreshLockInterval(1) {};
+        int tryGetLockInterval;
+        int tryGetLockCount;
+        int otherLockIsOutOfDateAfter;
+        int refreshLockInterval;
     };
 
 public:
