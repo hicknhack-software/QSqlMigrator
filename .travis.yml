@@ -7,11 +7,14 @@ compiler:
 env:
 - QT_BASE=4
 - QT_BASE=5
+- QT_BASE=5 QMAKE_OPTS="CONFIG+=static staticlib"
 
 matrix:
   allow_failures:
   - compiler: clang
     env: QT_BASE=5
+  - compiler: clang
+    env: QT_BASE=5 QMAKE_OPTS="CONFIG+=static staticlib"
 
 services:
   - mysql
@@ -32,5 +35,5 @@ before_script:
 - mv tests/postgresql/PostgresqlConfig.h.travis tests/postgresql/PostgresqlConfig.h
 
 script:
-- qmake -r "QMAKE_CXX=$CXX" "QMAKE_CC=$CC" "CONFIG+=NO_QSM_FIREBIRD"
+- qmake -r "QMAKE_CXX=$CXX" "QMAKE_CC=$CC" "CONFIG+=NO_QSM_FIREBIRD" ${QMAKE_OPTS:+"$QMAKE_OPTS"}
 - make check

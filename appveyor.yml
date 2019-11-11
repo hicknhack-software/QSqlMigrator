@@ -15,7 +15,7 @@ environment:
   POSTGRES_DRIVER_ARCHIVE: postgresql-9.3.5-1-windows-binaries.zip
 
   matrix:
-  - BUILD: Qt4.8.7-x86-msvc2010
+  - BUILD: 'Qt4.8.7-x86-msvc2010'
     QMAKE_OPTIONS: "CONFIG+=NO_QSM_POSTGRES"
     COMPILERBAT: '"C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\vcvarsall.bat" x86'
     PRO_MAKE: nmake release
@@ -27,7 +27,15 @@ environment:
     QTARCHIVE1: 'qt-opensource-windows-x86-vs2010-4.8.7.exe'
     QTARCHIVE1_OPTS: '"-ir!?_14_\*" "-xr!*doc\*" "-xr!*examples\*" "-xr!*demos\*"'
 
-  - BUILD: Qt5.6.3-mingw32
+  - BUILD: 'Qt5.6.3-mingw32'
+    QTDIR: 'C:\Qt\5.6.3\mingw49_32'
+    COMPILERDIR: 'C:\Qt\Tools\mingw492_32\bin'
+    QMAKESPEC: win32-g++
+    PRO_MAKE: mingw32-make
+    PRO_CHECK: mingw32-make check
+
+  - BUILD: 'Qt5.6.3-mingw32-static'
+    QMAKE_OPTIONS: '"CONFIG+=static staticlib"'
     QTDIR: 'C:\Qt\5.6.3\mingw49_32'
     COMPILERDIR: 'C:\Qt\Tools\mingw492_32\bin'
     QMAKESPEC: win32-g++
