@@ -15,21 +15,21 @@ environment:
   POSTGRES_DRIVER_ARCHIVE: postgresql-9.3.5-1-windows-binaries.zip
 
   matrix:
-  - BUILD: Qt4.8.6-x86-msvc2010
+  - BUILD: Qt4.8.7-x86-msvc2010
     QMAKE_OPTIONS: "CONFIG+=NO_QSM_POSTGRES"
     COMPILERBAT: '"C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\vcvarsall.bat" x86'
     PRO_MAKE: nmake release
     PRO_CHECK: 'cd ..\..\bin && dir && tst_SqliteTest.exe'
     QMAKESPEC: win32-msvc2010
-    QTMOVE: '$OUTDIR\bin 4.8.6-msvc2010'
-    QTSUB: '4.8.6-msvc2010'
-    QTDOWNLOAD1: http://download.qt-project.org/official_releases/qt/4.8/4.8.6/qt-opensource-windows-x86-vs2010-4.8.6.exe
-    QTARCHIVE1: 'qt-opensource-windows-x86-vs2010-4.8.6.exe'
-    QTARCHIVE1_OPTS: '"-ir!?OUTDIR\*" "-xr!*doc\*" "-xr!*examples\*" "-xr!*demos\*"'
+    QTMOVE: '$_14_ 4.8.7-msvc2010'
+    QTSUB: '4.8.7-msvc2010'
+    QTDOWNLOAD1: http://download.qt-project.org/archive/qt/4.8/4.8.7/qt-opensource-windows-x86-vs2010-4.8.7.exe
+    QTARCHIVE1: 'qt-opensource-windows-x86-vs2010-4.8.7.exe'
+    QTARCHIVE1_OPTS: '"-ir!?_14_\*" "-xr!*doc\*" "-xr!*examples\*" "-xr!*demos\*"'
 
-  - BUILD: Qt5.3.2-mingw32
-    QTDIR: 'C:\Qt\Qt5.3.2\5.3\mingw482_32'
-    COMPILERDIR: 'C:\Qt\Qt5.3.2\Tools\mingw482_32\bin'
+  - BUILD: Qt5.6.3-mingw32
+    QTDIR: 'C:\Qt\5.6.3\mingw49_32'
+    COMPILERDIR: 'C:\Qt\Tools\mingw492_32\bin'
     QMAKESPEC: win32-g++
     PRO_MAKE: mingw32-make
     PRO_CHECK: mingw32-make check
@@ -117,7 +117,3 @@ test_script:
 - cd "build\%BUILD%"
 - '%PRO_CHECK%'
 - cd ..\..
-
-branches:
-  only:
-  - master
