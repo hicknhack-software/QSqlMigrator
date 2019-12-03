@@ -31,7 +31,7 @@
 #include <Qt>
 
 #ifndef POSTGRESQLMIGRATOR_DLL_EXPORT
-#   ifdef Q_OS_WIN
+#   if defined(Q_OS_WIN) && !(defined(Q_CC_GNU) && defined(_BUILDING_STATIC_LIBS))
 #       ifdef _BUILDING_POSTGRESQLMIGRATOR_DLL
 #           define POSTGRESQLMIGRATOR_DLL_EXPORT __declspec(dllexport)
 #       else

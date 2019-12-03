@@ -19,3 +19,7 @@ INCLUDEPATH += $$QSQLMIGRATOR_ROOT/src
     xunittest.depends = first
     QMAKE_EXTRA_TARGETS += xunittest
 }
+
+static {
+    DEFINES += _BUILDING_STATIC_LIBS
+}
