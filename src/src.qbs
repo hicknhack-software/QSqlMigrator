@@ -233,20 +233,6 @@ DynamicLibrary {
     }
 
     Group {
-        name: "Scheme"
-        prefix: "Scheme/"
-
-        files: [
-            "Database.cpp",
-            "Database.h",
-            "DbColumn.cpp",
-            "DbColumn.h",
-            "DbTable.cpp",
-            "DbTable.h",
-        ]
-    }
-
-    Group {
         name: "Structure"
         prefix: "Structure/"
 
