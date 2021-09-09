@@ -1,8 +1,9 @@
 Project {
     name: "QSqlMigrator"
     references: [
-        "src/src.qbs",
+        "example/example.qbs",
         "plugins/plugins.qbs",
+        "src/src.qbs",
         "tests/tests.qbs",
     ]
 
