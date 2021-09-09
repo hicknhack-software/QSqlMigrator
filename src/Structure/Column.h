@@ -55,7 +55,7 @@ public:
     };
     typedef QFlags<Attribute> Attributes;
 
-public:    
+public:
     explicit Column(const QString &name, const Type &type, const QString& defaultValue, Attributes attributes = None);
     explicit Column(const QString &name, const Type &type, Attributes attributes = None);
 
@@ -73,10 +73,10 @@ public:
     bool isAutoIncremented() const;
 
 private:
-    const QString m_name;
-    const Type m_type;
-    const QString m_defaultValue;
-    const Attributes m_attributes;
+    QString m_name;
+    Type m_type;
+    QString m_defaultValue;
+    Attributes m_attributes;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Column::Attributes)
