@@ -35,9 +35,9 @@ MysqlTypeMapperService::MysqlTypeMapperService()
 {
     using namespace Structure;
 
-    m_typeMap.insert(Type::Boolean, "TINYINT(1)");
-    m_typeMap.insert(Type::Integer, "INT(%1)");
-    m_typeMap.insert(Type::BigInt,  "BIGINT(%1)");
+    m_typeMap.insert(Type::Boolean, "TINYINT");
+    m_typeMap.insert(Type::Integer, "INT");
+    m_typeMap.insert(Type::BigInt,  "BIGINT");
     m_typeMap.insert(Type::DoublePrecision,  "DOUBLE");
 }
 

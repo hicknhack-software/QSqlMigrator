@@ -6,6 +6,12 @@ DynamicLibrary {
     cpp.includePaths: ["./"]
     cpp.defines: ["LOG_PREFIX=\"[QSqlMigrator]\"",
                   "_BUILDING_QSQLMIGRATOR_DLL"]
+    Properties {
+        condition: qbs.toolchain.contains("clang")
+        cpp.commonCompilerFlags: "-Wno-deprecated-copy"
+    }
+    install: true
+
     Export {
         Depends { name: "cpp" }
         Depends { name: "Qt"; submodules: ["core", "sql"] }

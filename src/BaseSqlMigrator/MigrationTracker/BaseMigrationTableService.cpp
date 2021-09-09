@@ -107,7 +107,7 @@ bool BaseMigrationTableService::prepare(const MigrationExecution::MigrationExecu
     QString versionTableName = context.migrationConfig().migrationVersionTableName;
     if(!tables.contains(versionTableName)) {
         const QString query =
-                QString("CREATE TABLE %1 (version VARCHAR(255) NOT NULL, PRIMARY KEY (version))")
+                QString("CREATE TABLE IF NOT EXISTS %1 (version VARCHAR(255) NOT NULL, PRIMARY KEY (version))")
                 .arg(context.helperRepository().quoteService().quoteTableName(versionTableName));
         ::qDebug() << "creating migrationVersion table! query looks like:";
         ::qDebug() << query;

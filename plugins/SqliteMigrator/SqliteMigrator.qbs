@@ -6,6 +6,11 @@ DynamicLibrary {
     Depends { name: "cpp" }
     cpp.includePaths: ["../"]
     cpp.defines: ["_BUILDING_SQLITEMIGRATOR_DLL"]
+    Properties {
+        condition: qbs.toolchain.contains("clang")
+        cpp.commonCompilerFlags: "-Wno-deprecated-copy"
+    }
+    install: true
 
     Export {
         Depends { name: "QSqlMigrator" }

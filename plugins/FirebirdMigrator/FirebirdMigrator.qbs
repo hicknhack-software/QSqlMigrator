@@ -6,6 +6,12 @@ DynamicLibrary {
     Depends { name: "cpp" }
     cpp.includePaths: ["../"]
     cpp.defines: ["_BUILDING_FIREBIRDMIGRATOR_DLL"]
+    install: true
+
+    Properties {
+        condition: qbs.toolchain.contains("clang")
+        cpp.commonCompilerFlags: "-Wno-deprecated-copy"
+    }
 
     Export {
         Depends { name: "QSqlMigrator" }

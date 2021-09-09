@@ -1,0 +1,48 @@
+name: Qbs-Tests
+
+on: push
+
+jobs:
+  ubuntu-qbs:
+    name: "Build and run with ubuntu"
+    
+    runs-on: ubuntu-latest
+        
+    steps:
+      
+      - name: install qbs, clang12 and clang
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y qbs clang-12 llvm-12 qt5-default qtbase5-dev
+
+      - name: Set up MySQL
+        run: |
+          sudo /etc/init.d/mysql start
+          mysql -uroot -proot
+          mysql --version
+
+      - name: Set up PostgreSQL
+        run: |
+          sudo systemctl start postgresql.service
+          pg_isready
+          sudo -u postgres psql --command="CREATE USER test PASSWORD 'test';"
+          sudo -u postgres psql --command="ALTER ROLE test WITH SUPERUSER LOGIN CREATEDB CREATEROLE;"
+          sudo -u postgres psql --command="\du"
+
+      - name: install plugins
+        run: |
+          sudo apt-get install -y libqt5sql5-mysql libqt5sql5-psql
+
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: setup qbs
+        run: |
+          qbs setup-toolchains --detect
+          qbs config --list profiles
+
+      - name: build
+        run: >-
+         qbs build profile:clang
+         --build-directory ${env:RUNNER_TEMP}\build
+         -p autotest-runner

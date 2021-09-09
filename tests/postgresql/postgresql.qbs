@@ -1,9 +1,17 @@
 Application {
     name: "postgresqlTest"
-    type: base.concat("autotest")
+    consoleApplication: true
+    type: ["application", "autotest"]
+    install: true
 
+    Properties {
+        condition: qbs.toolchain.contains("clang")
+        cpp.commonCompilerFlags: "-Wno-deprecated-copy"
+    }
     Depends { name: "PostgresqlMigrator" }
     Depends { name: "Qt"; submodules: ["test"] }
+
+    cpp.rpaths: ["../lib/"];
 
     files: [
         "../BasicTest/BasicTest.cpp",
