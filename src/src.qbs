@@ -22,57 +22,52 @@ DynamicLibrary {
     }
 
     Group {
-        name: "BaseSqlMigrator.lib"
-        prefix: "BaseSqlMigrator/"
+       name: "BaseSqlMigrator/CommandExecution"
+       prefix: "BaseSqlMigrator/CommandExecution/"
 
-        Group {
-           name: "BaseSqlMigrator.lib/CommandExecution"
-           prefix: "BaseSqlMigrator/CommandExecution/"
+       files: [
+           "BaseSqlAddColumnService.cpp",
+           "BaseSqlAddColumnService.h",
+           "BaseSqlAlterColumnTypeService.cpp",
+           "BaseSqlAlterColumnTypeService.h",
+           "BaseSqlCreateIndexService.cpp",
+           "BaseSqlCreateIndexService.h",
+           "BaseSqlCreateTableService.cpp",
+           "BaseSqlCreateTableService.h",
+           "BaseSqlDropColumnService.cpp",
+           "BaseSqlDropColumnService.h",
+           "BaseSqlDropIndexService.cpp",
+           "BaseSqlDropIndexService.h",
+           "BaseSqlDropTableService.cpp",
+           "BaseSqlDropTableService.h",
+           "BaseSqlRenameColumnService.cpp",
+           "BaseSqlRenameColumnService.h",
+           "BaseSqlRenameTableService.cpp",
+           "BaseSqlRenameTableService.h",
+        ]
+    }
+    Group {
+        name: "BaseSqlMigrator/Helper"
+        prefix: "BaseSqlMigrator/Helper/"
 
-           files: [
-               "BaseSqlAddColumnService.cpp",
-               "BaseSqlAddColumnService.h",
-               "BaseSqlAlterColumnTypeService.cpp",
-               "BaseSqlAlterColumnTypeService.h",
-               "BaseSqlCreateIndexService.cpp",
-               "BaseSqlCreateIndexService.h",
-               "BaseSqlCreateTableService.cpp",
-               "BaseSqlCreateTableService.h",
-               "BaseSqlDropColumnService.cpp",
-               "BaseSqlDropColumnService.h",
-               "BaseSqlDropIndexService.cpp",
-               "BaseSqlDropIndexService.h",
-               "BaseSqlDropTableService.cpp",
-               "BaseSqlDropTableService.h",
-               "BaseSqlRenameColumnService.cpp",
-               "BaseSqlRenameColumnService.h",
-               "BaseSqlRenameTableService.cpp",
-               "BaseSqlRenameTableService.h",
-            ]
-        }
-        Group {
-            name: "BaseSqlMigrator.lib/Helper"
-            prefix: "BaseSqlMigrator/Helper/"
+        files: [
+            "BaseSqlColumnService.cpp",
+            "BaseSqlColumnService.h",
+            "BaseSqlQuoteService.cpp",
+            "BaseSqlQuoteService.h",
+            "BaseSqlTypeMapperService.cpp",
+            "BaseSqlTypeMapperService.h",
+        ]
+    }
 
-            files: [
-                "BaseSqlColumnService.cpp",
-                "BaseSqlColumnService.h",
-                "BaseSqlQuoteService.cpp",
-                "BaseSqlQuoteService.h",
-                "BaseSqlTypeMapperService.cpp",
-                "BaseSqlTypeMapperService.h",
-            ]
-        }
+    Group {
+        name: "BaseSqlMigrator/MigrationTracker"
+        prefix: "BaseSqlMigrator/MigrationTracker/"
 
-        Group {
-            name: "BaseSqlMigrator.lib/MigrationTracker"
-            prefix: "BaseSqlMigrator/MigrationTracker/"
-
-            files: [
-                "BaseMigrationTableService.cpp",
-                "BaseMigrationTableService.h",
-            ]
-        }
+        files: [
+            "BaseMigrationTableService.cpp",
+            "BaseMigrationTableService.h",
+        ]
     }
 
     Group {

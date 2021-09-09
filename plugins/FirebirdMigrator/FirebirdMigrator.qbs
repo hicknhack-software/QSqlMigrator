@@ -1,18 +1,18 @@
 DynamicLibrary {
     name: "FirebirdMigrator"
 
-    Depends { name: "Qt"; submodules: ["core", "sql"] }
     Depends { name: "QSqlMigrator" }
 
-    cpp.defines: ["_BUILDING_FIREBIRDMIGRATOR_DLL"]
+    Depends { name: "cpp" }
     cpp.includePaths: ["../"]
+    cpp.defines: ["_BUILDING_FIREBIRDMIGRATOR_DLL"]
 
     Export {
-        Depends { name: "cpp" }
         Depends { name: "QSqlMigrator" }
-        cpp.dynamicLibraries: {"QSqlMigrator"}
+        Depends { name: "cpp" }
         cpp.includePaths: ["../"]
     }
+
     files: [
         "FirebirdMigrator.cpp",
         "FirebirdMigrator.h",
