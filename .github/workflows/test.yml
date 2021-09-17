@@ -10,7 +10,16 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      
+
+      - name: Start PostgreSQL 
+        run: |
+          $pgService = Get-Service -Name postgresql*
+          Set-Service -InputObject $pgService -Status running -StartupType automatic
+          Start-Process -FilePath "$env:PGBIN\pg_isready" -Wait -PassThru
+          & $env:PGBIN\psql --command="CREATE USER test PASSWORD 'test';"
+          & $env:PGBIN\psql --command="ALTER ROLE test WITH SUPERUSER LOGIN CREATEDB CREATEROLE;"
+          & $env:PGBIN\psql --command="\du"
+
       - name: install mvsc
         uses: ilammy/msvc-dev-cmd@v1
 
