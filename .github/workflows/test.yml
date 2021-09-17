@@ -10,7 +10,6 @@ jobs:
     runs-on: windows-latest
 
     steps:
-
       - name: Start PostgreSQL 
         run: |
           $pgService = Get-Service -Name postgresql*
@@ -19,12 +18,34 @@ jobs:
           & $env:PGBIN\psql --command="CREATE USER test PASSWORD 'test';"
           & $env:PGBIN\psql --command="ALTER ROLE test WITH SUPERUSER LOGIN CREATEDB CREATEROLE;"
           & $env:PGBIN\psql --command="\du"
+      
+      - name: Start MySQL
+        uses: ankane/setup-mysql@v1
+        with:
+          mysql-version: 8.0
+          
+      - name: Config mysql
+        run: |
+          mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';"
+          mysql --version
 
       - name: install mvsc
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
+      
+      - name: Install Plugin Qt
+        run: |
+          git clone git://code.qt.io/qt/qt5.git 
+          cd qt5
+          git checkout 5.15.2
+          git submodule update --init qtbase
+          cd qtbase/src/plugins/sqldrivers 
+          qmake -- MYSQL_INCDIR="c:\Program Files\MySQL\MySQL Server 8.0\include" MYSQL_LIBDIR="c:\Program Files\MySQL\MySQL Server 8.0\lib"
+          nmake 
+          nmake install
+        shell: cmd
 
       - name: checkout
         uses: actions/checkout@v2
@@ -36,10 +57,10 @@ jobs:
           qbs config --list profiles
 
       - name: build
-        run: >-
-         qbs build profile:MSVC2019-x64
-         --build-directory ${env:RUNNER_TEMP}\build
-         -p autotest-runner
+        run: | 
+          set PATH=%PATH%;C:\Program Files\MySQL\MySQL Server 8.0\lib
+          qbs build profile:MSVC2019-x64 --build-directory %RUNNER_TEMP%\build -p autotest-runner
+        shell: cmd
 
   ubuntu:
     name: "test on ubuntu"
