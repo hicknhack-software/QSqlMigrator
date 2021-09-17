@@ -3,14 +3,42 @@ name: Qbs-Tests
 on: push
 
 jobs:
-  ubuntu-qbs:
-    name: "Build and run with ubuntu"
+
+  windows:
+    name: "test on windows"
+    
+    runs-on: windows-latest
+
+    steps:
+      
+      - name: install mvsc
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2
+
+      - name: checkout
+        uses: actions/checkout@v2
+        
+      - name: install qbs
+        run: |
+          choco install qbs
+          qbs setup-toolchains --detect
+          qbs config --list profiles
+
+      - name: build
+        run: >-
+         qbs build profile:MSVC2019-x64
+         --build-directory ${env:RUNNER_TEMP}\build
+         -p autotest-runner
+
+  ubuntu:
+    name: "test on ubuntu"
     
     runs-on: ubuntu-latest
         
     steps:
-      
-      - name: install qbs, clang12 and clang
+      - name: install qbs, clang12 and qt
         run: |
           sudo apt-get update -y
           sudo apt-get install -y qbs clang-12 llvm-12 qt5-default qtbase5-dev
