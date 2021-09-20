@@ -26,6 +26,8 @@ include(_common.pri)
 
 DESTDIR = $$LIB_PATH
 
+unix: LIBS += -Wl,-rpath,$$LIB_PATH
+
 # QSqlMigrator {
 LIBS += -L$$LIB_PATH -lQSqlMigrator
 DEPENDPATH += $$LIB_PATH

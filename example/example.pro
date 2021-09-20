@@ -26,16 +26,16 @@ PROJECT_ROOT = $$PWD/..
   system($$QMAKE_COPY Config.h.example Config.h)
 }
 
+SOURCES += \
+    example.cpp \
+    MyAppMigrator.cpp \
+    M201503301340654_CreateUsers.cpp
+
 HEADERS += \
     Config.h \
     Config.h.example \
     MyAppMigrator.h \
     M201503301340654_CreateUsers.h
-
-SOURCES += \
-    example.cpp \
-    MyAppMigrator.cpp \
-    M201503301340654_CreateUsers.cpp
 
 include($$PROJECT_ROOT/build/qmake/_test.pri)
 
