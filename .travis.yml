@@ -21,8 +21,8 @@ services:
   - postgresql
 
 before_install:
-- if [ "$CXX" = "g++" ]; then sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y --keyserver pool.sks-keyservers.net; fi
-- sudo add-apt-repository ppa:ubuntu-sdk-team/ppa -y --keyserver pool.sks-keyservers.net
+- if [ "$CXX" = "g++" ]; then sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y; fi
+- sudo add-apt-repository ppa:ubuntu-sdk-team/ppa -y
 - sudo apt-get update -qq
 
 install:
@@ -37,8 +37,3 @@ before_script:
 script:
 - qmake -r "QMAKE_CXX=$CXX" "QMAKE_CC=$CC" "CONFIG+=NoFirebird"
 - make check
-
-branches:
-  only:
-  - develop
-  - master
