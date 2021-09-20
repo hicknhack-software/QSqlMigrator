@@ -42,10 +42,15 @@ OTHER_FILES += \
 include($$PROJECT_ROOT/build/qmake/_test.pri)
 
 # MysqlMigrator {
-LIBS += -lMysqlMigrator
+LIBS += -lMysqlMigrator -lQSqlMigrator
 
 DEPENDPATH += $$LIB_PATH
 
-win32: PRE_TARGETDEPS += $$LIB_PATH/MysqlMigrator.dll
-else: PRE_TARGETDEPS += $$LIB_PATH/libMysqlMigrator.so
+static {
+  win32-msvc*: PRE_TARGETDEPS += $$LIB_PATH/MysqlMigrator.lib
+  else: PRE_TARGETDEPS += $$LIB_PATH/libMysqlMigrator.a
+} else {
+  win32: PRE_TARGETDEPS += $$LIB_PATH/MysqlMigrator.dll
+  else: PRE_TARGETDEPS += $$LIB_PATH/libMysqlMigrator.so
+}
 # }

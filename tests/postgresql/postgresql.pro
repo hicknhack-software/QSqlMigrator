@@ -42,10 +42,15 @@ OTHER_FILES += \
 include($$PROJECT_ROOT/build/qmake/_test.pri)
 
 # PostgresqlMigrator {
-LIBS += -lPostgresqlMigrator
+LIBS += -lPostgresqlMigrator -lQSqlMigrator
 
 DEPENDPATH += $$LIB_PATH
 
-win32: PRE_TARGETDEPS += $$LIB_PATH/PostgresqlMigrator.dll
-else: PRE_TARGETDEPS += $$LIB_PATH/libPostgresqlMigrator.so
+static {
+  win32-msvc*: PRE_TARGETDEPS += $$LIB_PATH/PostgresqlMigrator.lib
+  else: PRE_TARGETDEPS += $$LIB_PATH/libPostgresqlMigrator.a
+} else {
+  win32: PRE_TARGETDEPS += $$LIB_PATH/PostgresqlMigrator.dll
+  else: PRE_TARGETDEPS += $$LIB_PATH/libPostgresqlMigrator.so
+}
 # }
