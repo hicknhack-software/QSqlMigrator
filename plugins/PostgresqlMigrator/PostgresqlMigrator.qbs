@@ -2,14 +2,11 @@ DynamicLibrary {
     name: "PostgresqlMigrator"
 
     Depends { name: "QSqlMigrator" }
-
     Depends { name: "cpp" }
+
     cpp.includePaths: ["../"]
     cpp.defines: ["_BUILDING_POSTGRESQLMIGRATOR_DLL"]
-    Properties {
-        condition: qbs.toolchain.contains("clang")
-        cpp.commonCompilerFlags: "-Wno-deprecated-copy"
-    }
+
     install: true
 
     Export {

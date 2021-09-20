@@ -1,6 +1,3 @@
-import qbs
-import qbs.FileInfo
-
 Application {
     name: "ApiTest"
     consoleApplication: true
@@ -10,10 +7,6 @@ Application {
     Depends { name: "SqliteMigrator" }
     Depends { name: "Qt"; submodules: ["test"] }
 
-    Properties {
-        condition: qbs.toolchain.contains("clang")
-        cpp.commonCompilerFlags: "-Wno-deprecated-copy"
-    }
 
     cpp.rpaths: ["../lib/"];
 

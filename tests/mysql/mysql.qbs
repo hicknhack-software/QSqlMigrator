@@ -3,15 +3,10 @@ Application {
     consoleApplication: true
     type: ["application", "autotest"]
     install: true
+    cpp.rpaths: ["../lib/"];
 
     Depends { name: "MysqlMigrator" }
     Depends { name: "Qt"; submodules: ["test"] }
-
-    cpp.rpaths: ["../lib/"];
-    Properties {
-        condition: qbs.toolchain.contains("clang")
-        cpp.commonCompilerFlags: "-Wno-deprecated-copy"
-    }
 
     files: [
         "../BasicTest/BasicTest.cpp",
