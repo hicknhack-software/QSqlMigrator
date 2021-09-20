@@ -62,8 +62,8 @@ public:
         bool operator==(const Column& other) const;
 
     private:
-        const QString m_name;
-        const SortOrder m_sortOrder;
+        QString m_name;
+        SortOrder m_sortOrder;
     };
 
     typedef QList<Column> ColumnList;
@@ -95,8 +95,8 @@ public:
     bool isValid() const;
 
 private:
-    const QString m_name;
-    const QString m_tableName;
+    QString m_name;
+    QString m_tableName;
     ColumnList m_columns;
 };
 

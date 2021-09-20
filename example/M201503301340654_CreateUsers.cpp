@@ -23,34 +23,21 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef FIREBIRDMIGRATOR_H
-#define FIREBIRDMIGRATOR_H
+#include "M201503301340654_CreateUsers.h"
 
-#include "MigrationExecution/MigrationExecutionContext.h"
-
-#include <Qt>
-
-#ifndef FIREBIRDMIGRATOR_DLL_EXPORT
-#   if defined(Q_OS_WIN) && !(defined(Q_CC_GNU) && defined(_BUILDING_STATIC_LIBS))
-#       ifdef _BUILDING_FIREBIRDMIGRATOR_DLL
-#           define FIREBIRDMIGRATOR_DLL_EXPORT __declspec(dllexport)
-#       else
-#           define FIREBIRDMIGRATOR_DLL_EXPORT __declspec(dllimport)
-#       endif
-#   else
-#       define FIREBIRDMIGRATOR_DLL_EXPORT __attribute__ ((visibility("default")))
-#   endif // Q_OS_WIN
-#endif // FIREBIRDMIGRATOR_DLL_EXPORT
-
-namespace FirebirdMigrator {
-
-/*!
- * \brief Use this function to build your execution context for Firebird migrations.
- *
- * See Sqlite for an usage example
- */
-MigrationExecution::MigrationExecutionContextPtr FIREBIRDMIGRATOR_DLL_EXPORT buildContext(MigrationExecution::MigrationExecutionContext::Builder &contextBuilder);
-
-} // namespace FirebirdMigrator
-
-#endif // FIREBIRDMIGRATOR_H
+M201503301340654_CreateUsers::M201503301340654_CreateUsers() {
+    using namespace Structure;
+    using namespace Commands;
+    // create the table
+    Table::Builder table("users");
+    table << Column("id", Type::Integer, Column::Primary|Column::AutoIncrement)
+          << Column("name", Type(Type::VarChar, 50))
+          << Column("email", Type(Type::VarChar, 100))
+          << Column("password_salt", Type(Type::VarChar, 64))
+          << Column("password_encrypted", Type(Type::VarChar, 64));
+    add(new CreateTable(table));
+    // add an index to the emails
+    Index::Builder emailIndex( "users_email", "users" );
+    emailIndex << Index::Column("email");
+    add(new CreateIndex(emailIndex));
+}

@@ -73,8 +73,8 @@ public:
     Column fetchColumnByName(const QString &name) const;
 
 private:
-    const QString m_name;
-    const ColumnList m_columns;
+    QString m_name;
+    ColumnList m_columns;
 };
 
 inline Table::Builder::Builder(const QString &name, const ColumnList &columns)

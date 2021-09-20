@@ -23,34 +23,11 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#ifndef FIREBIRDMIGRATOR_H
-#define FIREBIRDMIGRATOR_H
+#pragma once
 
-#include "MigrationExecution/MigrationExecutionContext.h"
+#include "api.h"
 
-#include <Qt>
-
-#ifndef FIREBIRDMIGRATOR_DLL_EXPORT
-#   if defined(Q_OS_WIN) && !(defined(Q_CC_GNU) && defined(_BUILDING_STATIC_LIBS))
-#       ifdef _BUILDING_FIREBIRDMIGRATOR_DLL
-#           define FIREBIRDMIGRATOR_DLL_EXPORT __declspec(dllexport)
-#       else
-#           define FIREBIRDMIGRATOR_DLL_EXPORT __declspec(dllimport)
-#       endif
-#   else
-#       define FIREBIRDMIGRATOR_DLL_EXPORT __attribute__ ((visibility("default")))
-#   endif // Q_OS_WIN
-#endif // FIREBIRDMIGRATOR_DLL_EXPORT
-
-namespace FirebirdMigrator {
-
-/*!
- * \brief Use this function to build your execution context for Firebird migrations.
- *
- * See Sqlite for an usage example
- */
-MigrationExecution::MigrationExecutionContextPtr FIREBIRDMIGRATOR_DLL_EXPORT buildContext(MigrationExecution::MigrationExecutionContext::Builder &contextBuilder);
-
-} // namespace FirebirdMigrator
-
-#endif // FIREBIRDMIGRATOR_H
+class M201503301340654_CreateUsers : public Migrations::Migration {
+public:
+    M201503301340654_CreateUsers();
+};

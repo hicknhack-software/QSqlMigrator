@@ -19,6 +19,16 @@ qrc_*.cpp
 Makefile
 *-build-*
 *.exp
+.qmake.stash
+
+Makefile.Debug
+Makefile.Release
+wrapper.sh
+target_wrapper.sh
+
+*/release
+plugins/*/release
+tests/*/release
 
 *.ilk
 *.lib

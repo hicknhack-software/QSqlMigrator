@@ -7,18 +7,22 @@ compiler:
 env:
 - QT_BASE=4
 - QT_BASE=5
+- QT_BASE=5 QMAKE_OPTS="CONFIG+=static staticlib"
 
 matrix:
   allow_failures:
   - compiler: clang
     env: QT_BASE=5
+  - compiler: clang
+    env: QT_BASE=5 QMAKE_OPTS="CONFIG+=static staticlib"
 
-addons:
-  postgresql: "9.3"
+services:
+  - mysql
+  - postgresql
 
 before_install:
-- if [ "$CXX" = "g++" ]; then sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y; fi
-- sudo add-apt-repository ppa:ubuntu-sdk-team/ppa -y
+- if [ "$CXX" = "g++" ]; then sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y --keyserver pool.sks-keyservers.net; fi
+- sudo add-apt-repository ppa:ubuntu-sdk-team/ppa -y --keyserver pool.sks-keyservers.net
 - sudo apt-get update -qq
 
 install:
