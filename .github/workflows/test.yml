@@ -104,7 +104,7 @@ jobs:
           mv tests/mysql/MysqlConfig.h.github tests/mysql/MysqlConfig.h
           mv tests/postgresql/PostgresqlConfig.h.github tests/postgresql/PostgresqlConfig.h
 
-      - name: run qbs build
+      - name: build and run tests
         run: >-
           docker run --network="host" --rm -v ${GITHUB_WORKSPACE}:/build -w /build
           ${{ matrix.image }}
