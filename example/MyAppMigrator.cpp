@@ -21,8 +21,8 @@ bool MyAppMigrator::migrate(QSqlDatabase database) {
     contextBuilder.setDatabase(database);
     auto context = SqliteMigrator::buildContext(contextBuilder);
 
-    QSqlMigrator::QSqlMigratorService manager;
-    return manager.applyAll(*context);
+    QSqlMigrator::QSqlMigratorService manager(*context);
+    return manager.applyAll();
 }
 
 #include "MigrationExecution/LocalSchemeMigrationExecutionContext.h"
