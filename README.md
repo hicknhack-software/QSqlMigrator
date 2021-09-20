@@ -1,5 +1,5 @@
-Linux: [![Build Status](https://travis-ci.com/hicknhack-software/QSqlMigrator.svg?branch=master)](https://travis-ci.com/hicknhack-software/QSqlMigrator)
-Windows: [![Build Status](https://ci.appveyor.com/api/projects/status/github/hicknhack-software/QSqlMigrator?branch=master&svg=true)](https://ci.appveyor.com/project/arBmind/qsqlmigrator)
+TravisCI: [![Build Status](https://app.travis-ci.com/hicknhack-software/QSqlMigrator.svg?branch=develop)](https://app.travis-ci.com/hicknhack-software/QSqlMigrator)
+AppVeyor: [![Build Status](https://ci.appveyor.com/api/projects/status/github/hicknhack-software/QSqlMigrator?branch=develop&svg=true)](https://ci.appveyor.com/project/arBmind/qsqlmigrator)
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/898/badge.svg)](https://scan.coverity.com/projects/898)
 
 # QSqlMigrator
