@@ -1,7 +1,5 @@
 version: 1.5.1_{build}
 
-os: unstable
-
 services:
 - mysql
 - postgresql
@@ -15,7 +13,8 @@ environment:
   POSTGRES_DRIVER_ARCHIVE: postgresql-9.3.5-1-windows-binaries.zip
 
   matrix:
-  - BUILD: Qt4.8.7-x86-msvc2010
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    BUILD: Qt4.8.7-x86-msvc2010
     QMAKE_OPTIONS: "CONFIG+=NoPostgres"
     COMPILERBAT: '"C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\vcvarsall.bat" x86'
     PRO_MAKE: nmake release
@@ -27,14 +26,16 @@ environment:
     QTARCHIVE1: 'qt-opensource-windows-x86-vs2010-4.8.7.exe'
     QTARCHIVE1_OPTS: '"-ir!?_14_\*" "-xr!*doc\*" "-xr!*examples\*" "-xr!*demos\*"'
 
-  - BUILD: 'Qt5.6.3-mingw32'
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    BUILD: 'Qt5.6.3-mingw32'
     QTDIR: 'C:\Qt\5.6.3\mingw49_32'
     COMPILERDIR: 'C:\Qt\Tools\mingw492_32\bin'
     QMAKESPEC: win32-g++
     PRO_MAKE: mingw32-make
     PRO_CHECK: mingw32-make check
 
-  - BUILD: 'Qt5.6.3-mingw32-static'
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    BUILD: 'Qt5.6.3-mingw32-static'
     QMAKE_OPTIONS: '"CONFIG+=static staticlib"'
     QTDIR: 'C:\Qt\5.6.3\mingw49_32'
     COMPILERDIR: 'C:\Qt\Tools\mingw492_32\bin'
@@ -42,7 +43,8 @@ environment:
     PRO_MAKE: mingw32-make
     PRO_CHECK: mingw32-make check
 
-  - BUILD: 'Qt5.9.0-x86-msvc2015'
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    BUILD: 'Qt5.9.0-x86-msvc2015'
     COMPILERBAT: '"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86'
     PRO_MAKE: nmake
     PRO_CHECK: nmake check
@@ -50,7 +52,8 @@ environment:
     QTDOWNLOAD1: https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/qt5_59/qt.59.win32_msvc2015/5.9.0-0-201705291821qtbase-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z
     QTARCHIVE1: '5.9.0-0-201705291821qtbase-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z'
 
-  - BUILD: 'Qt5.9.0-x64-msvc2015'
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    BUILD: 'Qt5.9.0-x64-msvc2015'
     COMPILERBAT: '"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86_amd64'
     PRO_MAKE: nmake
     PRO_CHECK: nmake check
@@ -62,6 +65,21 @@ environment:
     MYSQL_DRIVER_NAME: mysql-connector-c-6.1.5-winx64
     POSTGRES_DRIVER_URL: http://get.enterprisedb.com/postgresql/postgresql-9.3.5-1-windows-x64-binaries.zip
     POSTGRES_DRIVER_ARCHIVE: postgresql-9.3.5-1-windows-x64-binaries.zip
+
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    BUILD: 'Qt5.15.2-x64-msvc2019'
+    COMPILERBAT: '"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"'
+    PRO_MAKE: nmake
+    PRO_CHECK: nmake check
+    QTSUB: '5.15.2\msvc2019_64'
+    QTDOWNLOAD1: https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/qt5_5152/qt.qt5.5152.win64_msvc2019_64/5.15.2-0-202011130602qtbase-Windows-Windows_10-MSVC2019-Windows-Windows_10-X86_64.7z
+    QTARCHIVE1: '5.15.2-0-202011130602qtbase-Windows-Windows_10-MSVC2019-Windows-Windows_10-X86_64.7z'
+    MYSQL_DRIVER_URL: https://downloads.mysql.com/archives/get/p/19/file/mysql-connector-c-6.1.11-winx64.zip
+    MYSQL_DRIVER_ARCHIVE: mysql-connector-c-6.1.11-winx64.zip
+    MYSQL_DRIVER_NAME: mysql-connector-c-6.1.11-winx64
+    POSTGRES_DRIVER_URL: https://get.enterprisedb.com/postgresql/postgresql-13.4-1-windows-x64-binaries.zip
+    POSTGRES_DRIVER_ARCHIVE: postgresql-13.4-1-windows-x64-binaries.zip
+    QMYSQL: '5.15.2'
 
 install:
 # fix git\bin bug for mingw build
@@ -82,7 +100,10 @@ install:
 - if defined QTMOVE move %QTMOVE%
 - if defined QTSUB set "QTDIR=%CD%\%QTSUB%"
 - if defined QTDOWNLOAD1 (echo [Paths]&& echo Prefix=..) >%QTDIR%\bin\qt.conf
-- if defined QTDOWNLOAD1 (echo QT_EDITION = OpenSource) >>%QTDIR%\mkspecs\qconfig.pri
+- if defined QTDOWNLOAD1 (copy %QTDIR%\mkspecs\qconfig.pri %QTDIR%\mkspecs\qconfig.pri.old)
+- if defined QTDOWNLOAD1 (findstr /r /i /v "^QT_EDITION.*$ ^QT_LICHECK.*$" %QTDIR%\mkspecs\qconfig.pri.old& exit 0) >%QTDIR%\mkspecs\qconfig.pri
+- if defined QTDOWNLOAD1 (echo QT_EDITION = OpenSource&& echo QT_LICHECK =) >>%QTDIR%\mkspecs\qconfig.pri
+- if defined QTDOWNLOAD1 cat %QTDIR%\mkspecs\qconfig.pri
 - set QT_PLUGIN_PATH=%QTDIR%\plugins
 - cd ..
 
@@ -96,10 +117,20 @@ install:
 - 7z x %POSTGRES_DRIVER_ARCHIVE% >nul
 
 # finish install
-- cd ..
+- cd %APPVEYOR_BUILD_FOLDER%
 - set "PATH=%QTDIR%\bin;%PATH%"
 - if defined COMPILERDIR set "PATH=%COMPILERDIR%;%PATH%"
 - '%COMPILERBAT%'
+
+# install mysql plugin
+- "if defined QMYSQL (git clone --branch %qmysql% --depth 1 --no-tags git://code.qt.io/qt/qt5.git extern/qt5)"
+- if defined QMYSQL cd extern/qt5
+- if defined QMYSQL git submodule update --init qtbase
+- if defined QMYSQL cd qtbase/src/plugins/sqldrivers
+- if defined QMYSQL qmake -- MYSQL_INCDIR="%APPVEYOR_BUILD_FOLDER%\extern\%MYSQL_DRIVER_NAME%\include" MYSQL_LIBDIR="%APPVEYOR_BUILD_FOLDER%\extern\%MYSQL_DRIVER_NAME%\lib"
+- if defined QMYSQL %PRO_MAKE%
+- if defined QMYSQL %PRO_MAKE% install
+- if defined QMYSQL cd %APPVEYOR_BUILD_FOLDER%
 
 before_build:
 - move tests\mysql\MysqlConfig.h.appveyor tests\mysql\MysqlConfig.h
