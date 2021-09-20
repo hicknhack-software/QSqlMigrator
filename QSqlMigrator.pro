@@ -27,6 +27,7 @@ SUBDIRS += src
 
 plugins.depends = src
 tests.depends = src plugins
+example.depends = src plugins
 
 OTHER_FILES += \
     README.md \
