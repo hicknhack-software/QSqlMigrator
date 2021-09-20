@@ -19,7 +19,7 @@ environment:
     QMAKE_OPTIONS: "CONFIG+=NoPostgres"
     COMPILERBAT: '"C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\vcvarsall.bat" x86'
     PRO_MAKE: nmake release
-    PRO_CHECK: 'cd ..\..\bin && dir && tst_SqliteTest.exe'
+    PRO_CHECK: 'cd ..\..\bin && dir && TestSqlite.exe'
     QMAKESPEC: win32-msvc2010
     QTMOVE: '$_14_ 4.8.7-msvc2010'
     QTSUB: '4.8.7-msvc2010'
@@ -42,27 +42,21 @@ environment:
     PRO_MAKE: mingw32-make
     PRO_CHECK: mingw32-make check
 
-  - BUILD: 'Qt5.3.2-x86-msvc2013'
-    COMPILERBAT: '"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86'
+  - BUILD: 'Qt5.9.0-x86-msvc2015'
+    COMPILERBAT: '"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86'
     PRO_MAKE: nmake
     PRO_CHECK: nmake check
-    QMAKESPEC: win32-msvc2013
-    QTSUB: '5.3\msvc2013_opengl'
-    QTDOWNLOAD1: http://download.qt-project.org/online/qtsdkrepository/windows_x86/desktop/qt5_53/qt.53.win32_msvc2013_opengl/5.3.2-0qt5_essentials.7z
-    QTARCHIVE1: '5.3.2-0qt5_essentials.7z'
-    QTDOWNLOAD2: http://download.qt-project.org/online/qtsdkrepository/windows_x86/desktop/qt5_53/qt.53.win32_msvc2013_opengl/5.3.2-0icu_52_1_msvc_2013_32.7z
-    QTARCHIVE2: '5.3.2-0icu_52_1_msvc_2013_32.7z'
+    QTSUB: '5.9\msvc2015'
+    QTDOWNLOAD1: https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/qt5_59/qt.59.win32_msvc2015/5.9.0-0-201705291821qtbase-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z
+    QTARCHIVE1: '5.9.0-0-201705291821qtbase-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z'
 
-  - BUILD: 'Qt5.3.2-x64-msvc2013'
-    COMPILERBAT: '"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86_amd64'
+  - BUILD: 'Qt5.9.0-x64-msvc2015'
+    COMPILERBAT: '"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86_amd64'
     PRO_MAKE: nmake
     PRO_CHECK: nmake check
-    QMAKESPEC: win32-msvc2013
-    QTSUB: '5.3\msvc2013_64_opengl'
-    QTDOWNLOAD1: http://download.qt-project.org/online/qtsdkrepository/windows_x86/desktop/qt5_53/qt.53.win64_msvc2013_64_opengl/5.3.2-0qt5_essentials.7z
-    QTARCHIVE1: '5.3.2-0qt5_essentials.7z'
-    QTDOWNLOAD2: http://download.qt-project.org/online/qtsdkrepository/windows_x86/desktop/qt5_53/qt.53.win64_msvc2013_64_opengl/5.3.2-0icu_52_1_msvc_2013_64.7z
-    QTARCHIVE2: '5.3.2-0icu_52_1_msvc_2013_64.7z'
+    QTSUB: '5.9\msvc2015_64'
+    QTDOWNLOAD1: https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/qt5_59/qt.59.win64_msvc2015_64/5.9.0-0-201705291821qtbase-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
+    QTARCHIVE1: '5.9.0-0-201705291821qtbase-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z'
     MYSQL_DRIVER_URL: https://dev.mysql.com/get/Downloads/Connector-C/mysql-connector-c-6.1.5-winx64.zip
     MYSQL_DRIVER_ARCHIVE: mysql-connector-c-6.1.5-winx64.zip
     MYSQL_DRIVER_NAME: mysql-connector-c-6.1.5-winx64
@@ -88,6 +82,7 @@ install:
 - if defined QTMOVE move %QTMOVE%
 - if defined QTSUB set "QTDIR=%CD%\%QTSUB%"
 - if defined QTDOWNLOAD1 (echo [Paths]&& echo Prefix=..) >%QTDIR%\bin\qt.conf
+- if defined QTDOWNLOAD1 (echo QT_EDITION = OpenSource) >>%QTDIR%\mkspecs\qconfig.pri
 - set QT_PLUGIN_PATH=%QTDIR%\plugins
 - cd ..
 
@@ -112,21 +107,16 @@ before_build:
 
 build_script:
 - echo "building %BUILD%"
-- mkdir build
-- mkdir "build\%BUILD%"
-- cd "build\%BUILD%"
+- mkdir tmp
+- mkdir "tmp\%BUILD%"
+- cd "tmp\%BUILD%"
 - set
 - qmake -r "CONFIG+=NoFirebird" %QMAKE_OPTIONS% %PRO_FILE%
 - '%PRO_MAKE%'
-- cd ..\..
+- cd %APPVEYOR_BUILD_FOLDER%
 
 test_script:
 - set "PATH=%CD%\extern\pgsql\bin;%PATH%"
-- cd "build\%BUILD%"
+- cd "tmp\%BUILD%"
 - '%PRO_CHECK%'
-- cd ..\..
-
-branches:
-  only:
-  - develop
-  - master
+- cd %APPVEYOR_BUILD_FOLDER%
