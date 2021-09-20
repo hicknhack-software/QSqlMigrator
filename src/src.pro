@@ -1,4 +1,5 @@
 TARGET = QSqlMigrator
+PROJECT_ROOT = $$PWD/..
 DEFINES += _BUILDING_QSQLMIGRATOR_DLL
 DEFINES += LOG_PREFIX=\\\"[QSqlMigrator]\\\"
 
@@ -136,4 +137,4 @@ HEADERS += \
     LocalSchemeMigrator/LocalSchemeComparisonService.h \
     LocalSchemeMigrator/LocalSchemeComparisonContext.h \
 
-include(../build/qmake/_lib.pri)
+include($$PROJECT_ROOT/build/qmake/_lib.pri)

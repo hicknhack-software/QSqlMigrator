@@ -20,6 +20,7 @@
 # ensure the GNU General Public License version 3.0 requirements will be
 # met: http://www.gnu.org/copyleft/gpl.html.
 TARGET = PostgresqlMigrator
+PROJECT_ROOT = $$PWD/../..
 DEFINES += _BUILDING_POSTGRESQLMIGRATOR_DLL
 
 SOURCES += \
@@ -38,4 +39,4 @@ HEADERS += \
          Helper/PostgresqlColumnService.h \
          Helper/PostgresqlTypeMapperService.h
 
-include(../../build/qmake/_plugin.pri)
+include($$PROJECT_ROOT/build/qmake/_plugin.pri)

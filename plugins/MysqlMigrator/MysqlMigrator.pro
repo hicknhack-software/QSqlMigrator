@@ -20,6 +20,7 @@
 # ensure the GNU General Public License version 3.0 requirements will be
 # met: http://www.gnu.org/copyleft/gpl.html.
 TARGET = MysqlMigrator
+PROJECT_ROOT = $$PWD/../..
 DEFINES += _BUILDING_MYSQLMIGRATOR_DLL
 
 SOURCES += \
@@ -40,4 +41,4 @@ HEADERS += \
      CommandExecution/MysqlAlterColumnTypeService.h \
      CommandExecution/MysqlRenameColumnService.h
 
-include(../../build/qmake/_plugin.pri)
+include($$PROJECT_ROOT/build/qmake/_plugin.pri)

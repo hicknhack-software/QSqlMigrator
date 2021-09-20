@@ -20,6 +20,7 @@
 # ensure the GNU General Public License version 3.0 requirements will be
 # met: http://www.gnu.org/copyleft/gpl.html.
 TARGET = TestMysql
+PROJECT_ROOT = $$PWD/../..
 
 !exists(MysqlConfig.h) {
     system($$QMAKE_COPY MysqlConfig.h.example MysqlConfig.h)
@@ -38,7 +39,7 @@ OTHER_FILES += \
     MysqlConfig.h.appveyor \
     MysqlConfig.h.travis
 
-include(../../build/qmake/_test.pri)
+include($$PROJECT_ROOT/build/qmake/_test.pri)
 
 # MysqlMigrator {
 LIBS += -lMysqlMigrator

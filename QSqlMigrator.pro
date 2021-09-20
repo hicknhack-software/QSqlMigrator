@@ -23,7 +23,7 @@ TEMPLATE = subdirs
 
 SUBDIRS += src
 !CONFIG(NoPlugins): SUBDIRS += plugins
-!CONFIG(NoTest): SUBDIRS += tests
+!CONFIG(NoTest): SUBDIRS += tests example
 
 plugins.depends = src
 tests.depends = src plugins

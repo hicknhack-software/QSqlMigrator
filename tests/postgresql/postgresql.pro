@@ -20,6 +20,7 @@
 # ensure the GNU General Public License version 3.0 requirements will be
 # met: http://www.gnu.org/copyleft/gpl.html.
 TARGET = TestPostgresql
+PROJECT_ROOT = $$PWD/../..
 
 !exists(PostgresqlConfig.h) {
   system($$QMAKE_COPY PostgresqlConfig.h.example PostgresqlConfig.h)
@@ -38,7 +39,7 @@ OTHER_FILES += \
     PostgresqlConfig.h.appveyor \
     PostgresqlConfig.h.travis
 
-include(../../build/qmake/_test.pri)
+include($$PROJECT_ROOT/build/qmake/_test.pri)
 
 # PostgresqlMigrator {
 LIBS += -lPostgresqlMigrator

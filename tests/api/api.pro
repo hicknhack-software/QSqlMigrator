@@ -20,6 +20,7 @@
 # ensure the GNU General Public License version 3.0 requirements will be
 # met: http://www.gnu.org/copyleft/gpl.html.
 TARGET = TestApi
+PROJECT_ROOT = $$PWD/../..
 
 !exists(ApiConfig.h) {
     system($$QMAKE_COPY ApiConfig.h.example ApiConfig.h)
@@ -41,7 +42,7 @@ HEADERS += \
     ApiConfig.h \
     ApiConfig.h.example
 
-include(../../build/qmake/_test.pri)
+include($$PROJECT_ROOT/build/qmake/_test.pri)
 
 # SqliteMigrator {
 LIBS += -lSqliteMigrator
