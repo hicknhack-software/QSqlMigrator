@@ -1,5 +1,8 @@
+import qbs.File
+
 Application {
-    name: "postgresqlTest"
+    id: product
+    name: "TestPostgresql"
     consoleApplication: true
     type: ["application", "autotest"]
     install: true
@@ -7,6 +10,15 @@ Application {
 
     Depends { name: "PostgresqlMigrator" }
     Depends { name: "Qt"; submodules: ["test"] }
+
+    Probe {
+        id: config
+        configure: {
+            if (!File.exists(product.sourceDirectory + "/PostgresqlConfig.h")) {
+                File.copy(product.sourceDirectory + "/PostgresqlConfig.h.example", product.sourceDirectory + "/PostgresqlConfig.h")
+            }
+        }
+    }
 
     files: [
         "../BasicTest/BasicTest.cpp",

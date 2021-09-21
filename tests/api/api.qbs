@@ -1,5 +1,8 @@
+import qbs.File
+
 Application {
-    name: "ApiTest"
+    id: product
+    name: "TestApi"
     consoleApplication: true
     type: ["application", "autotest"]
     install: true
@@ -7,8 +10,14 @@ Application {
     Depends { name: "SqliteMigrator" }
     Depends { name: "Qt"; submodules: ["test"] }
 
-
-    cpp.rpaths: ["../lib/"];
+    Probe {
+        id: config
+        configure: {
+            if (!File.exists(product.sourceDirectory + "/ApiConfig.h")) {
+                File.copy(product.sourceDirectory + "/ApiConfig.h.example", product.sourceDirectory + "/ApiConfig.h")
+            }
+        }
+    }
 
     files: [
         "../BasicTest/BasicTest.cpp",

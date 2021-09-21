@@ -30,6 +30,8 @@
 
 #include <QString>
 #include <QtTest>
+#include <QSqlQuery>
+#include <QSqlError>
 
 using namespace Structure;
 using namespace Migrations;
@@ -60,7 +62,13 @@ void SqliteTest::defineStructureDatabase()
 
 void SqliteTest::createStructureDatabase()
 {
-    // empty
+    // workaround for NFS mount bug present on Github Actions
+    QSqlDatabase test_database = QSqlDatabase::database(TEST_CONNECTION_NAME);
+    auto query = test_database.exec("SELECT 1");
+    if (query.lastError().isValid()) {
+        ::qDebug() << "initial query error";
+    }
+    test_database.close();
 }
 
 void SqliteTest::cleanStructureDatabase()

@@ -3,14 +3,12 @@ name: Qbs-Tests
 on: push
 
 jobs:
-
   windows:
     name: "test on windows"
-    
     runs-on: windows-latest
 
     steps:
-      - name: Start PostgreSQL 
+      - name: Start PostgreSQL
         run: |
           $pgService = Get-Service -Name postgresql*
           Set-Service -InputObject $pgService -Status running -StartupType automatic
@@ -18,12 +16,12 @@ jobs:
           & $env:PGBIN\psql --command="CREATE USER test PASSWORD 'test';"
           & $env:PGBIN\psql --command="ALTER ROLE test WITH SUPERUSER LOGIN CREATEDB CREATEROLE;"
           & $env:PGBIN\psql --command="\du"
-      
+
       - name: Start MySQL
         uses: ankane/setup-mysql@v1
         with:
-          mysql-version: 8.0
-          
+          mysql-version: "8.0"
+
       - name: Config mysql
         run: |
           mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';"
@@ -31,55 +29,61 @@ jobs:
 
       - name: install mvsc
         uses: ilammy/msvc-dev-cmd@v1
+        with:
+          toolset: "14.29"
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
-      
-      - name: Install Plugin Qt
+        with:
+          version: "5.15.2"
+
+      - name: Compile and install QMySql Plugin for Qt
         run: |
-          git clone git://code.qt.io/qt/qt5.git 
+          git clone --branch 5.15.2 --depth 1 --no-tags git://code.qt.io/qt/qt5.git qt5
           cd qt5
-          git checkout 5.15.2
-          git submodule update --init qtbase
-          cd qtbase/src/plugins/sqldrivers 
+          git submodule update --init --depth 1 qtbase
+          cd qtbase/src/plugins/sqldrivers
           qmake -- MYSQL_INCDIR="c:\Program Files\MySQL\MySQL Server 8.0\include" MYSQL_LIBDIR="c:\Program Files\MySQL\MySQL Server 8.0\lib"
-          nmake 
+          nmake
           nmake install
         shell: cmd
 
       - name: checkout
         uses: actions/checkout@v2
-        
+
       - name: install qbs
         run: |
           choco install qbs
           qbs setup-toolchains --detect
           qbs config --list profiles
 
+      - name: prepare config
+        run: |
+          move tests\mysql\MysqlConfig.h.github tests\mysql\MysqlConfig.h
+          move tests\postgresql\PostgresqlConfig.h.github tests\postgresql\PostgresqlConfig.h
+        shell: cmd
+
       - name: build and run tests
-        run: | 
+        run: |
+          set QT_FORCE_STDERR_LOGGING=1
           set PATH=%PATH%;C:\Program Files\MySQL\MySQL Server 8.0\lib
           qbs build profile:MSVC2019-x64 --build-directory %RUNNER_TEMP%\build -p autotest-runner
         shell: cmd
 
   ubuntu:
     name: "test on ubuntu"
-    
     runs-on: ubuntu-latest
-        
+
     steps:
       - name: install qbs, clang12 and qt
         run: |
           sudo apt-get update -y
           sudo apt-get install -y qbs clang-12 llvm-12 qt5-default qtbase5-dev
 
-      - name: Set up MySQL
-        run: |
-          sudo /etc/init.d/mysql start
-          mysql -uroot -proot
-          mysql --version
+      - name: Setup MySQL
+        run: sudo systemctl start mysql.service
 
-      - name: Set up PostgreSQL
+      - name: Setup PostgreSQL
         run: |
           sudo systemctl start postgresql.service
           pg_isready
@@ -98,6 +102,11 @@ jobs:
         run: |
           qbs setup-toolchains --detect
           qbs config --list profiles
+
+      - name: prepare config
+        run: |
+          mv tests/mysql/MysqlConfig.h.github tests/mysql/MysqlConfig.h
+          mv tests/postgresql/PostgresqlConfig.h.github tests/postgresql/PostgresqlConfig.h
 
       - name: build and run tests
         run: >-

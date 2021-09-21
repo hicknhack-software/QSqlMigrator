@@ -17,6 +17,7 @@ DynamicLibrary {
         Depends { name: "cpp" }
         Depends { name: "Qt"; submodules: ["core", "sql"] }
         cpp.includePaths: ["./"]
+        cpp.rpaths: ["../lib/"]
         Properties {
             condition: qbs.toolchain.contains("clang")
             cpp.commonCompilerFlags: "-Wno-deprecated-copy"

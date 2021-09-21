@@ -6,7 +6,6 @@ DynamicLibrary {
 
     cpp.includePaths: ["../"]
     cpp.defines: ["_BUILDING_POSTGRESQLMIGRATOR_DLL"]
-
     install: true
 
     Export {
@@ -14,6 +13,7 @@ DynamicLibrary {
         Depends { name: "cpp" }
         cpp.includePaths: ["../"]
     }
+
     files: [
         "Helper/PostgresqlColumnService.cpp",
         "Helper/PostgresqlColumnService.h",

@@ -1,5 +1,8 @@
+import qbs.File
+
 Application {
-    name: "sqliteTest"
+    id: product
+    name: "TestSqlite"
     consoleApplication: true
     type: ["application", "autotest"]
     install: true
@@ -7,7 +10,14 @@ Application {
     Depends { name: "SqliteMigrator" }
     Depends { name: "Qt"; submodules: ["test"] }
 
-    cpp.rpaths: ["../lib/"];
+    Probe {
+        id: config
+        configure: {
+            if (!File.exists(product.sourceDirectory + "/SqliteConfig.h")) {
+                File.copy(product.sourceDirectory + "/SqliteConfig.h.example", product.sourceDirectory + "/SqliteConfig.h")
+            }
+        }
+    }
 
     files: [
         "../BasicTest/BasicTest.cpp",

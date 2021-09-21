@@ -125,7 +125,7 @@ install:
 # install mysql plugin
 - "if defined QMYSQL (git clone --branch %qmysql% --depth 1 --no-tags git://code.qt.io/qt/qt5.git extern/qt5)"
 - if defined QMYSQL cd extern/qt5
-- if defined QMYSQL git submodule update --init qtbase
+- if defined QMYSQL git submodule update --init --depth 1 qtbase
 - if defined QMYSQL cd qtbase/src/plugins/sqldrivers
 - if defined QMYSQL qmake -- MYSQL_INCDIR="%APPVEYOR_BUILD_FOLDER%\extern\%MYSQL_DRIVER_NAME%\include" MYSQL_LIBDIR="%APPVEYOR_BUILD_FOLDER%\extern\%MYSQL_DRIVER_NAME%\lib"
 - if defined QMYSQL %PRO_MAKE%
