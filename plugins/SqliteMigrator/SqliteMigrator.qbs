@@ -27,6 +27,8 @@ DynamicLibrary {
         "DatabaseLock.h",
         "Helper/SqliteSqlStructureService.cpp",
         "Helper/SqliteSqlStructureService.h",
+        "Helper/SqliteTypeMapperService.cpp",
+        "Helper/SqliteTypeMapperService.h",
         "MigrationTracker/SqliteMigrationTableService.cpp",
         "MigrationTracker/SqliteMigrationTableService.h",
         "SqliteMigrator.cpp",
