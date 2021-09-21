@@ -2,10 +2,11 @@ DynamicLibrary {
     name: "SqliteMigrator"
 
     Depends { name: "QSqlMigrator" }
-
     Depends { name: "cpp" }
+
     cpp.includePaths: ["../"]
     cpp.defines: ["_BUILDING_SQLITEMIGRATOR_DLL"]
+    install: true
 
     Export {
         Depends { name: "QSqlMigrator" }

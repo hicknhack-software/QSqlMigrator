@@ -1,6 +1,9 @@
 Application {
     name: "postgresqlTest"
-    type: base.concat("autotest")
+    consoleApplication: true
+    type: ["application", "autotest"]
+    install: true
+    cpp.rpaths: ["../lib/"];
 
     Depends { name: "PostgresqlMigrator" }
     Depends { name: "Qt"; submodules: ["test"] }

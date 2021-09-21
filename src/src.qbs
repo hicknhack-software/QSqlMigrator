@@ -3,13 +3,24 @@ DynamicLibrary {
 
     Depends { name: "cpp" }
     Depends { name: "Qt"; submodules: ["core", "sql"] }
+
     cpp.includePaths: ["./"]
     cpp.defines: ["LOG_PREFIX=\"[QSqlMigrator]\"",
                   "_BUILDING_QSQLMIGRATOR_DLL"]
+    install: true
+
+    Properties {
+        condition: qbs.toolchain.contains("clang")
+        cpp.commonCompilerFlags: "-Wno-deprecated-copy"
+    }
     Export {
         Depends { name: "cpp" }
         Depends { name: "Qt"; submodules: ["core", "sql"] }
         cpp.includePaths: ["./"]
+        Properties {
+            condition: qbs.toolchain.contains("clang")
+            cpp.commonCompilerFlags: "-Wno-deprecated-copy"
+        }
     }
 
     Group {
@@ -229,20 +240,6 @@ DynamicLibrary {
             "QSqlMigratorConfig.h",
             "QSqlMigratorService.cpp",
             "QSqlMigratorService.h",
-        ]
-    }
-
-    Group {
-        name: "Scheme"
-        prefix: "Scheme/"
-
-        files: [
-            "Database.cpp",
-            "Database.h",
-            "DbColumn.cpp",
-            "DbColumn.h",
-            "DbTable.cpp",
-            "DbTable.h",
         ]
     }
 

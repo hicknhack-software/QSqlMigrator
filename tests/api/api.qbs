@@ -1,11 +1,14 @@
 Application {
     name: "ApiTest"
     consoleApplication: true
-    type: base.concat("autotest")
+    type: ["application", "autotest"]
+    install: true
 
     Depends { name: "SqliteMigrator" }
     Depends { name: "Qt"; submodules: ["test"] }
 
+
+    cpp.rpaths: ["../lib/"];
 
     files: [
         "../BasicTest/BasicTest.cpp",

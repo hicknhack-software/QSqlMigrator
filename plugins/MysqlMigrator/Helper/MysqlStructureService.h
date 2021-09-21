@@ -56,6 +56,10 @@ public:
     Structure::Index getIndexDefinition(const QString &indexName,
                                         const QString &tableName,
                                         QSqlDatabase database) const Q_DECL_OVERRIDE;
+
+private:
+    void normalizeDatatype(QString& type) const;
+
 };
 
 } // namespace Helper

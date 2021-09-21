@@ -1,0 +1,106 @@
+name: Qbs-Tests
+
+on: push
+
+jobs:
+
+  windows:
+    name: "test on windows"
+    
+    runs-on: windows-latest
+
+    steps:
+      - name: Start PostgreSQL 
+        run: |
+          $pgService = Get-Service -Name postgresql*
+          Set-Service -InputObject $pgService -Status running -StartupType automatic
+          Start-Process -FilePath "$env:PGBIN\pg_isready" -Wait -PassThru
+          & $env:PGBIN\psql --command="CREATE USER test PASSWORD 'test';"
+          & $env:PGBIN\psql --command="ALTER ROLE test WITH SUPERUSER LOGIN CREATEDB CREATEROLE;"
+          & $env:PGBIN\psql --command="\du"
+      
+      - name: Start MySQL
+        uses: ankane/setup-mysql@v1
+        with:
+          mysql-version: 8.0
+          
+      - name: Config mysql
+        run: |
+          mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';"
+          mysql --version
+
+      - name: install mvsc
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2
+      
+      - name: Install Plugin Qt
+        run: |
+          git clone git://code.qt.io/qt/qt5.git 
+          cd qt5
+          git checkout 5.15.2
+          git submodule update --init qtbase
+          cd qtbase/src/plugins/sqldrivers 
+          qmake -- MYSQL_INCDIR="c:\Program Files\MySQL\MySQL Server 8.0\include" MYSQL_LIBDIR="c:\Program Files\MySQL\MySQL Server 8.0\lib"
+          nmake 
+          nmake install
+        shell: cmd
+
+      - name: checkout
+        uses: actions/checkout@v2
+        
+      - name: install qbs
+        run: |
+          choco install qbs
+          qbs setup-toolchains --detect
+          qbs config --list profiles
+
+      - name: build and run tests
+        run: | 
+          set PATH=%PATH%;C:\Program Files\MySQL\MySQL Server 8.0\lib
+          qbs build profile:MSVC2019-x64 --build-directory %RUNNER_TEMP%\build -p autotest-runner
+        shell: cmd
+
+  ubuntu:
+    name: "test on ubuntu"
+    
+    runs-on: ubuntu-latest
+        
+    steps:
+      - name: install qbs, clang12 and qt
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y qbs clang-12 llvm-12 qt5-default qtbase5-dev
+
+      - name: Set up MySQL
+        run: |
+          sudo /etc/init.d/mysql start
+          mysql -uroot -proot
+          mysql --version
+
+      - name: Set up PostgreSQL
+        run: |
+          sudo systemctl start postgresql.service
+          pg_isready
+          sudo -u postgres psql --command="CREATE USER test PASSWORD 'test';"
+          sudo -u postgres psql --command="ALTER ROLE test WITH SUPERUSER LOGIN CREATEDB CREATEROLE;"
+          sudo -u postgres psql --command="\du"
+
+      - name: install plugins
+        run: |
+          sudo apt-get install -y libqt5sql5-mysql libqt5sql5-psql
+
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: setup qbs
+        run: |
+          qbs setup-toolchains --detect
+          qbs config --list profiles
+
+      - name: build and run tests
+        run: >-
+         qbs build profile:clang
+         --build-directory ${env:RUNNER_TEMP}\build
+         -p autotest-runner
