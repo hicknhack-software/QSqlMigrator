@@ -35,7 +35,7 @@
 #include "SqliteMigrator/CommandExecution/SqliteAlterColumnTypeService.h"
 #include "SqliteMigrator/CommandExecution/SqliteDropColumnService.h"
 #include "SqliteMigrator/CommandExecution/SqliteRenameColumnService.h"
-
+#include "SqliteMigrator/Helper/SqliteTypeMapperService.h"
 #include "Helper/HelperRepository.h"
 
 #include "BaseSqlMigrator/Helper/BaseSqlQuoteService.h"
@@ -79,7 +79,7 @@ Helper::HelperRepository &createHelperRepository()
     using namespace Helper;
 
     static BaseSqlQuoteService quoteService;
-    static BaseSqlTypeMapperService typeMapperService;
+    static SqliteTypeMapperService typeMapperService;
     static BaseSqlColumnService columnService(typeMapperService);
     static SqliteSqlStructureService structureService;
     static HelperRepository repository(quoteService, typeMapperService, columnService, structureService);
