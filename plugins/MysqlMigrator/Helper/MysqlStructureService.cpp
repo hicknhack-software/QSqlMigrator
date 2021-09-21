@@ -36,6 +36,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QStringList>
+#include <QRegExp>
 
 using namespace Structure;
 
@@ -59,6 +60,7 @@ Table MysqlStructureService::getTableDefinition(const QString &tableName, QSqlDa
         while (query.next()) {
             QString name = query.value(0).toString();
             QString type = query.value(1).toString();
+            normalizeDatatype(type);
             bool null = query.value(2).toBool();
             QString key = query.value(3).toString();
             QString defaultValue = query.value(4).toString();
@@ -85,6 +87,19 @@ Table MysqlStructureService::getTableDefinition(const QString &tableName, QSqlDa
         }
     } while (false);
     return Table(tableName, columns);
+}
+
+void MysqlStructureService::normalizeDatatype(QString& type) const {
+    auto replaceIfMatch = [&type](QString const& pattern) {
+        QRegExp tinyint(pattern + "\\(\\d+\\)");
+        if(tinyint.indexIn(type) != -1)
+        {
+            type = pattern;
+        }
+    };
+    replaceIfMatch("tinyint");
+    replaceIfMatch("bigint");
+    replaceIfMatch("int");
 }
 
 Index MysqlStructureService::getIndexDefinition(const QString &indexName,
