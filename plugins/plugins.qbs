@@ -1,5 +1,5 @@
 Project {
-    name: "Plugin"
+    name: "Plugins"
 
     references: [
         "FirebirdMigrator/FirebirdMigrator.qbs",

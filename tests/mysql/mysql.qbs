@@ -1,12 +1,23 @@
+import qbs.File
+
 Application {
-    name: "mysqlTest"
+    id: product
+    name: "TestMysql"
     consoleApplication: true
     type: ["application", "autotest"]
     install: true
-    cpp.rpaths: ["../lib/"];
 
     Depends { name: "MysqlMigrator" }
     Depends { name: "Qt"; submodules: ["test"] }
+
+    Probe {
+        id: config
+        configure: {
+            if (!File.exists(product.sourceDirectory + "/MysqlConfig.h")) {
+                File.copy(product.sourceDirectory + "/MysqlConfig.h.example", product.sourceDirectory + "/MysqlConfig.h")
+            }
+        }
+    }
 
     files: [
         "../BasicTest/BasicTest.cpp",

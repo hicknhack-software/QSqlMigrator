@@ -35,9 +35,10 @@ tests/*/release
 *.pdb
 *.exe
 
-/tests/auto/mysql/MysqlConfig.h
-/tests/auto/sqlite/SqliteConfig.h
-/tests/auto/postgresql/PostgresqlConfig.h
-/tests/auto/api/ApiConfig.h
+/tests/mysql/MysqlConfig.h
+/tests/sqlite/SqliteConfig.h
+/tests/postgresql/PostgresqlConfig.h
+/tests/api/ApiConfig.h
+/example/Config.h
 /bin/*
 /doc/*
