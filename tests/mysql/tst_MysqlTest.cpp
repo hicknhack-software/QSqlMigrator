@@ -52,6 +52,6 @@ MysqlTest::MysqlTest()
 {
 }
 
-QTEST_MAIN(MysqlTest)
+QTEST_GUILESS_MAIN(MysqlTest)
 
 #include "tst_MysqlTest.moc"

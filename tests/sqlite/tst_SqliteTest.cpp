@@ -113,6 +113,6 @@ void SqliteTest::defineTestDatabase()
     database.setDatabaseName(m_testDatabaseName);
 }
 
-QTEST_MAIN(SqliteTest)
+QTEST_GUILESS_MAIN(SqliteTest)
 
 #include "tst_SqliteTest.moc"
