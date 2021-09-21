@@ -26,10 +26,17 @@ include(_common.pri)
 
 DESTDIR = $$LIB_PATH
 
+unix: LIBS += -Wl,-rpath,$$LIB_PATH
+
 # QSqlMigrator {
 LIBS += -L$$LIB_PATH -lQSqlMigrator
 DEPENDPATH += $$LIB_PATH
 
-win32: PRE_TARGETDEPS += $$LIB_PATH/QSqlMigrator.dll
-else: PRE_TARGETDEPS += $$LIB_PATH/libQSqlMigrator.so
+static {
+  win32-msvc*: PRE_TARGETDEPS += $$LIB_PATH/QSqlMigrator.lib
+  else: PRE_TARGETDEPS += $$LIB_PATH/libQSqlMigrator.a
+} else {
+  win32: PRE_TARGETDEPS += $$LIB_PATH/QSqlMigrator.dll
+  else: PRE_TARGETDEPS += $$LIB_PATH/libQSqlMigrator.so
+}
 # }

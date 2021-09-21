@@ -20,6 +20,7 @@
 # ensure the GNU General Public License version 3.0 requirements will be
 # met: http://www.gnu.org/copyleft/gpl.html.
 TARGET = SqliteMigrator
+PROJECT_ROOT = $$PWD/../..
 DEFINES += _BUILDING_SQLITEMIGRATOR_DLL
 
 SOURCES += \
@@ -44,4 +45,4 @@ HEADERS += \
     MigrationTracker/SqliteMigrationTableService.h \
     Helper/SqliteSqlStructureService.h
 
-include(../../build/qmake/_plugin.pri)
+include($$PROJECT_ROOT/build/qmake/_plugin.pri)

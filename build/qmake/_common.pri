@@ -25,10 +25,10 @@ QT -= gui
 CONFIG += c++11
 !win32: equals(QT_MAJOR_VERSION, 4): QMAKE_CXXFLAGS += -std=c++0x
 
-PROJECT_ROOT = $$PWD/../..
-
 LIB_PATH = $$PROJECT_ROOT/bin
 #LIB_VENDOR = $$BUILD_ROOT/vendor/lib
 #INCLUDE_VENDOR += $$BUILD_ROOT/vendor/include
 
 INCLUDEPATH += $$PROJECT_ROOT/src
+
+static: DEFINES += _BUILDING_STATIC_LIBS

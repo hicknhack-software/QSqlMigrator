@@ -20,6 +20,7 @@
 # ensure the GNU General Public License version 3.0 requirements will be
 # met: http://www.gnu.org/copyleft/gpl.html.
 TARGET = FirebirdMigrator
+PROJECT_ROOT = $$PWD/../..
 DEFINES += _BUILDING_FIREBIRDMIGRATOR_DLL
 
 SOURCES += \
@@ -32,4 +33,4 @@ INSTALL_HEADERS += \
 HEADERS += \
     Helper/FirebirdSqlStructureService.h
 
-include(../../build/qmake/_plugin.pri)
+include($$PROJECT_ROOT/build/qmake/_plugin.pri)

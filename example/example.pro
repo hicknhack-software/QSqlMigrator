@@ -1,33 +1,35 @@
-
-TEST_NAME=Example
-include(../tests/test.pri)
-
-DEFINES += SRCDIR=\\\"$$PWD/\\\"
+# Copyright (C) 2014, HicknHack Software
+# All rights reserved.
+# Contact: http://www.hicknhack-software.com/contact
+#
+# This file is part of the QSqlMigrator
+#
+# GNU Lesser General Public License Usage
+# This file may be used under the terms of the GNU Lesser
+# General Public License version 2.1 as published by the Free Software
+# Foundation and appearing in the file LICENSE.LGPL included in the
+# packaging of this file.  Please review the following information to
+# ensure the GNU Lesser General Public License version 2.1 requirements
+# will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+#
+# GNU General Public License Usage
+# Alternatively, this file may be used under the terms of the GNU
+# General Public License version 3.0 as published by the Free Software
+# Foundation and appearing in the file LICENSE.GPL3 included in the
+# packaging of this file.  Please review the following information to
+# ensure the GNU General Public License version 3.0 requirements will be
+# met: http://www.gnu.org/copyleft/gpl.html.
+TARGET=Example
+PROJECT_ROOT = $$PWD/..
 
 !exists(Config.h) {
   system($$QMAKE_COPY Config.h.example Config.h)
 }
 
-# depends SqliteMigrator.lib {
-CONFIG(release, debug|release): LIBS += -lSqliteMigrator -lQSqlMigrator
-else:CONFIG(debug, debug|release): LIBS += -lSqliteMigratord -lQSqlMigratord
-
-INCLUDEPATH += $$QSQLMIGRATOR_ROOT/plugins
-DEPENDPATH += $$DESTDIR
-
-static {
-    win32-msvc*:CONFIG(release, debug|release): PRE_TARGETDEPS += $$LIB_PATH/SqliteMigrator.lib
-    else:win32-msvc*:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$LIB_PATH/SqliteMigratord.lib
-    else:win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$LIB_PATH/libSqliteMigrator.a
-    else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$LIB_PATH/libSqliteMigratord.a
-    else:unix:CONFIG(release, debug|release): PRE_TARGETDEPS += $$LIB_PATH/libSqliteMigrator.a
-    else:unix:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$LIB_PATH/libSqliteMigratord.a
-} else {
-    win32:CONFIG(release, debug|release): PRE_TARGETDEPS += $$LIB_PATH/SqliteMigrator.dll
-    else:win32:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$LIB_PATH/SqliteMigratord.dll
-    else:unix:CONFIG(release, debug|release): PRE_TARGETDEPS += $$LIB_PATH/libSqliteMigrator.so
-    else:unix:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$LIB_PATH/libSqliteMigratord.so
-}
+SOURCES += \
+    example.cpp \
+    MyAppMigrator.cpp \
+    M201503301340654_CreateUsers.cpp
 
 HEADERS += \
     Config.h \
@@ -35,7 +37,18 @@ HEADERS += \
     MyAppMigrator.h \
     M201503301340654_CreateUsers.h
 
-SOURCES += \
-    example.cpp \
-    MyAppMigrator.cpp \
-    M201503301340654_CreateUsers.cpp
+include($$PROJECT_ROOT/build/qmake/_test.pri)
+
+# SqliteMigrator {
+LIBS += -lSqliteMigrator -lQSqlMigrator
+
+DEPENDPATH += $$LIB_PATH
+
+static {
+  win32-msvc*: PRE_TARGETDEPS += $$LIB_PATH/SqliteMigrator.lib
+  else: PRE_TARGETDEPS += $$LIB_PATH/libSqliteMigrator.a
+} else {
+  win32: PRE_TARGETDEPS += $$LIB_PATH/SqliteMigrator.dll
+  else: PRE_TARGETDEPS += $$LIB_PATH/libSqliteMigrator.so
+}
+# }

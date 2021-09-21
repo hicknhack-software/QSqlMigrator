@@ -20,6 +20,7 @@
 # ensure the GNU General Public License version 3.0 requirements will be
 # met: http://www.gnu.org/copyleft/gpl.html.
 TARGET = TestPostgresql
+PROJECT_ROOT = $$PWD/../..
 
 !exists(PostgresqlConfig.h) {
   system($$QMAKE_COPY PostgresqlConfig.h.example PostgresqlConfig.h)
@@ -38,13 +39,18 @@ OTHER_FILES += \
     PostgresqlConfig.h.appveyor \
     PostgresqlConfig.h.travis
 
-include(../../build/qmake/_test.pri)
+include($$PROJECT_ROOT/build/qmake/_test.pri)
 
 # PostgresqlMigrator {
-LIBS += -lPostgresqlMigrator
+LIBS += -lPostgresqlMigrator -lQSqlMigrator
 
 DEPENDPATH += $$LIB_PATH
 
-win32: PRE_TARGETDEPS += $$LIB_PATH/PostgresqlMigrator.dll
-else: PRE_TARGETDEPS += $$LIB_PATH/libPostgresqlMigrator.so
+static {
+  win32-msvc*: PRE_TARGETDEPS += $$LIB_PATH/PostgresqlMigrator.lib
+  else: PRE_TARGETDEPS += $$LIB_PATH/libPostgresqlMigrator.a
+} else {
+  win32: PRE_TARGETDEPS += $$LIB_PATH/PostgresqlMigrator.dll
+  else: PRE_TARGETDEPS += $$LIB_PATH/libPostgresqlMigrator.so
+}
 # }

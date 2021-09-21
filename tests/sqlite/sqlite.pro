@@ -20,6 +20,7 @@
 # ensure the GNU General Public License version 3.0 requirements will be
 # met: http://www.gnu.org/copyleft/gpl.html.
 TARGET = TestSqlite
+PROJECT_ROOT = $$PWD/../..
 
 !exists(SqliteConfig.h) {
   system($$QMAKE_COPY SqliteConfig.h.example SqliteConfig.h)
@@ -32,13 +33,18 @@ HEADERS += \
     ../BasicTest/BasicTest.h \
     SqliteConfig.h
 
-include(../../build/qmake/_test.pri)
+include($$PROJECT_ROOT/build/qmake/_test.pri)
 
 # SqliteMigrator {
-LIBS += -lSqliteMigrator
+LIBS += -lSqliteMigrator -lQSqlMigrator
 
 DEPENDPATH += $$LIB_PATH
 
-win32: PRE_TARGETDEPS += $$LIB_PATH/SqliteMigrator.dll
-else: PRE_TARGETDEPS += $$LIB_PATH/libSqliteMigrator.so
+static {
+  win32-msvc*: PRE_TARGETDEPS += $$LIB_PATH/SqliteMigrator.lib
+  else: PRE_TARGETDEPS += $$LIB_PATH/libSqliteMigrator.a
+} else {
+  win32: PRE_TARGETDEPS += $$LIB_PATH/SqliteMigrator.dll
+  else: PRE_TARGETDEPS += $$LIB_PATH/libSqliteMigrator.so
+}
 # }
