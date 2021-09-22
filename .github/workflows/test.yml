@@ -81,8 +81,15 @@ jobs:
           sudo apt-get install -y qbs clang-12 llvm-12 qt5-default qtbase5-dev
           sudo apt-get install -y libqt5sql5-mysql libqt5sql5-psql
 
-      - name: Setup MySQL
-        run: sudo systemctl start mysql.service
+      - name: Start MySQL
+        uses: ankane/setup-mysql@v1
+        with:
+          mysql-version: 8.0
+
+      - name: Set up MySQL
+        run: |
+          mysql -uroot -proot
+          mysql --version
 
       - name: Setup PostgreSQL
         run: |
