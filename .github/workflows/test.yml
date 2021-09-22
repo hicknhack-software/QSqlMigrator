@@ -20,12 +20,7 @@ jobs:
       - name: Start MySQL
         uses: ankane/setup-mysql@v1
         with:
-          mysql-version: "8.0"
-
-      - name: Config mysql
-        run: |
-          mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';"
-          mysql --version
+          mysql-version: 8.0
 
       - name: install mvsc
         uses: ilammy/msvc-dev-cmd@v1
@@ -86,12 +81,7 @@ jobs:
         with:
           mysql-version: 8.0
 
-      - name: Set up MySQL
-        run: |
-          mysql -uroot -proot
-          mysql --version
-
-      - name: Setup PostgreSQL
+      - name: Set up PostgreSQL
         run: |
           sudo systemctl start postgresql.service
           pg_isready
