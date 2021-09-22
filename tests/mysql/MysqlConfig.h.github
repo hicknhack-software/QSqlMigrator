@@ -9,6 +9,6 @@
 #define MYSQL_HOSTNAME "127.0.0.1"
 #define MYSQL_HOSTPORT 3306
 #define MYSQL_USERNAME "root"
-#define MYSQL_PASSWORD "root"
+#define MYSQL_PASSWORD ""
 
 #endif // MYSQLCONFIG_H
