@@ -69,6 +69,19 @@ jobs:
     name: "test on ubuntu"
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_USER: test
+
     steps:
       - name: install qbs, clang12 and qt
         run: |
@@ -80,14 +93,6 @@ jobs:
         uses: ankane/setup-mysql@v1
         with:
           mysql-version: 8.0
-
-      - name: Set up PostgreSQL
-        run: |
-          sudo systemctl start postgresql.service
-          pg_isready
-          sudo -u postgres psql --command="CREATE USER test PASSWORD 'test';"
-          sudo -u postgres psql --command="ALTER ROLE test WITH SUPERUSER LOGIN CREATEDB CREATEROLE;"
-          sudo -u postgres psql --command="\du"
 
       - name: checkout
         uses: actions/checkout@v2
@@ -107,3 +112,5 @@ jobs:
          qbs build profile:clang
          --build-directory ${env:RUNNER_TEMP}\build
          -p autotest-runner
+        env:
+          POSTGRES_HOST: postgres
