@@ -18,9 +18,10 @@ jobs:
           & $env:PGBIN\psql --command="\du"
 
       - name: Start MySQL
-        uses: ankane/setup-mysql@v1
+        uses: fettpet/setup-mysql@v1
         with:
           mysql-version: 8.0
+          install-directory: "${{ runner.workspace }}\\MySQL"
 
       - name: install mvsc
         uses: ilammy/msvc-dev-cmd@v1
@@ -30,18 +31,16 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
-          version: "5.15.2"
-
-      - name: Compile and install QMySql Plugin for Qt
-        run: |
-          git clone --branch 5.15.2 --depth 1 --no-tags git://code.qt.io/qt/qt5.git qt5
-          cd qt5
-          git submodule update --init --depth 1 qtbase
-          cd qtbase/src/plugins/sqldrivers
-          qmake -- MYSQL_INCDIR="c:\Program Files\MySQL\MySQL Server 8.0\include" MYSQL_LIBDIR="c:\Program Files\MySQL\MySQL Server 8.0\lib"
-          nmake
-          nmake install
-        shell: cmd
+          version: 5.15.2
+      
+      - name: Install Plugin Qt
+        uses: fettpet/qt_sql_plugin_installer@master
+        with:
+          mysql-install: true
+          mysql-path: "${{ runner.workspace }}\\MySQL"
+          postgresql-install: true
+          postgresql-path: "${{ env.PGROOT }}"
+          qt-version: 5.15.2
 
       - name: checkout
         uses: actions/checkout@v2
@@ -83,16 +82,29 @@ jobs:
           POSTGRES_USER: test
 
     steps:
-      - name: install qbs, clang12 and qt
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y qbs clang-12 llvm-12 qt5-default qtbase5-dev
-          sudo apt-get install -y libqt5sql5-mysql libqt5sql5-psql
-
+      
       - name: Start MySQL
-        uses: ankane/setup-mysql@v1
+        uses: fettpet/setup-mysql@v1
         with:
           mysql-version: 8.0
+          install-directory: "${{ runner.workspace }}\\MySQL"
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2
+        with:
+          version: 5.15.2
+
+      - name: install qbs, clang12
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y clang-12 llvm-12 qbs
+
+      - name: Install Plugin Qt
+        uses: Fettpet/qt_sql_plugin_installer@master
+        with:
+          mysql-install: true
+          postgresql-install: true
+          qt-version: 5.15.2
 
       - name: checkout
         uses: actions/checkout@v2
