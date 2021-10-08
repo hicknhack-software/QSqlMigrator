@@ -7,6 +7,7 @@ DynamicLibrary {
     cpp.includePaths: ["./"]
     cpp.defines: ["LOG_PREFIX=\"[QSqlMigrator]\"",
                   "_BUILDING_QSQLMIGRATOR_DLL"]
+    cpp.cxxLanguageVersion: "c++17"
     install: true
 
     Properties {
@@ -21,6 +22,7 @@ DynamicLibrary {
         Properties {
             condition: qbs.toolchain.contains("clang")
             cpp.commonCompilerFlags: "-Wno-deprecated-copy"
+            cpp.cxxLanguageVersion: "c++17"
         }
     }
 
