@@ -6,7 +6,9 @@ jobs:
   windows:
     name: "test on windows"
     runs-on: windows-latest
-
+    strategy:
+      matrix:
+        qt-version: [5.15.2, 6.2.0]
     steps:
       - name: Start PostgreSQL
         run: |
@@ -31,7 +33,7 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
-          version: 5.15.2
+          version: ${{matrix.qt-version}}
       
       - name: Install Plugin Qt
         uses: fettpet/qt_sql_plugin_installer@master
@@ -40,7 +42,7 @@ jobs:
           mysql-path: "${{ runner.workspace }}\\MySQL"
           postgresql-install: true
           postgresql-path: "${{ env.PGROOT }}"
-          qt-version: 5.15.2
+          qt-version:  ${{matrix.qt-version}}
 
       - name: checkout
         uses: actions/checkout@v2
@@ -67,7 +69,9 @@ jobs:
   ubuntu:
     name: "test on ubuntu"
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        qt-version: [5.15.2, 6.2.0]
     services:
       postgres:
         image: postgres
@@ -92,7 +96,7 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
-          version: 5.15.2
+          version: ${{matrix.qt-version}}
 
       - name: install qbs, clang12
         run: |
@@ -104,7 +108,7 @@ jobs:
         with:
           mysql-install: true
           postgresql-install: true
-          qt-version: 5.15.2
+          qt-version: ${{matrix.qt-version}}
 
       - name: checkout
         uses: actions/checkout@v2
