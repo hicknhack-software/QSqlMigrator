@@ -8,7 +8,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        qt-version: [5.15.2, 6.2.0]
+        qt-version: [6.2.0]
     steps:
       - name: Start PostgreSQL
         run: |
@@ -34,6 +34,7 @@ jobs:
         uses: jurplel/install-qt-action@v2
         with:
           version: ${{matrix.qt-version}}
+          dir: ${{ github.workspace }}
       
       - name: Install Plugin Qt
         uses: fettpet/qt_sql_plugin_installer@master
@@ -60,9 +61,9 @@ jobs:
         shell: cmd
 
       - name: build and run tests
-        run: |
+        run: | 
           set QT_FORCE_STDERR_LOGGING=1
-          set PATH=%PATH%;C:\Program Files\MySQL\MySQL Server 8.0\lib
+          set PATH=%PATH%;${{ runner.workspace }}\MySQL\lib;${{ runner.workspace }}\MySQL\include
           qbs build profile:MSVC2019-x64 --build-directory %RUNNER_TEMP%\build -p autotest-runner
         shell: cmd
 
@@ -71,7 +72,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        qt-version: [5.15.2, 6.2.0]
+        qt-version: [6.2.0]
     services:
       postgres:
         image: postgres
@@ -93,12 +94,11 @@ jobs:
           mysql-version: 8.0
           install-directory: "${{ runner.workspace }}\\MySQL"
       
-      - name: install qbs, clang12
+      - name: install clang12
         run: |
           sudo apt-get update -y
           sudo apt-get install -y clang-12 llvm-12 qbs
-          sudo apt-get remove -y qt5-default qt5-qmake qtbase5-dev-tools qt5-doc 
-
+          
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
