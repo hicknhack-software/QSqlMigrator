@@ -8,7 +8,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        qt-version: [5.15.2, 6.2.0]
+        qt-version: [6.2.0, 5.15.2]
     steps:
       - name: Start PostgreSQL
         run: |
@@ -34,6 +34,7 @@ jobs:
         uses: jurplel/install-qt-action@v2
         with:
           version: ${{matrix.qt-version}}
+          dir: ${{ runner.workspace }}
       
       - name: Install Plugin Qt
         uses: fettpet/qt_sql_plugin_installer@master
@@ -62,7 +63,7 @@ jobs:
       - name: build and run tests
         run: |
           set QT_FORCE_STDERR_LOGGING=1
-          set PATH=%PATH%;C:\Program Files\MySQL\MySQL Server 8.0\lib
+          set PATH=%PATH%;${{ runner.workspace }}\MySQL\lib;${{ runner.workspace }}\MySQL\include
           qbs build profile:MSVC2019-x64 --build-directory %RUNNER_TEMP%\build -p autotest-runner
         shell: cmd
 
@@ -70,8 +71,11 @@ jobs:
     name: "test on ubuntu"
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        qt-version: [5.15.2, 6.2.0]
+        include:
+          - image: ghcr.io/fettpet/qbs_qt_sql_plugins_docker:qt5.15.2-qbs1.20.1-clang10
+          - image: ghcr.io/fettpet/qbs_qt_sql_plugins_docker:qt6.2.0-qbs1.20.1-clang12
     services:
       postgres:
         image: postgres
@@ -86,48 +90,26 @@ jobs:
           POSTGRES_USER: test
 
     steps:
-      
       - name: Start MySQL
         uses: fettpet/setup-mysql@v1
         with:
           mysql-version: 8.0
           install-directory: "${{ runner.workspace }}\\MySQL"
       
-      - name: install qbs, clang12
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y clang-12 llvm-12 qbs
-          sudo apt-get remove -y qt5-default qt5-qmake qtbase5-dev-tools qt5-doc 
-
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v2
-        with:
-          version: ${{matrix.qt-version}}
-
-      - name: Install Plugin Qt
-        uses: Fettpet/qt_sql_plugin_installer@master
-        with:
-          mysql-install: true
-          postgresql-install: true
-          qt-version: ${{matrix.qt-version}}
-
       - name: checkout
         uses: actions/checkout@v2
-
-      - name: setup qbs
-        run: |
-          qbs setup-toolchains --detect
-          qbs config --list profiles
-
-      - name: prepare config
+      
+      - name: prepare tests 
         run: |
           mv tests/mysql/MysqlConfig.h.github tests/mysql/MysqlConfig.h
           mv tests/postgresql/PostgresqlConfig.h.github tests/postgresql/PostgresqlConfig.h
 
-      - name: build and run tests
+      - name: run qbs build
         run: >-
-         qbs build profile:clang
-         --build-directory ${env:RUNNER_TEMP}\build
-         -p autotest-runner
+          docker run --network="host" --rm -v ${GITHUB_WORKSPACE}:/build -w /build
+          ${{ matrix.image }}
+          build
+          --build-directory /tmp/build
+          -p autotest-runner
         env:
           POSTGRES_HOST: postgres
