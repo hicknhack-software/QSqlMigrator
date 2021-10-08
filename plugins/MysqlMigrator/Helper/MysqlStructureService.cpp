@@ -36,7 +36,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QStringList>
-#include <QRegExp>
+#include <QRegularExpression>
 
 using namespace Structure;
 
@@ -91,8 +91,9 @@ Table MysqlStructureService::getTableDefinition(const QString &tableName, QSqlDa
 
 void MysqlStructureService::normalizeDatatype(QString& type) const {
     auto replaceIfMatch = [&type](QString const& pattern) {
-        QRegExp tinyint(pattern + "\\(\\d+\\)");
-        if(tinyint.indexIn(type) != -1)
+        QRegularExpression intType(pattern + "\\(\\d+\\)");
+        auto match = intType.match(type);
+        if(match.hasMatch())
         {
             type = pattern;
         }
