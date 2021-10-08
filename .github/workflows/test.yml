@@ -92,16 +92,17 @@ jobs:
         with:
           mysql-version: 8.0
           install-directory: "${{ runner.workspace }}\\MySQL"
+      
+      - name: install qbs, clang12
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y clang-12 llvm-12 qbs
+          sudo apt-get remove -y qt5-default qt5-qmake qtbase5-dev-tools qt5-doc 
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
           version: ${{matrix.qt-version}}
-
-      - name: install qbs, clang12
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y clang-12 llvm-12 qbs
 
       - name: Install Plugin Qt
         uses: Fettpet/qt_sql_plugin_installer@master
