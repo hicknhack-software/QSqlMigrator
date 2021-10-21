@@ -58,7 +58,7 @@
 class BasicTest : public QObject
 {
     Q_OBJECT
-private Q_SLOTS:
+protected Q_SLOTS:
     //TODO add tests for "default value", "autoincrement" and other constraints
     //TODO check if versionTable is maintained correctly
     virtual void initTestCase();
@@ -66,6 +66,7 @@ private Q_SLOTS:
     virtual void init();
     virtual void cleanup();
 
+private Q_SLOTS:
     void testCreateTable();
     void testDropTable();
     void testDropTableRevert();
@@ -94,7 +95,7 @@ protected:
     virtual void defineTestDatabase();
 
     const QString m_driverName;
-    const QString m_testDatabaseName;
+    QString m_testDatabaseName;
     MigrationExecution::MigrationExecutionContextPtr (*m_buildContext)(MigrationExecution::MigrationExecutionContext::Builder &);
 
     const QString m_structureDatabase;
