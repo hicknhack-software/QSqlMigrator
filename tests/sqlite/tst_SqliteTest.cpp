@@ -45,10 +45,10 @@ public:
     SqliteTest();
 
 private:
-    void defineStructureDatabase();
-    void createStructureDatabase();
-    void cleanStructureDatabase();
-    void defineTestDatabase();
+    void defineStructureDatabase() override;
+    void createStructureDatabase() override;
+    void cleanStructureDatabase() override;
+    void defineTestDatabase() override;
 };
 
 SqliteTest::SqliteTest() : BasicTest(SQLITE_DRIVERNAME, SQLITE_DATABASE_FILE, &SqliteMigrator::buildContext)
