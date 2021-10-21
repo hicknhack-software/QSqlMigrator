@@ -69,13 +69,15 @@ void SqliteTest::createStructureDatabase()
         ::qDebug() << "initial query error";
     }
     test_database.close();
+    Q_ASSERT(QFile::exists(m_testDatabaseName));
 }
 
 void SqliteTest::cleanStructureDatabase()
 {
     if (QFile::exists(m_testDatabaseName)) {
-        QFile::remove(m_testDatabaseName);
+        Q_ASSERT(QFile::remove(m_testDatabaseName));
     }
+    Q_ASSERT(!QFile::exists(m_testDatabaseName));
 }
 
 void SqliteTest::defineTestDatabase()
