@@ -8,7 +8,7 @@
 
 #define POSTGRESQL_HOSTNAME "localhost"
 #define POSTGRESQL_HOSTPORT 5432
-#define POSTGRESQL_USERNAME "test"
+#define POSTGRESQL_USERNAME "postgres"
 #define POSTGRESQL_PASSWORD "test"
 
 #endif // POSTGRESQLCONFIG_H
