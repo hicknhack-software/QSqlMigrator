@@ -31,6 +31,7 @@
 #include <QString>
 #include <QtTest>
 #include <QSqlQuery>
+#include <QFile>
 #include <QSqlError>
 
 using namespace Structure;
@@ -45,14 +46,39 @@ public:
     SqliteTest();
 
 private:
-    void defineStructureDatabase();
-    void createStructureDatabase();
-    void cleanStructureDatabase();
-    void defineTestDatabase();
+    void defineStructureDatabase() override;
+    void createStructureDatabase() override;
+    void cleanStructureDatabase() override;
+    void defineTestDatabase() override;
+    void init() override;
+    void initTestCase() override;
+
 };
 
 SqliteTest::SqliteTest() : BasicTest(SQLITE_DRIVERNAME, SQLITE_DATABASE_FILE, &SqliteMigrator::buildContext)
 {
+}
+
+void SqliteTest::initTestCase()
+{
+    initLibraryPath();
+    defineTestDatabase();
+    defineStructureDatabase();
+
+    m_contextBuilder.setDatabase(QSqlDatabase::database(TEST_CONNECTION_NAME, false));
+}
+
+void SqliteTest::init() {
+    auto getFilename = []() -> QString {
+        QTemporaryFile tempFile;
+        Q_ASSERT(tempFile.open());
+        return tempFile.fileName();
+    };
+    m_testDatabaseName = getFilename();
+    qDebug() << "Use DatabaseName " << m_testDatabaseName;
+    defineTestDatabase();
+    m_contextBuilder.setDatabase(QSqlDatabase::database(TEST_CONNECTION_NAME, false));
+    BasicTest::init();
 }
 
 void SqliteTest::defineStructureDatabase()
@@ -69,13 +95,16 @@ void SqliteTest::createStructureDatabase()
         ::qDebug() << "initial query error";
     }
     test_database.close();
+    Q_ASSERT(QFile::exists(m_testDatabaseName));
 }
 
 void SqliteTest::cleanStructureDatabase()
 {
-    if (QFile::exists(m_testDatabaseName)) {
-        QFile::remove(m_testDatabaseName);
+    QFile file(m_testDatabaseName);
+    if (file.exists()) {
+        Q_ASSERT_X(file.remove(), m_testDatabaseName.toStdString().c_str(), file.errorString().toStdString().c_str()) ;
     }
+    Q_ASSERT(!QFile::exists(m_testDatabaseName));
 }
 
 void SqliteTest::defineTestDatabase()

@@ -6,7 +6,9 @@ Application {
     consoleApplication: true
     type: ["application", "autotest"]
     install: true
+
     cpp.rpaths: ["../lib/"];
+    cpp.cxxLanguageVersion: "c++17"
 
     Depends { name: "PostgresqlMigrator" }
     Depends { name: "Qt"; submodules: ["test"] }
