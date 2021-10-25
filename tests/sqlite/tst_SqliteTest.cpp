@@ -28,6 +28,7 @@
 
 #include "SqliteConfig.h"
 
+#include <ctime>
 #include <QString>
 #include <QtTest>
 #include <QSqlQuery>
@@ -69,10 +70,30 @@ void SqliteTest::initTestCase()
 }
 
 void SqliteTest::init() {
-    auto getFilename = []() -> QString {
-        QTemporaryFile tempFile;
-        Q_ASSERT(tempFile.open());
-        return tempFile.fileName();
+
+    auto generateRandomFile = [](const int len) -> std::string {
+        std::string tmp_s;
+        srand( (unsigned) time(NULL));
+        static const char availChars[] =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "abcdefghijklmnopqrstuvwxyz";
+
+        for (int i = 0; i < len; ++i)
+            tmp_s += availChars[rand() % (sizeof(availChars) - 1)];
+
+
+        return tmp_s;
+    };
+
+    auto getFilename = [&]() -> QString {
+        while(true){
+            auto filename = QDir::tempPath() + QString("/") + QString(generateRandomFile(10).c_str());
+            auto file = QFileInfo(filename);
+            if(!file.exists()) {
+                return filename;
+            }
+
+        }
     };
     m_testDatabaseName = getFilename();
     qDebug() << "Use DatabaseName " << m_testDatabaseName;
