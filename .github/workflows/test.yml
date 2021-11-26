@@ -67,8 +67,8 @@ jobs:
           qbs build profile:MSVC2019-x64 --build-directory %RUNNER_TEMP%\build -p autotest-runner
         shell: cmd
 
-  ubuntu:
-    name: "test on ubuntu"
+  qbs-ubuntu:
+    name: "test qbs on ubuntu"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -111,5 +111,44 @@ jobs:
           build
           --build-directory /tmp/build
           -p autotest-runner
+        env:
+          POSTGRES_HOST: postgres
+
+
+  qmake-ubuntu:
+    name: "test qmake on ubuntu"
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_USER: test
+
+    steps:
+      - name: Start MySQL
+        uses: fettpet/setup-mysql@v1
+        with:
+          mysql-version: 8.0
+          install-directory: "${{ runner.workspace }}\\MySQL"
+      
+      - name: checkout
+        uses: actions/checkout@v2
+      
+      - name: prepare tests 
+        run: |
+          mv tests/mysql/MysqlConfig.h.github tests/mysql/MysqlConfig.h
+          mv tests/postgresql/PostgresqlConfig.h.github tests/postgresql/PostgresqlConfig.h
+
+      - name: build and run tests
+        run: |
+          docker run --network="host" --rm -v ${GITHUB_WORKSPACE}:/build -w /build ghcr.io/fettpet/qbs_qt_sql_plugins_docker:qt-qbs1.20.1-clang10 qmake -r "QMAKE_CXX=clang++-10" "QMAKE_CC=clang-10" "QMAKE_CXXFLAGS+=-fPIE"
+          docker run --network="host" --rm -v ${GITHUB_WORKSPACE}:/build -w /build ghcr.io/fettpet/qbs_qt_sql_plugins_docker:qt-qbs1.20.1-clang10 make check
         env:
           POSTGRES_HOST: postgres
