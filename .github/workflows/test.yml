@@ -108,16 +108,23 @@ jobs:
         run: >-
           docker run --network="host" --rm -v ${GITHUB_WORKSPACE}:/build -w /build
           ${{ matrix.image }}
-          build
+          qbs build
           --build-directory /tmp/build
           -p autotest-runner
         env:
           POSTGRES_HOST: postgres
 
-
   qmake-ubuntu:
     name: "test qmake on ubuntu"
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: ghcr.io/fettpet/qbs_qt_sql_plugins_docker:qt5.15.2-qbs1.20.1-clang10
+            qmake_extra: "-spec /opt/qt515/mkspecs/linux-clang"
+          - image: ghcr.io/fettpet/qbs_qt_sql_plugins_docker:qt-qbs1.20.1-clang10
+            qmake_extra: ""
     services:
       postgres:
         image: postgres
@@ -148,7 +155,7 @@ jobs:
 
       - name: build and run tests
         run: |
-          docker run --network="host" --rm -v ${GITHUB_WORKSPACE}:/build -w /build ghcr.io/fettpet/qbs_qt_sql_plugins_docker:qt-qbs1.20.1-clang10 qmake -r "QMAKE_CXX=clang++-10" "QMAKE_CC=clang-10" "QMAKE_CXXFLAGS+=-fPIE"
-          docker run --network="host" --rm -v ${GITHUB_WORKSPACE}:/build -w /build ghcr.io/fettpet/qbs_qt_sql_plugins_docker:qt-qbs1.20.1-clang10 make check
+          docker run --network="host" --rm -v ${GITHUB_WORKSPACE}:/build -w /build ${{ matrix.image }} qmake -r ${{matrix.qmake_extra}} "QMAKE_CXX=clang++-10" "QMAKE_CC=clang-10" "QMAKE_CXXFLAGS+=-fPIE"
+          docker run --network="host" --rm -v ${GITHUB_WORKSPACE}:/build -w /build ${{ matrix.image }} make check
         env:
           POSTGRES_HOST: postgres
