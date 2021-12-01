@@ -28,9 +28,11 @@
 
 #include "SqliteConfig.h"
 
+#include <ctime>
 #include <QString>
 #include <QtTest>
 #include <QSqlQuery>
+#include <QFile>
 #include <QSqlError>
 
 using namespace Structure;
@@ -45,14 +47,59 @@ public:
     SqliteTest();
 
 private:
-    void defineStructureDatabase();
-    void createStructureDatabase();
-    void cleanStructureDatabase();
-    void defineTestDatabase();
+    void defineStructureDatabase() override;
+    void createStructureDatabase() override;
+    void cleanStructureDatabase() override;
+    void defineTestDatabase() override;
+    void init() override;
+    void initTestCase() override;
+
 };
 
 SqliteTest::SqliteTest() : BasicTest(SQLITE_DRIVERNAME, SQLITE_DATABASE_FILE, &SqliteMigrator::buildContext)
 {
+}
+
+void SqliteTest::initTestCase()
+{
+    initLibraryPath();
+    defineTestDatabase();
+    defineStructureDatabase();
+
+    m_contextBuilder.setDatabase(QSqlDatabase::database(TEST_CONNECTION_NAME, false));
+}
+
+void SqliteTest::init() {
+
+    auto generateRandomFile = [](const int len) -> std::string {
+        std::string tmp_s;
+        srand( (unsigned) time(NULL));
+        static const char availChars[] =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "abcdefghijklmnopqrstuvwxyz";
+
+        for (int i = 0; i < len; ++i)
+            tmp_s += availChars[rand() % (sizeof(availChars) - 1)];
+
+
+        return tmp_s;
+    };
+
+    auto getFilename = [&]() -> QString {
+        while(true){
+            auto filename = QDir::tempPath() + QString("/") + QString(generateRandomFile(10).c_str());
+            auto file = QFileInfo(filename);
+            if(!file.exists()) {
+                return filename;
+            }
+
+        }
+    };
+    m_testDatabaseName = getFilename();
+    qDebug() << "Use DatabaseName " << m_testDatabaseName;
+    defineTestDatabase();
+    m_contextBuilder.setDatabase(QSqlDatabase::database(TEST_CONNECTION_NAME, false));
+    BasicTest::init();
 }
 
 void SqliteTest::defineStructureDatabase()
@@ -69,13 +116,16 @@ void SqliteTest::createStructureDatabase()
         ::qDebug() << "initial query error";
     }
     test_database.close();
+    Q_ASSERT(QFile::exists(m_testDatabaseName));
 }
 
 void SqliteTest::cleanStructureDatabase()
 {
-    if (QFile::exists(m_testDatabaseName)) {
-        QFile::remove(m_testDatabaseName);
+    QFile file(m_testDatabaseName);
+    if (file.exists()) {
+        Q_ASSERT_X(file.remove(), m_testDatabaseName.toStdString().c_str(), file.errorString().toStdString().c_str()) ;
     }
+    Q_ASSERT(!QFile::exists(m_testDatabaseName));
 }
 
 void SqliteTest::defineTestDatabase()
@@ -84,6 +134,6 @@ void SqliteTest::defineTestDatabase()
     database.setDatabaseName(m_testDatabaseName);
 }
 
-QTEST_MAIN(SqliteTest)
+QTEST_GUILESS_MAIN(SqliteTest)
 
 #include "tst_SqliteTest.moc"

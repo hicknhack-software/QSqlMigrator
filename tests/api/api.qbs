@@ -18,6 +18,8 @@ Application {
             }
         }
     }
+    cpp.rpaths: ["../lib/"];
+    cpp.cxxLanguageVersion: "c++17"
 
     files: [
         "../BasicTest/BasicTest.cpp",

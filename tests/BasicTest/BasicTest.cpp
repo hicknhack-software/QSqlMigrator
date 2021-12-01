@@ -118,6 +118,7 @@ void BasicTest::closeTestDatabase()
 {
     QSqlDatabase test_database = QSqlDatabase::database(TEST_CONNECTION_NAME, false);
     if (test_database.isOpen()) test_database.close();
+    Q_ASSERT(!test_database.isOpen());
 }
 
 void BasicTest::initTestCase()

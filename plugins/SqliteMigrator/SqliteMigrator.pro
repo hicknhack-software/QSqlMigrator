@@ -31,7 +31,8 @@ SOURCES += \
     CommandExecution/SqliteRenameColumnService.cpp \
     MigrationTracker/SqliteMigrationTableService.cpp \
     SqliteMigrator.cpp \
-    Helper/SqliteSqlStructureService.cpp
+    Helper/SqliteSqlStructureService.cpp \
+    Helper/SqliteTypeMapperService.cpp
 
 INSTALL_HEADERS += \
     SqliteMigrator.h \
@@ -43,6 +44,7 @@ HEADERS += \
     CommandExecution/SqliteAlterColumnService.h \
     CommandExecution/SqliteRenameColumnService.h \
     MigrationTracker/SqliteMigrationTableService.h \
-    Helper/SqliteSqlStructureService.h
+    Helper/SqliteSqlStructureService.h \
+    Helper/SqliteTypeMapperService.h
 
 include($$PROJECT_ROOT/build/qmake/_plugin.pri)

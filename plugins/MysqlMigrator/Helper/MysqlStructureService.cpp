@@ -31,12 +31,16 @@
 
 #include "Structure/Table.h"
 #include "Structure/Index.h"
-
+#include <QtGlobal>
 #include <QDebug>
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QStringList>
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QRegExp>
+#else
+#include <QRegularExpression>
+#endif
 
 using namespace Structure;
 
@@ -90,13 +94,23 @@ Table MysqlStructureService::getTableDefinition(const QString &tableName, QSqlDa
 }
 
 void MysqlStructureService::normalizeDatatype(QString& type) const {
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     auto replaceIfMatch = [&type](QString const& pattern) {
         QRegExp tinyint(pattern + "\\(\\d+\\)");
-        if(tinyint.indexIn(type) != -1)
+        if(tinyint.indexIn(type) != -1) {
+            type = pattern;
+        }
+    };
+#else
+    auto replaceIfMatch = [&type](QString const& pattern) {
+        QRegularExpression intType(pattern + "\\(\\d+\\)");
+        auto match = intType.match(type);
+        if(match.hasMatch())
         {
             type = pattern;
         }
     };
+#endif
     replaceIfMatch("tinyint");
     replaceIfMatch("bigint");
     replaceIfMatch("int");

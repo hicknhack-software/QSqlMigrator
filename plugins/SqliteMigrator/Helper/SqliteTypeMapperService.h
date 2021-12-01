@@ -23,35 +23,26 @@
 ** met: http://www.gnu.org/copyleft/gpl.html.
 **
 ****************************************************************************/
-#include "../BasicTest/BasicTest.h"
+#pragma once
+
 #include "MysqlMigrator/MysqlMigrator.h"
 
-#include "MysqlConfig.h"
+#include "BaseSqlMigrator/Helper/BaseSqlTypeMapperService.h"
+
+#include "Structure/Type.h"
 
 #include <QString>
-#include <QtTest>
 
-using namespace Structure;
-using namespace Migrations;
-using namespace MigrationExecution;
+namespace Helper {
 
-#define MYSQL_STRUCTURE_DATABASE "mysql"
-#define MYSQLTEST_DATABASE_NAME "qdb_migrator_test_db"
-
-class MysqlTest : public BasicTest
+class SqliteTypeMapperService : public BaseSqlTypeMapperService
 {
-    Q_OBJECT
-
 public:
-    MysqlTest();
+    SqliteTypeMapperService();
+    ~SqliteTypeMapperService() QSQL_OVERRIDE_D {}
+
+    QString map(const Structure::Type &type) const Q_DECL_OVERRIDE;
 };
 
-MysqlTest::MysqlTest()
-    : BasicTest(MYSQL_DRIVERNAME, MYSQLTEST_DATABASE_NAME, &MysqlMigrator::buildContext, MYSQL_STRUCTURE_DATABASE,
-                MYSQL_HOSTNAME, MYSQL_HOSTPORT, MYSQL_USERNAME, MYSQL_PASSWORD)
-{
-}
+} // namespace Helper
 
-QTEST_GUILESS_MAIN(MysqlTest)
-
-#include "tst_MysqlTest.moc"

@@ -9,22 +9,17 @@ You need the "libmysql.dll"/.so in your path  (See Step 6)
 Requirements to build for Windows
 ---------------------------------
 
-A. Download the latest MySQL Connector C noinstall version and extract it to %MYSQL%
+A. Download and install the MySQL Installer (tested with 8.0.26)
 B. Make sure you have the qt sources available/installed in %QTDIR%
-C. Visual Studio >= 2008 (matching your qt version)
+C. Visual Studio >= 2019 (matching your qt version)
 
 Steps to build
 --------------
 
-1. Launch a compile command prompt
+1. Launch the Visual Studio command prompt
 
-2. Setup Qt Path
-2a) Execute the qtvars.bat (Qt 4.x only)
-%QTDIR%\bin\qtvars.bat
-
-2b) Add Qt bin path and fix QTDIR to src\qtbase (Qt 5.x)
-%QTDIR%\bin\qtenv2.bat
-set %QTDIR%=%QTDIR%\..\Src\qtbase
+2. Add the Qt binary path to PATH. 
+2.a qmake --version should be avail
 
 3. Change directory to the build path
 cd %TEMP%
