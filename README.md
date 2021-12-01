@@ -1,4 +1,3 @@
-TravisCI: [![Build Status](https://app.travis-ci.com/hicknhack-software/QSqlMigrator.svg?branch=develop)](https://app.travis-ci.com/hicknhack-software/QSqlMigrator)
 AppVeyor: [![Build Status](https://ci.appveyor.com/api/projects/status/github/hicknhack-software/QSqlMigrator?branch=develop&svg=true)](https://ci.appveyor.com/project/arBmind/qsqlmigrator)
 Github: [![Qbs-Tests](https://github.com/hicknhack-software/QSqlMigrator/actions/workflows/test.yml/badge.svg?branch=develop)](https://github.com/hicknhack-software/QSqlMigrator/actions/workflows/test.yml)
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/898/badge.svg)](https://scan.coverity.com/projects/898)
